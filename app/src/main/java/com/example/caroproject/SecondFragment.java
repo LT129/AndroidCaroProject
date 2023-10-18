@@ -89,7 +89,7 @@ public class SecondFragment extends Fragment {
                         // Mật khẩu nhập lại khớp với mật khẩu ban đầu
                         Toast.makeText(requireContext(), "Registration successful!", Toast.LENGTH_SHORT).show();
                         NavController navController = Navigation.findNavController(v);
-                        navController.navigate(R.id.action_secondFragment_to_firstFragment);
+                        navController.navigate(R.id.action_secondFragment_to_gameModeFragment);
                     } else {
                         // Mật khẩu không khớp
                         Toast.makeText(requireContext(), "Passwords do not match!", Toast.LENGTH_SHORT).show();
