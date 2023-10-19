@@ -9,11 +9,15 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -66,7 +70,7 @@ public class InGameFragment extends Fragment {
     private int currentPlayer;
     private boolean gameOver;
     private int[][] board;  // Bảng lưu trạng thái của ô cờ
-    private void initializeBoard() {
+    private void initializeBoard(View v) {
         board = new int[15][15];  // Bảng 15x15
         // Khởi tạo tất cả ô cờ là trống
         for (int i = 0; i < 15; i++) {
@@ -76,44 +80,45 @@ public class InGameFragment extends Fragment {
         }
         currentPlayer = 1;
         gameOver = false;
-        // Bắt đầu trò chơi
-        //startGame();
+
+        TextView txtWatch=v.findViewById(R.id.txtBottomInGame);
+        startCountdownTimer(46000, txtWatch, v);
+        ImageView imgBottom = v.findViewById(R.id.imgBottomInGame);
+        imgBottom.setBackgroundResource(R.drawable.custom_picture2);
     }
-//    private void startGame() {
-//        GridView gridView = requireView().findViewById(R.id.gridView);
-//        AdapterGridview adapter = new AdapterGridview(requireContext());
-//        gridView.setAdapter(adapter);
-//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                // Xử lý đánh cờ
-//                onCellClicked(position);
-//            }
-//        });
-//    }
+
     // Hàm xử lý sự kiện khi người chơi đánh vào một ô cờ
-    public void onCellClicked(int position, GridView gridView, AdapterGridview adapter ) {
+    public void onCellClicked(int position, View v, AdapterGridview adapter ) {
         if (!gameOver) {
-//            GridView gridView = requireView().findViewById(R.id.gridView);
-//            AdapterGridview adapter = (AdapterGridview) gridView.getAdapter();
+            TextView txtWatch1=v.findViewById(R.id.txtTopInGame);
+            TextView txtWatch2=v.findViewById(R.id.txtBottomInGame);
+            ImageView imgBottom=v.findViewById(R.id.imgBottomInGame);
+            ImageView imgTop=v.findViewById(R.id.imgTopInGame);
             int row = position / 15; // Lấy hàng dựa trên vị trí ô
             int col = position % 15; // Lấy cột dựa trên vị trí ô
-
             // Kiểm tra nếu ô đã được đánh
             if (adapter.isCellEmpty(position)) {
                 // Đánh dấu ô và thay đổi hình ảnh
                 if (currentPlayer == 1) {
+                    countDownTimer.cancel();
                     board[row][col]=1;
                     adapter.markCellAsPlayer1(position);
+                    startCountdownTimer(46000, txtWatch1, v);
+                    imgBottom.setBackgroundResource(R.drawable.custom_picture);
+                    imgTop.setBackgroundResource(R.drawable.custom_picture2);
                 } else if (currentPlayer == 2) {
+                    countDownTimer.cancel();
                     board[row][col]=2;
                     adapter.markCellAsPlayer2(position);
+                    startCountdownTimer(46000, txtWatch2, v);
+                    imgTop.setBackgroundResource(R.drawable.custom_picture);
+                    imgBottom.setBackgroundResource(R.drawable.custom_picture2);
                 }
 
                 // Kiểm tra thắng
                 if (checkWin(currentPlayer)) {
                     gameOver = true;
-                    showWinDialog(currentPlayer, gridView);
+                    showWinDialog(currentPlayer, v);
                 }
                 else{
                     currentPlayer = (currentPlayer == 1) ? 2 : 1;
@@ -205,6 +210,44 @@ public class InGameFragment extends Fragment {
         });
         builder.show();
     }
+    private Button btnTop, btnBottom;
+    private CountDownTimer countDownTimer;
+
+    private void startCountdownTimer(long millisInFuture, TextView txtWatch, View v) {
+        // millisInFuture là thời gian đếm ngược theo mili giây
+
+        countDownTimer = new CountDownTimer(millisInFuture, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                // Cập nhật TextView với thời gian còn lại
+                long seconds = millisUntilFinished / 1000;
+                long minutes = seconds / 60;
+                seconds = seconds % 60;
+                txtWatch.setText(String.format("%02d:%02d", minutes, seconds));
+            }
+
+            @Override
+            public void onFinish() {
+                // Xử lý khi đếm ngược kết thúc (hết thời gian)
+                if(txtWatch.getText().toString().equals("00:00"))
+                gameOver = true;
+                if(currentPlayer==1)
+                    currentPlayer=2;
+                else currentPlayer=1;
+                showWinDialog(currentPlayer, v);
+            }
+        }.start();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Dừng đồng hồ đếm khi Activity bị hủy để tránh rò rỉ bộ nhớ
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -216,12 +259,29 @@ public class InGameFragment extends Fragment {
         gridView.setAdapter(adapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 // Xử lý đánh cờ
-                onCellClicked(position, gridView, adapter);
+                onCellClicked(position, view, adapter);
             }
         });
-        initializeBoard();
+        initializeBoard(view);
+
+        btnTop=view.findViewById(R.id.btnTopInGame);
+        btnBottom =view.findViewById(R.id.btnBottomInGame);
+        btnBottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController=Navigation.findNavController(v);
+                navController.navigate(R.id.action_inGameFragment_self);
+            }
+        });
+        btnTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController=Navigation.findNavController(v);
+                navController.navigate(R.id.action_inGameFragment_to_gameModeFragment);
+            }
+        });
         return view;
     }
 }
