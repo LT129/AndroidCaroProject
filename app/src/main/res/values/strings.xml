@@ -2,4 +2,21 @@
     <string name="app_name">CaroProject</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="pvp">PvP</string>
+    <string name="pvc">PvE</string>
+    <string name="setting">Setting</string>
+    <string name="exit">Exit</string>
+
+    <string name="mode">Play:</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+
+    <string name="choose_shape">Shape: </string>
+    <string name="choose_color">Color: </string>
+    <string name="choose_background">Background</string>
+
+    <string name="x5">5x5</string>
+    <string name="x8">8x8</string>
+    <string name="x11">11x11</string>
+    <string name="choose_board_size">Board Size:</string>
 </resources>

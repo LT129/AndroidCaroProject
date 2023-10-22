@@ -229,11 +229,16 @@ public class InGameFragment extends Fragment {
             @Override
             public void onFinish() {
                 // Xử lý khi đếm ngược kết thúc (hết thời gian)
-                if(txtWatch.getText().toString().equals("00:00"))
-                gameOver = true;
-                if(currentPlayer==1)
+                if(txtWatch.getText().toString().equals("00:00")) {
+                    gameOver = true;
+                }
+
+                if(currentPlayer==1) {
                     currentPlayer=2;
-                else currentPlayer=1;
+                }
+                else {
+                    currentPlayer=1;
+                }
                 showWinDialog(currentPlayer, v);
             }
         }.start();

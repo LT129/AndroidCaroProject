@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
-    app:startDestination="@id/inGameFragment">
+    app:startDestination="@id/gameModeFragment">
 
     <fragment
         android:id="@+id/firstFragment"
@@ -52,11 +52,17 @@
         android:label="fragment_game_mode"
         tools:layout="@layout/fragment_game_mode" >
         <action
-            android:id="@+id/action_gameModeFragment_to_inGameFragment"
-            app:destination="@id/inGameFragment"
+            android:id="@+id/action_gameModeFragment_to_settingFragment"
+            app:destination="@id/settingFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_gameModeFragment_to_pvpFragment"
+            app:destination="@id/pvpFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
     </fragment>
+
     <fragment
         android:id="@+id/inGameFragment"
         android:name="com.example.caroproject.InGameFragment"
@@ -69,6 +75,25 @@
             app:exitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_inGameFragment_self"
+            app:destination="@id/inGameFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.example.caroproject.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting" >
+
+    </fragment>
+    <fragment
+        android:id="@+id/pvpFragment"
+        android:name="com.example.caroproject.PvpFragment"
+        android:label="fragment_pvp"
+        tools:layout="@layout/fragment_pvp" >
+        <action
+            android:id="@+id/action_pvpFragment_to_inGameFragment"
             app:destination="@id/inGameFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />

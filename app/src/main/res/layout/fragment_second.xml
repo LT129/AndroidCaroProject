@@ -99,7 +99,7 @@
             android:layout_weight="1"
             android:id="@+id/btnResetSecond"
             android:textSize="20dp"
-            android:textColor="@color/word_button"
+            android:textColor="@color/word_color_gray"
             android:textStyle="bold"
             android:layout_marginRight="20dp"
             android:text="Reset"
@@ -113,7 +113,7 @@
                 android:id="@+id/btnSignUpSecond"
                 android:textStyle="bold"
                 android:text="Sign-Up"
-                android:textColor="@color/word_button"
+                android:textColor="@color/word_color_gray"
                 android:background="@drawable/custom_button_1"/>
         </LinearLayout>
         <LinearLayout

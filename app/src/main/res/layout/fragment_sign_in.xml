@@ -83,7 +83,7 @@
                 android:id="@+id/btnSignInSignIn"
                 android:layout_marginRight="20dp"
                 android:layout_marginLeft="30dp"
-                android:textColor="@color/word_button"
+                android:textColor="@color/word_color_gray"
                 android:text="Sign-In"
                 android:background="@drawable/custom_button_1"/>
 

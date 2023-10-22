@@ -4,5 +4,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="click">#E18787</color>
     <color name="word">#06770B</color>
-    <color name="word_button">#0A554E</color>
+    <color name="word_color_gray">#4E4E4E</color>
 </resources>

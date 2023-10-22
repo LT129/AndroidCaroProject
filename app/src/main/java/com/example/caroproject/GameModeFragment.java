@@ -10,12 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link GameModeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class GameModeFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -26,20 +22,16 @@ public class GameModeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private Button btnPvp;
+    private Button btnPvc;
+    private Button btnSetting;
+    private Button btnExit;
+    private ImageView userAvatar;
 
     public GameModeFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment GameModeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static GameModeFragment newInstance(String param1, String param2) {
         GameModeFragment fragment = new GameModeFragment();
         Bundle args = new Bundle();
@@ -58,23 +50,51 @@ public class GameModeFragment extends Fragment {
         }
     }
 
-    Button btnTwoPlayers, btnPlusPlus;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_game_mode, container, false);
-        btnTwoPlayers = view.findViewById(R.id.btnTwoPlayers);
-        btnPlusPlus=view.findViewById(R.id.btnPlusPlus);
-        btnPlusPlus.setOnClickListener(new View.OnClickListener() {
+        btnPvp = view.findViewById(R.id.btnPvp);
+        btnPvc = view.findViewById(R.id.btnPvc);
+        btnSetting = view.findViewById(R.id.btnSetting);
+        btnExit = view.findViewById(R.id.btnExit);
+        btnPvp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.action_gameModeFragment_to_pvpFragment);
             }
         });
-        btnTwoPlayers.setOnClickListener(new View.OnClickListener() {
+
+        btnPvc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO change to fragment_pvc
+            }
+        });
+
+        btnSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_gameModeFragment_to_inGameFragment);
+                navController.navigate(R.id.action_gameModeFragment_to_settingFragment);
+            }
+        });
+
+        btnExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO finish all activity
+            }
+        });
+
+        userAvatar = view.findViewById(R.id.userAvatar);
+        userAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO change to fragment_user_info
             }
         });
         return view;

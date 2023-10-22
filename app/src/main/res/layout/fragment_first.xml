@@ -26,7 +26,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/word_button"
+            android:textColor="@color/word_color_gray"
             android:background="@drawable/custom_button_1"
             android:text="Sign-in"
             android:padding="20dp"
@@ -38,7 +38,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/word_button"
+            android:textColor="@color/word_color_gray"
             android:padding="20dp"
             android:background="@drawable/custom_button_1"
             android:text="Sign-up"
