@@ -58,16 +58,18 @@ public class GameModeFragment extends Fragment {
         }
     }
 
-    Button btnTwoPlayers, btnPlusPlus;
+    Button btnTwoPlayers, btnPVE;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_game_mode, container, false);
         btnTwoPlayers = view.findViewById(R.id.btnTwoPlayers);
-        btnPlusPlus=view.findViewById(R.id.btnPlusPlus);
-        btnPlusPlus.setOnClickListener(new View.OnClickListener() {
+        btnPVE=view.findViewById(R.id.btnPVE);
+        btnPVE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.action_gameModeFragment_to_inGameAIFragment);
             }
         });
         btnTwoPlayers.setOnClickListener(new View.OnClickListener() {

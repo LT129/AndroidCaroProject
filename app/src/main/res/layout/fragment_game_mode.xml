@@ -40,6 +40,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:textSize="30dp"
+            android:id="@+id/btnPVE"
             android:textColor="@color/word_button"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="40dp"

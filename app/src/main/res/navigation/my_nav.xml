@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
-    app:startDestination="@id/inGameFragment">
+    app:startDestination="@id/inGameAIFragment">
 
     <fragment
         android:id="@+id/firstFragment"
@@ -56,6 +56,11 @@
             app:destination="@id/inGameFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_gameModeFragment_to_inGameAIFragment"
+            app:destination="@id/inGameAIFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
     </fragment>
     <fragment
         android:id="@+id/inGameFragment"
@@ -70,6 +75,22 @@
         <action
             android:id="@+id/action_inGameFragment_self"
             app:destination="@id/inGameFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/inGameAIFragment"
+        android:name="com.example.caroproject.InGameAIFragment"
+        android:label="fragment_in_game_a_i"
+        tools:layout="@layout/fragment_in_game_a_i" >
+        <action
+            android:id="@+id/action_inGameAIFragment_to_gameModeFragment"
+            app:destination="@id/gameModeFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_inGameAIFragment_self"
+            app:destination="@id/inGameAIFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
     </fragment>
