@@ -10,7 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 public class GameModeFragment extends Fragment {
 
@@ -22,11 +25,17 @@ public class GameModeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private ImageButton btnStore;
     private Button btnPvp;
     private Button btnPvc;
     private Button btnSetting;
     private Button btnExit;
     private ImageView userAvatar;
+
+    private RadioGroup groupButton;
+    private RadioButton btnMenu;
+    private RadioButton btnFriendList;
+    private RadioButton btnHistory;
 
     public GameModeFragment() {
         // Required empty public constructor
@@ -58,10 +67,25 @@ public class GameModeFragment extends Fragment {
         btnPvc = view.findViewById(R.id.btnPvc);
         btnSetting = view.findViewById(R.id.btnSetting);
         btnExit = view.findViewById(R.id.btnExit);
+        btnStore = view.findViewById(R.id.btnStore);
+        groupButton = view.findViewById(R.id.groupButton);
+        btnMenu = view.findViewById(R.id.btnMenu);
+        btnFriendList = view.findViewById(R.id.btnFriendList);
+        btnHistory = view.findViewById(R.id.btnHistory);
+        groupButton.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                btnMenu.setBackgroundResource(R.drawable.game_mode_wait_choose_button);
+                btnFriendList.setBackgroundResource(R.drawable.game_mode_wait_choose_button);
+                btnHistory.setBackgroundResource(R.drawable.game_mode_wait_choose_button);
+                view.findViewById(checkedId).setBackgroundResource(R.drawable.game_mode_on_choose_button);
+            }
+        });
+
         btnPvp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+//                SoundMaking.buttonClickedSound();
                 NavController navController = Navigation.findNavController(v);
                 navController.navigate(R.id.action_gameModeFragment_to_pvpFragment);
             }
@@ -70,6 +94,7 @@ public class GameModeFragment extends Fragment {
         btnPvc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                SoundMaking.buttonClickedSound();
                 //TODO change to fragment_pvc
             }
         });
@@ -77,6 +102,7 @@ public class GameModeFragment extends Fragment {
         btnSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                SoundMaking.buttonClickedSound();
 
                 NavController navController = Navigation.findNavController(v);
                 navController.navigate(R.id.action_gameModeFragment_to_settingFragment);
@@ -86,7 +112,8 @@ public class GameModeFragment extends Fragment {
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO finish all activity
+//                SoundMaking.buttonClickedSound();
+                getActivity().finishAffinity();
             }
         });
 
@@ -95,6 +122,14 @@ public class GameModeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //TODO change to fragment_user_info
+            }
+        });
+
+        btnStore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.action_gameModeFragment_to_storeFragment);
             }
         });
         return view;

@@ -35,6 +35,13 @@
     </fragment>
 
     <fragment
+        android:id="@+id/storeFragment"
+        android:name="com.example.caroproject.StoreFragment"
+        android:label="fragment_store"
+        tools:layout="@layout/fragment_store" >
+    </fragment>
+
+    <fragment
         android:id="@+id/signInFragment"
         android:name="com.example.caroproject.SignInFragment"
         android:label="fragment_sign_in"
@@ -61,6 +68,11 @@
             app:destination="@id/pvpFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_gameModeFragment_to_storeFragment"
+            app:destination="@id/storeFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
     </fragment>
 
     <fragment
@@ -84,9 +96,8 @@
         android:id="@+id/settingFragment"
         android:name="com.example.caroproject.SettingFragment"
         android:label="fragment_setting"
-        tools:layout="@layout/fragment_setting" >
+        tools:layout="@layout/fragment_setting" />
 
-    </fragment>
     <fragment
         android:id="@+id/pvpFragment"
         android:name="com.example.caroproject.PvpFragment"

@@ -1,6 +1,5 @@
 package com.example.caroproject;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
@@ -19,6 +18,8 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.caroproject.Adapter.AdapterGridview;
 
 /**
  * A simple {@link Fragment} subclass.

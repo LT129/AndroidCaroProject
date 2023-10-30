@@ -9,18 +9,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <ImageView
-            android:id="@+id/userAvatar"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@drawable/custom_picture"
-            android:clickable="true"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Your name"
-            android:textStyle="bold"
-            android:textSize="20dp"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/userAvatar"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/custom_picture"
+                android:layout_alignParentStart="true"/>
+            <ImageButton
+                android:id="@+id/btnStore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerHorizontal="true"
+                android:background="@android:color/transparent"
+                android:src="@drawable/store"/>
+
+        </RelativeLayout>
         <View
             android:layout_width="wrap_content"
             android:layout_height="0dp"
@@ -37,7 +44,9 @@
             android:layout_marginRight="100dp"
             android:textStyle="bold"
             android:text="@string/pvp"
-            android:background="@drawable/custom_button_1"/>
+            android:textAllCaps="false"
+            android:background="@drawable/custom_button_1"
+            android:soundEffectsEnabled="false"/>
         <Button
             android:id="@+id/btnPvc"
             android:layout_width="match_parent"
@@ -49,7 +58,9 @@
             android:layout_marginRight="100dp"
             android:textStyle="bold"
             android:text="@string/pvc"
-            android:background="@drawable/custom_button_1"/>
+            android:textAllCaps="false"
+            android:background="@drawable/custom_button_1"
+            android:soundEffectsEnabled="false"/>
         <Button
             android:id="@+id/btnSetting"
             android:layout_width="match_parent"
@@ -61,7 +72,9 @@
             android:layout_marginLeft="100dp"
             android:layout_marginRight="100dp"
             android:text="@string/setting"
-            android:background="@drawable/custom_button_1"/>
+            android:textAllCaps="false"
+            android:background="@drawable/custom_button_1"
+            android:soundEffectsEnabled="false"/>
         <Button
             android:id="@+id/btnExit"
             android:layout_width="match_parent"
@@ -73,7 +86,9 @@
             android:layout_marginLeft="100dp"
             android:layout_marginRight="100dp"
             android:text="@string/exit"
-            android:background="@drawable/custom_button_1"/>
+            android:textAllCaps="false"
+            android:background="@drawable/custom_button_1"
+            android:soundEffectsEnabled="false"/>
         <View
             android:layout_width="wrap_content"
             android:layout_height="0dp"
@@ -81,13 +96,59 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="@android:color/transparent"
+            android:orientation="horizontal">
+            <RadioGroup
+                android:id="@+id/groupButton"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/btnMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:gravity="center"
+                    android:textAllCaps="false"
+                    android:textSize="24sp"
+                    android:clickable="true"
+                    android:button="@null"
+                    android:background="@drawable/game_mode_on_choose_button"
+                    android:text="@string/menu"/>
+                <RadioButton
+                    android:id="@+id/btnFriendList"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:gravity="center"
+                    android:textAllCaps="false"
+                    android:textSize="24sp"
+                    android:clickable="true"
+                    android:button="@null"
+                    android:background="@drawable/game_mode_wait_choose_button"
+                    android:text="@string/friend_list"/>
+                <RadioButton
+                    android:id="@+id/btnHistory"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:gravity="center"
+                    android:textAllCaps="false"
+                    android:textSize="24sp"
+                    android:clickable="true"
+                    android:button="@null"
+                    android:background="@drawable/game_mode_wait_choose_button"
+                    android:text="@string/history"/>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Do Some Thing About Friend, history..." />
+            </RadioGroup>
         </LinearLayout>
     </LinearLayout>
 

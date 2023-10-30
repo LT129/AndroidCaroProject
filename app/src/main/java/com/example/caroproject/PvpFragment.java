@@ -21,6 +21,8 @@ public class PvpFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private ImageButton btnCallBack;
+
     private RadioGroup playMode;
     private RadioGroup boardSize;
 
@@ -97,6 +99,14 @@ public class PvpFragment extends Fragment {
                 NavController navController = Navigation.findNavController(v);
                 navController.navigate(R.id.action_pvpFragment_to_inGameFragment);
 
+            }
+        });
+
+        btnCallBack = view.findViewById(R.id.btnCallBack);
+        btnCallBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
 

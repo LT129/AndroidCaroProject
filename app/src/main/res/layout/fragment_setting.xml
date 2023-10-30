@@ -10,10 +10,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <Button
+        <ImageButton
+            android:id="@+id/btnCallBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="BackButton"/>
+            android:background="@android:color/transparent"
+            android:src="@drawable/back_arrow"/>
 
         <View
             android:layout_width="wrap_content"
@@ -30,29 +32,15 @@
             android:layout_marginRight="100dp"
             android:textSize="26sp"
             android:textColor="@color/word_color_gray"
-            android:text="@string/choose_background"/>
+            android:text="@string/background"/>
 
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <ImageButton
+            android:id="@+id/btnChooseBackground"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_gravity="center"
-            android:layout_marginLeft="100dp"
-            android:layout_marginRight="100dp"
-            android:orientation="horizontal"
-            android:layout_marginBottom="10dp">
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="color"/>
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="color"/>
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="color"/>
-        </RadioGroup>
+            android:background="@android:color/transparent"
+            android:src="@drawable/background_1"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -65,13 +53,13 @@
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_lock_silent_mode_off" />
+                android:src="@drawable/music_on" />
 
             <SeekBar
                 android:id="@+id/seekBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center" />
         </LinearLayout>
 
         <LinearLayout
@@ -86,7 +74,7 @@
                 android:id="@+id/imageView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_lock_silent_mode" />
+                android:src="@drawable/volumn_up" />
 
             <SeekBar
                 android:id="@+id/seekBar2"
@@ -104,11 +92,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <Button
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Home" />
+                android:background="@android:color/transparent"
+                android:src="@drawable/home" />
         </LinearLayout>
         <View
             android:layout_width="wrap_content"

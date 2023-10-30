@@ -5,4 +5,7 @@
     <color name="click">#E18787</color>
     <color name="word">#06770B</color>
     <color name="word_color_gray">#4E4E4E</color>
+    <color name="brown_background">#C19A6B</color>
+    <color name="almond_background">#EADDCA</color>
+    <color name="gray_background">#D3D3D3</color>
 </resources>
