@@ -1,6 +1,5 @@
 package com.example.caroproject;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
@@ -24,10 +23,10 @@ import com.example.caroproject.Adapter.AdapterGridview;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link InGameFragment#newInstance} factory method to
+ * Use the {@link InGameAIFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class InGameFragment extends Fragment {
+public class InGameAIFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,7 +37,7 @@ public class InGameFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public InGameFragment() {
+    public InGameAIFragment() {
         // Required empty public constructor
     }
 
@@ -48,11 +47,11 @@ public class InGameFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment InGameFragment.
+     * @return A new instance of fragment InGameAIFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static InGameFragment newInstance(String param1, String param2) {
-        InGameFragment fragment = new InGameFragment();
+    public static InGameAIFragment newInstance(String param1, String param2) {
+        InGameAIFragment fragment = new InGameAIFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -68,10 +67,13 @@ public class InGameFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
     private int currentPlayer;
+    private int bestMovePosition=112;
     private boolean gameOver;
     private int[][] board;  // Bảng lưu trạng thái của ô cờ
+    private AIPlayer aiPlayer;
+
+    private int times=195000;
     private void initializeBoard(View v) {
         board = new int[15][15];  // Bảng 15x15
         // Khởi tạo tất cả ô cờ là trống
@@ -83,19 +85,19 @@ public class InGameFragment extends Fragment {
         currentPlayer = 1;
         gameOver = false;
 
-        TextView txtWatch=v.findViewById(R.id.txtBottomInGame);
-        startCountdownTimer(46000, txtWatch, v);
-        ImageView imgBottom = v.findViewById(R.id.imgBottomInGame);
+        TextView txtWatch=v.findViewById(R.id.txtBottomInGameAI);
+        startCountdownTimer(times, txtWatch, v);
+        ImageView imgBottom = v.findViewById(R.id.imgBottomInGameAI);
         imgBottom.setBackgroundResource(R.drawable.custom_picture2);
     }
 
     // Hàm xử lý sự kiện khi người chơi đánh vào một ô cờ
-    public void onCellClicked(int position, View v, AdapterGridview adapter ) {
+    public void onCellClicked(int position, View v, AdapterGridview adapter) {
         if (!gameOver) {
-            TextView txtWatch1=v.findViewById(R.id.txtTopInGame);
-            TextView txtWatch2=v.findViewById(R.id.txtBottomInGame);
-            ImageView imgBottom=v.findViewById(R.id.imgBottomInGame);
-            ImageView imgTop=v.findViewById(R.id.imgTopInGame);
+            TextView txtWatch1=v.findViewById(R.id.txtTopInGameAI);
+            TextView txtWatch2=v.findViewById(R.id.txtBottomInGameAI);
+            ImageView imgBottom=v.findViewById(R.id.imgBottomInGameAI);
+            ImageView imgTop=v.findViewById(R.id.imgTopInGameAI);
             int row = position / 15; // Lấy hàng dựa trên vị trí ô
             int col = position % 15; // Lấy cột dựa trên vị trí ô
             // Kiểm tra nếu ô đã được đánh
@@ -105,14 +107,16 @@ public class InGameFragment extends Fragment {
                     countDownTimer.cancel();
                     board[row][col]=1;
                     adapter.markCellAsPlayer1(position);
-                    startCountdownTimer(46000, txtWatch1, v);
+                    startCountdownTimer(times, txtWatch1, v);
                     imgBottom.setBackgroundResource(R.drawable.custom_picture);
                     imgTop.setBackgroundResource(R.drawable.custom_picture2);
-                } else if (currentPlayer == 2) {
+                }
+                if (currentPlayer == 2) {
+                     // Chuyển vị trí tốt nhất thành chỉ mục của ô cờ
                     countDownTimer.cancel();
                     board[row][col]=2;
                     adapter.markCellAsPlayer2(position);
-                    startCountdownTimer(46000, txtWatch2, v);
+                    startCountdownTimer(times, txtWatch2, v);
                     imgTop.setBackgroundResource(R.drawable.custom_picture);
                     imgBottom.setBackgroundResource(R.drawable.custom_picture2);
                 }
@@ -125,6 +129,12 @@ public class InGameFragment extends Fragment {
                 }
                 else{
                     currentPlayer = (currentPlayer == 1) ? 2 : 1;
+                    if (currentPlayer==1){
+                        return;
+                    }
+                    int[] bestMove = aiPlayer.findBestMove(board, position, bestMovePosition);
+                    bestMovePosition = bestMove[0] * 15 + bestMove[1];
+                    onCellClicked(bestMovePosition, v, adapter);
                 }
             } else {
                 // Ô đã được đánh, xử lý theo ý của bạn (ví dụ: thông báo ô đã được đánh)
@@ -162,7 +172,7 @@ public class InGameFragment extends Fragment {
             }
         }
 
-        // Kiểm tra đường chéo chính
+        // Kiểm tra đường chéo (từ trái trên xuống phải dưới)
         for (int row = 0; row < boardSize - 4; row++) {
             for (int col = 0; col < boardSize - 4; col++) {
                 if (board[row][col] == player &&
@@ -175,7 +185,7 @@ public class InGameFragment extends Fragment {
             }
         }
 
-        // Kiểm tra đường chéo phụ
+        // Kiểm tra đường chéo (từ trái trên xuống phải dưới)
         for (int row = 4; row < boardSize; row++) {
             for (int col = 0; col < boardSize - 4; col++) {
                 if (board[row][col] == player &&
@@ -194,21 +204,28 @@ public class InGameFragment extends Fragment {
     // Hàm hiển thị thông báo thắng
     private void showWinDialog(int player, View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-        builder.setTitle("Player " + player + " wins!");
-        builder.setMessage("Congratulations, Player " + player + "!");
+        if(player==1) {
+            builder.setTitle("Player" + " wins!");
+            builder.setMessage("Congratulations, Player!");
+        }
+        else{
+            builder.setTitle("AI" + " wins!");
+            builder.setMessage("Congratulations, AI!");
+        }
+
         builder.setCancelable(false);
         builder.setPositiveButton("New Game", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_self);
+                navController.navigate(R.id.action_inGameAIFragment_self);
             }
         });
         builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_to_gameModeFragment);
+                navController.navigate(R.id.action_inGameAIFragment_to_gameModeFragment);
             }
         });
         builder.show();
@@ -258,12 +275,13 @@ public class InGameFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_in_game, container, false);
-
-        GridView gridView = view.findViewById(R.id.gridView);
+        View view = inflater.inflate(R.layout.fragment_in_game_a_i, container, false);
+        aiPlayer = new AIPlayer(2,5);
+        GridView gridView = view.findViewById(R.id.gridViewAI);
         AdapterGridview adapter = new AdapterGridview(view.getContext());
         // Khởi tạo bảng cờ và bắt đầu trò chơi
         gridView.setAdapter(adapter);
+        initializeBoard(view);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -271,16 +289,16 @@ public class InGameFragment extends Fragment {
                 onCellClicked(position, view, adapter);
             }
         });
-        initializeBoard(view);
 
-        btnTop=view.findViewById(R.id.btnTopInGame);
-        btnBottom =view.findViewById(R.id.btnBottomInGame);
+
+        btnTop=view.findViewById(R.id.btnTopInGameAI);
+        btnBottom =view.findViewById(R.id.btnBottomInGameAI);
         btnBottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 countDownTimer.cancel();
                 NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_self);
+                navController.navigate(R.id.action_inGameAIFragment_self);
             }
         });
         btnTop.setOnClickListener(new View.OnClickListener() {
@@ -288,7 +306,7 @@ public class InGameFragment extends Fragment {
             public void onClick(View v) {
                 countDownTimer.cancel();
                 NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_to_gameModeFragment);
+                navController.navigate(R.id.action_inGameAIFragment_to_gameModeFragment);
             }
         });
         return view;

@@ -95,7 +95,8 @@ public class GameModeFragment extends Fragment {
             @Override
             public void onClick(View v) {
 //                SoundMaking.buttonClickedSound();
-                //TODO change to fragment_pvc
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.action_gameModeFragment_to_inGameAIFragment);
             }
         });
 
