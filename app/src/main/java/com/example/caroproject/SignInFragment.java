@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,7 +50,7 @@ public class SignInFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
+    com.example.caroproject.MyDatabaseHelper myDatabaseHelper;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,23 +58,40 @@ public class SignInFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+
     }
 
-    private Button btnSignUp;
+    private Button btnSignIn;
     private EditText edtUsername, edtPassword;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_sign_in, container, false);
-        btnSignUp=view.findViewById(R.id.btnSignInSignIn);
+        btnSignIn=view.findViewById(R.id.btnSignInSignIn);
         edtPassword=view.findViewById(R.id.edtPasswordSignIn);
         edtUsername=view.findViewById(R.id.edtUsernameSignIn);
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
+
+        myDatabaseHelper = new com.example.caroproject.MyDatabaseHelper(requireContext());
+        btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_signInFragment_to_gameModeFragment);
+                String username = edtUsername.getText().toString().trim();
+                String password = edtPassword.getText().toString().trim();
+                if(username.equals("")||password.equals(""))
+                    Toast.makeText(requireContext(), "All fields are mandatory", Toast.LENGTH_SHORT).show();
+                else{
+                    Boolean checkCredentials = myDatabaseHelper.checkUsernamePassword(username,password);
+                    if(checkCredentials == true){
+                        Toast.makeText(requireContext(), "Login Successfully!", Toast.LENGTH_SHORT).show();
+                        NavController navController = Navigation.findNavController(v);
+                        navController.navigate(R.id.action_signInFragment_to_gameModeFragment);
+                    }else{
+                        Toast.makeText(requireContext(), "Invalid Credentials", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
             }
         });
         return view;
