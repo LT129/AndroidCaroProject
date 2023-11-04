@@ -3,17 +3,20 @@ package com.example.caroproject;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link PvcFragment#newInstance} factory method to
+ * Use the {@link PveFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PvcFragment extends Fragment {
+public class PveFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,7 +27,9 @@ public class PvcFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public PvcFragment() {
+    private Button btnStartPlay;
+
+    public PveFragment() {
         // Required empty public constructor
     }
 
@@ -37,8 +42,8 @@ public class PvcFragment extends Fragment {
      * @return A new instance of fragment PvcFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PvcFragment newInstance(String param1, String param2) {
-        PvcFragment fragment = new PvcFragment();
+    public static PveFragment newInstance(String param1, String param2) {
+        PveFragment fragment = new PveFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -58,7 +63,17 @@ public class PvcFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_pvc, container, false);
+        View view = inflater.inflate(R.layout.fragment_pve, container, false);
+        btnStartPlay = view.findViewById(R.id.btnStartPlay);
+        btnStartPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO create an argument and pass it to next fragment
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.action_pveFragment_to_inGameAIFragment);
+            }
+        });
+
+        return view;
     }
 }

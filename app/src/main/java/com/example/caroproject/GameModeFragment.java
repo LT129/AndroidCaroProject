@@ -27,7 +27,7 @@ public class GameModeFragment extends Fragment {
     private String mParam2;
     private ImageButton btnStore;
     private Button btnPvp;
-    private Button btnPvc;
+    private Button btnPve;
     private Button btnSetting;
     private Button btnExit;
     private ImageView userAvatar;
@@ -64,7 +64,7 @@ public class GameModeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_game_mode, container, false);
         btnPvp = view.findViewById(R.id.btnPvp);
-        btnPvc = view.findViewById(R.id.btnPvc);
+        btnPve = view.findViewById(R.id.btnPve);
         btnSetting = view.findViewById(R.id.btnSetting);
         btnExit = view.findViewById(R.id.btnExit);
         btnStore = view.findViewById(R.id.btnStore);
@@ -91,12 +91,12 @@ public class GameModeFragment extends Fragment {
             }
         });
 
-        btnPvc.setOnClickListener(new View.OnClickListener() {
+        btnPve.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                SoundMaking.buttonClickedSound();
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_gameModeFragment_to_inGameAIFragment);
+                navController.navigate(R.id.action_gameModeFragment_to_pveFragment);
             }
         });
 
