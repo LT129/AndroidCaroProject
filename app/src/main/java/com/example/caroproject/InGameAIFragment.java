@@ -10,6 +10,7 @@ import androidx.navigation.Navigation;
 
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
+import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.caroproject.Adapter.AdapterGridview;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,15 +70,18 @@ public class InGameAIFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-    private int currentPlayer;
-    private int bestMovePosition=112;
+    private int currentPlayer, countAI=0, countPlayer=0;
+    private int bestMovePosition=0;
+    private int[] savePlayerPosition, saveAIPosition;
     private boolean gameOver;
     private int[][] board;  // Bảng lưu trạng thái của ô cờ
     private AIPlayer aiPlayer;
 
-    private int times=195000;
+    private int times=15000;
     private void initializeBoard(View v) {
         board = new int[15][15];  // Bảng 15x15
+        savePlayerPosition=new int[15*15/2];
+        saveAIPosition=new int[15*15/2];
         // Khởi tạo tất cả ô cờ là trống
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
@@ -115,7 +121,11 @@ public class InGameAIFragment extends Fragment {
                      // Chuyển vị trí tốt nhất thành chỉ mục của ô cờ
                     countDownTimer.cancel();
                     board[row][col]=2;
-                    adapter.markCellAsPlayer2(position);
+                    //adapter.markCellAsPlayer2(position);
+                    adapter.markCellBackground2(bestMovePosition);
+                    if(countAI>0) {
+                        adapter.markCellAsPlayer2(saveAIPosition[countAI - 1]);
+                    }
                     startCountdownTimer(times, txtWatch2, v);
                     imgTop.setBackgroundResource(R.drawable.custom_picture);
                     imgBottom.setBackgroundResource(R.drawable.custom_picture2);
@@ -230,7 +240,7 @@ public class InGameAIFragment extends Fragment {
         });
         builder.show();
     }
-    private Button btnTop, btnBottom;
+    private Button btnTop, btnBottom, btnBack;
     private CountDownTimer countDownTimer;
 
     private void startCountdownTimer(long millisInFuture, TextView txtWatch, View v) {
@@ -276,7 +286,7 @@ public class InGameAIFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_in_game_a_i, container, false);
-        aiPlayer = new AIPlayer(2,5);
+        aiPlayer = new AIPlayer(2,4);
         GridView gridView = view.findViewById(R.id.gridViewAI);
         AdapterGridview adapter = new AdapterGridview(view.getContext());
         // Khởi tạo bảng cờ và bắt đầu trò chơi
@@ -287,9 +297,33 @@ public class InGameAIFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 // Xử lý đánh cờ
                 onCellClicked(position, view, adapter);
+//                adapter.markCellBackground2(bestMovePosition);
+//                if(countAI>0) {
+//                    adapter.markCellAsPlayer2(saveAIPosition[countAI - 1]);
+//                }
+//                adapter.markCellBackgroundNew(position);
+//                if(countAI>0) {
+//                    adapter.markCellBackgroundLast(savePlayerPosition[countPlayer - 1]);
+//                }
+                saveAIPosition[countAI++]=bestMovePosition;
+                savePlayerPosition[countPlayer++]=position;
             }
         });
-
+        btnBack=view.findViewById(R.id.btnBackOneTurnInGameAI);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (countPlayer > 0 && countAI > 0) {
+                    countDownTimer.cancel();
+                    int c1 = --countPlayer;
+                    int c2 = --countAI;
+                    adapter.markCellAsPlayer0(savePlayerPosition[c1]);
+                    board[savePlayerPosition[c1] / 15][savePlayerPosition[c1] % 15] = 0;
+                    adapter.markCellAsPlayer0(saveAIPosition[c2]);
+                    board[saveAIPosition[c2] / 15][saveAIPosition[c2] % 15] = 0;
+                }
+            }
+        });
 
         btnTop=view.findViewById(R.id.btnTopInGameAI);
         btnBottom =view.findViewById(R.id.btnBottomInGameAI);

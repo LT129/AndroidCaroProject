@@ -1,6 +1,6 @@
 package com.example.caroproject;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
@@ -11,12 +11,15 @@ import androidx.navigation.Navigation;
 
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +30,7 @@ import com.example.caroproject.Adapter.AdapterGridview;
  * Use the {@link InGameFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class InGameFragment extends Fragment {
+public class InGameFragment extends Fragment{
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -68,12 +71,22 @@ public class InGameFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
-    private int currentPlayer;
+    private GridView gridView;
+    private LinearLayout linearLayout;
+    private int currentPlayer, countPlayer=0,countClick=0;
     private boolean gameOver;
+    private Button btnTop, btnBottom, btnBack, btnZoom;
+    private int[] savePlayerPosition;
+    private CountDownTimer countDownTimer;
+    private ScaleGestureDetector scaleGestureDetector;
+    private float scaleFactor = 1.0f;
+    private static final float MIN_SCALE = 1.0f;
+    private static final float MAX_SCALE = 3.0f;
+
     private int[][] board;  // Bảng lưu trạng thái của ô cờ
     private void initializeBoard(View v) {
         board = new int[15][15];  // Bảng 15x15
+        savePlayerPosition=new int[15*15/2];
         // Khởi tạo tất cả ô cờ là trống
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
@@ -84,7 +97,7 @@ public class InGameFragment extends Fragment {
         gameOver = false;
 
         TextView txtWatch=v.findViewById(R.id.txtBottomInGame);
-        startCountdownTimer(46000, txtWatch, v);
+        startCountdownTimer(9946000, txtWatch, v);
         ImageView imgBottom = v.findViewById(R.id.imgBottomInGame);
         imgBottom.setBackgroundResource(R.drawable.custom_picture2);
     }
@@ -104,14 +117,20 @@ public class InGameFragment extends Fragment {
                 if (currentPlayer == 1) {
                     countDownTimer.cancel();
                     board[row][col]=1;
-                    adapter.markCellAsPlayer1(position);
+                    adapter.markCellBackground1(position);
+                    if(countPlayer>0) {
+                        adapter.markCellAsPlayer2(savePlayerPosition[countPlayer - 1]);
+                    }
                     startCountdownTimer(46000, txtWatch1, v);
                     imgBottom.setBackgroundResource(R.drawable.custom_picture);
                     imgTop.setBackgroundResource(R.drawable.custom_picture2);
                 } else if (currentPlayer == 2) {
                     countDownTimer.cancel();
                     board[row][col]=2;
-                    adapter.markCellAsPlayer2(position);
+                    adapter.markCellBackground2(position);
+                    if(countPlayer>0) {
+                        adapter.markCellAsPlayer1(savePlayerPosition[countPlayer - 1]);
+                    }
                     startCountdownTimer(46000, txtWatch2, v);
                     imgTop.setBackgroundResource(R.drawable.custom_picture);
                     imgBottom.setBackgroundResource(R.drawable.custom_picture2);
@@ -213,8 +232,7 @@ public class InGameFragment extends Fragment {
         });
         builder.show();
     }
-    private Button btnTop, btnBottom;
-    private CountDownTimer countDownTimer;
+
 
     private void startCountdownTimer(long millisInFuture, TextView txtWatch, View v) {
         // millisInFuture là thời gian đếm ngược theo mili giây
@@ -254,25 +272,142 @@ public class InGameFragment extends Fragment {
             countDownTimer.cancel();
         }
     }
+    float xOriginal,yOriginal;
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            scaleFactor *= detector.getScaleFactor();
+            scaleFactor = Math.max(MIN_SCALE, Math.min(scaleFactor, MAX_SCALE));
 
+            // Update the scale of your GridView here
+            gridView.setScaleX(scaleFactor);
+            gridView.setScaleY(scaleFactor);
+
+            return true;
+        }
+    }
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_in_game, container, false);
+        scaleGestureDetector = new ScaleGestureDetector(requireContext(), new ScaleListener());
 
-        GridView gridView = view.findViewById(R.id.gridView);
+        gridView = view.findViewById(R.id.gridView);
+        linearLayout=view.findViewById(R.id.linearGrid);
         AdapterGridview adapter = new AdapterGridview(view.getContext());
         // Khởi tạo bảng cờ và bắt đầu trò chơi
         gridView.setAdapter(adapter);
+
+        initializeBoard(view);
+
+        int[] locationOriginal = new int[2];
+        gridView.getLocationOnScreen(locationOriginal);
+
+        xOriginal = locationOriginal[0];
+        yOriginal = locationOriginal[1];
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 // Xử lý đánh cờ
                 onCellClicked(position, view, adapter);
+                savePlayerPosition[countPlayer++] = position;
             }
         });
-        initializeBoard(view);
 
+        gridView.setOnTouchListener(new View.OnTouchListener() {
+            private float startX, startY;
+            private float offsetX=0, offsetY=0;
+
+            private boolean isZooming = false;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(scaleFactor==1){
+                    gridView.setTranslationX(xOriginal);
+                    gridView.setTranslationY(yOriginal);
+                }
+                int pointerCount = event.getPointerCount();
+                if (pointerCount > 1) {
+                    isZooming = true;
+                    scaleGestureDetector.onTouchEvent(event);
+                } else {
+                    if (scaleFactor > 1) {
+                        isZooming = false;
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                if (!isZooming) {
+                                    startX = event.getX();
+                                    startY = event.getY();
+                                }
+                                break;
+
+                            case MotionEvent.ACTION_MOVE:
+                                if (!isZooming) {
+                                    float endX = event.getX();
+                                    float endY = event.getY();
+                                    float dx = endX - startX;
+                                    float dy = endY - startY;
+
+                                    offsetX += dx;
+                                    offsetY += dy;
+
+                                    gridView.setTranslationX(offsetX);
+                                    gridView.setTranslationY(offsetY);
+
+                                    startX = endX;
+                                    startY = endY;
+                                }
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                if (!isZooming) {
+                                    break;
+                                }
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+
+        btnZoom=view.findViewById(R.id.btnZoomPVPOfline);
+        btnZoom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                float newScale = 1.5f; // Scale X 2 lần
+                float newScale2 = 3f; // Scale X 3 lần
+
+                if (scaleFactor < newScale) {
+                    scaleFactor = newScale; // Cập nhật scaleFactor
+                } else if (scaleFactor < newScale2) {
+                    scaleFactor = newScale2; // Cập nhật scaleFactor
+                } else {
+                    scaleFactor = 1.0f; // Trở về tỷ lệ ban đầu
+                }
+
+                // Cập nhật tỷ lệ phóng to của gridView bằng scaleFactor
+                gridView.setScaleX(scaleFactor);
+                gridView.setScaleY(scaleFactor);
+
+                gridView.setTranslationX(xOriginal);
+                gridView.setTranslationY(yOriginal);
+            }
+        });
+
+        btnBack=view.findViewById(R.id.btnBackOneTurnInGame);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (countPlayer > 0) {
+                    countDownTimer.cancel();
+                    int c = --countPlayer;
+                    adapter.markCellAsPlayer0(savePlayerPosition[c]);
+                    board[savePlayerPosition[c] / 15][savePlayerPosition[c] % 15] = 0;
+                    currentPlayer = (currentPlayer == 1) ? 2 : 1;
+                }
+            }
+        });
         btnTop=view.findViewById(R.id.btnTopInGame);
         btnBottom =view.findViewById(R.id.btnBottomInGame);
         btnBottom.setOnClickListener(new View.OnClickListener() {
@@ -291,6 +426,8 @@ public class InGameFragment extends Fragment {
                 navController.navigate(R.id.action_inGameFragment_to_gameModeFragment);
             }
         });
+
+
         return view;
     }
 }

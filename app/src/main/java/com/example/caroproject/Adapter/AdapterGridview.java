@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+
 import com.example.caroproject.R;
 
 public class AdapterGridview extends BaseAdapter {
@@ -48,9 +49,20 @@ public class AdapterGridview extends BaseAdapter {
 
         if (cellValue == 1) {
             imageView.setImageResource(R.drawable.player1_piece);
+            imageView.setBackgroundResource(R.drawable.empty);
         } else if (cellValue == 2) {
             imageView.setImageResource(R.drawable.player2_piece);
-        } else {
+            imageView.setBackgroundResource(R.drawable.empty);
+        }
+        else if (cellValue == -1) {
+            imageView.setImageResource(R.drawable.player1_piece);
+            imageView.setBackgroundResource(R.drawable.custom_background_new);
+        }
+        else if (cellValue == -2) {
+            imageView.setImageResource(R.drawable.player2_piece);
+            imageView.setBackgroundResource(R.drawable.custom_background_new);
+        }
+         else {
             imageView.setImageResource(R.drawable.empty);
         }
         return gridItem;
@@ -65,7 +77,18 @@ public class AdapterGridview extends BaseAdapter {
             board[position] = 2;
             notifyDataSetChanged();
     }
-
+    public void markCellAsPlayer0(int position) {
+        board[position] = 0;
+        notifyDataSetChanged();
+    }
+    public void markCellBackground1(int position) {
+        board[position] = -1;
+        notifyDataSetChanged();
+    }
+    public void markCellBackground2(int position) {
+        board[position] = -2;
+        notifyDataSetChanged();
+    }
     public boolean isCellEmpty(int position) {
         return board[position] == 0;
     }
