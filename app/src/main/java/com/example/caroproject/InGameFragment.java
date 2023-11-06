@@ -63,6 +63,8 @@ public class InGameFragment extends Fragment{
         return fragment;
     }
 
+    private int sizeBoard;
+    private Bundle bundle;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,10 +72,20 @@ public class InGameFragment extends Fragment{
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        Bundle args = getArguments();
+        if (args != null) {
+            // Lấy dữ liệu từ Bundle
+            sizeBoard = args.getInt("sizeBoard");
+        }
+        // Tạo một Bundle để chứa dữ liệu
+        bundle = new Bundle();
+        // Đặt dữ liệu vào Bundle, ví dụ:
+        bundle.putInt("sizeBoard", sizeBoard);
+
     }
     private GridView gridView;
     private LinearLayout linearLayout;
-    private int currentPlayer, countPlayer=0,countClick=0;
+    private int currentPlayer, countPlayer=0;
     private boolean gameOver;
     private Button btnTop, btnBottom, btnBack, btnZoom;
     private int[] savePlayerPosition;
@@ -84,12 +96,13 @@ public class InGameFragment extends Fragment{
     private static final float MAX_SCALE = 3.0f;
 
     private int[][] board;  // Bảng lưu trạng thái của ô cờ
+    private int times=46000;
     private void initializeBoard(View v) {
-        board = new int[15][15];  // Bảng 15x15
-        savePlayerPosition=new int[15*15/2];
+        board = new int[sizeBoard][sizeBoard];  // Bảng sizeBoardxsizeBoard
+        savePlayerPosition=new int[sizeBoard*sizeBoard/2];
         // Khởi tạo tất cả ô cờ là trống
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) {
+        for (int i = 0; i < sizeBoard; i++) {
+            for (int j = 0; j < sizeBoard; j++) {
                 board[i][j] = 0;
             }
         }
@@ -97,7 +110,7 @@ public class InGameFragment extends Fragment{
         gameOver = false;
 
         TextView txtWatch=v.findViewById(R.id.txtBottomInGame);
-        startCountdownTimer(9946000, txtWatch, v);
+        startCountdownTimer(times, txtWatch, v);
         ImageView imgBottom = v.findViewById(R.id.imgBottomInGame);
         imgBottom.setBackgroundResource(R.drawable.custom_picture2);
     }
@@ -109,8 +122,8 @@ public class InGameFragment extends Fragment{
             TextView txtWatch2=v.findViewById(R.id.txtBottomInGame);
             ImageView imgBottom=v.findViewById(R.id.imgBottomInGame);
             ImageView imgTop=v.findViewById(R.id.imgTopInGame);
-            int row = position / 15; // Lấy hàng dựa trên vị trí ô
-            int col = position % 15; // Lấy cột dựa trên vị trí ô
+            int row = position / sizeBoard; // Lấy hàng dựa trên vị trí ô
+            int col = position % sizeBoard; // Lấy cột dựa trên vị trí ô
             // Kiểm tra nếu ô đã được đánh
             if (adapter.isCellEmpty(position)) {
                 // Đánh dấu ô và thay đổi hình ảnh
@@ -121,7 +134,7 @@ public class InGameFragment extends Fragment{
                     if(countPlayer>0) {
                         adapter.markCellAsPlayer2(savePlayerPosition[countPlayer - 1]);
                     }
-                    startCountdownTimer(46000, txtWatch1, v);
+                    startCountdownTimer(times, txtWatch1, v);
                     imgBottom.setBackgroundResource(R.drawable.custom_picture);
                     imgTop.setBackgroundResource(R.drawable.custom_picture2);
                 } else if (currentPlayer == 2) {
@@ -131,7 +144,7 @@ public class InGameFragment extends Fragment{
                     if(countPlayer>0) {
                         adapter.markCellAsPlayer1(savePlayerPosition[countPlayer - 1]);
                     }
-                    startCountdownTimer(46000, txtWatch2, v);
+                    startCountdownTimer(times, txtWatch2, v);
                     imgTop.setBackgroundResource(R.drawable.custom_picture);
                     imgBottom.setBackgroundResource(R.drawable.custom_picture2);
                 }
@@ -154,7 +167,7 @@ public class InGameFragment extends Fragment{
 
     // Hàm kiểm tra trạng thái thắng/thua
     public boolean checkWin(int player) {
-        int boardSize =15;
+        int boardSize =sizeBoard;
         // Kiểm tra hàng ngang
         for (int row = 0; row < boardSize; row++) {
             for (int col = 0; col < boardSize - 4; col++) {
@@ -220,7 +233,7 @@ public class InGameFragment extends Fragment{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_self);
+                navController.navigate(R.id.action_inGameFragment_self,bundle);
             }
         });
         builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
@@ -295,10 +308,10 @@ public class InGameFragment extends Fragment{
 
         gridView = view.findViewById(R.id.gridView);
         linearLayout=view.findViewById(R.id.linearGrid);
-        AdapterGridview adapter = new AdapterGridview(view.getContext());
+        AdapterGridview adapter = new AdapterGridview(view.getContext(),sizeBoard);
         // Khởi tạo bảng cờ và bắt đầu trò chơi
         gridView.setAdapter(adapter);
-
+        gridView.setNumColumns(sizeBoard);
         initializeBoard(view);
 
         int[] locationOriginal = new int[2];
@@ -311,6 +324,10 @@ public class InGameFragment extends Fragment{
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 // Xử lý đánh cờ
+                 if(adapter.isCellEmpty(position)==false&&countPlayer>0) {
+                     position=savePlayerPosition[countPlayer-1];
+                     countPlayer--;
+                 }
                 onCellClicked(position, view, adapter);
                 savePlayerPosition[countPlayer++] = position;
             }
@@ -403,7 +420,12 @@ public class InGameFragment extends Fragment{
                     countDownTimer.cancel();
                     int c = --countPlayer;
                     adapter.markCellAsPlayer0(savePlayerPosition[c]);
-                    board[savePlayerPosition[c] / 15][savePlayerPosition[c] % 15] = 0;
+                    if(currentPlayer==1&&countPlayer > 0){
+                        adapter.markCellBackground1(savePlayerPosition[countPlayer-1]);
+                    }else if(currentPlayer==2&&countPlayer > 0) {
+                        adapter.markCellBackground2(savePlayerPosition[countPlayer-1]);
+                    }
+                    board[savePlayerPosition[c] / sizeBoard][savePlayerPosition[c] % sizeBoard] = 0;
                     currentPlayer = (currentPlayer == 1) ? 2 : 1;
                 }
             }
@@ -415,7 +437,7 @@ public class InGameFragment extends Fragment{
             public void onClick(View v) {
                 countDownTimer.cancel();
                 NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_self);
+                navController.navigate(R.id.action_inGameFragment_self,bundle);
             }
         });
         btnTop.setOnClickListener(new View.OnClickListener() {
@@ -423,7 +445,7 @@ public class InGameFragment extends Fragment{
             public void onClick(View v) {
                 countDownTimer.cancel();
                 NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_to_gameModeFragment);
+                navController.navigate(R.id.action_inGameFragment_to_pvpFragment);
             }
         });
 

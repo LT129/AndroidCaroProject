@@ -25,6 +25,7 @@ public class PvpFragment extends Fragment {
 
     private RadioGroup playMode;
     private RadioGroup boardSize;
+    private RadioButton rdoOffline, rdoOnline, rdoSize9, rdoSize15, rdoSize21;
 
     private ImageButton chooseShape;
     private ImageButton chooseColor;
@@ -92,13 +93,31 @@ public class PvpFragment extends Fragment {
         });
 
         btnPlay = view.findViewById(R.id.btnPlay);
+        rdoOffline=view.findViewById(R.id.offlinePlayMode);
+        rdoSize9=view.findViewById(R.id.boardSize9);
+        rdoSize15=view.findViewById(R.id.boardSize15);
+        rdoSize21=view.findViewById(R.id.boardSize21);
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TODO create an argument and pass it to next fragment
-                NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_pvpFragment_to_inGameFragment);
 
+                // Tạo một Bundle để chứa dữ liệu
+                Bundle bundle = new Bundle();
+                // Đặt dữ liệu vào Bundle, ví dụ:
+                int sizeBoard;
+                if(rdoSize9.isChecked()){
+                    sizeBoard=10;
+                } else if (rdoSize15.isChecked()) {
+                    sizeBoard=15;
+                } else{
+                    sizeBoard=20;
+                }
+                bundle.putInt("sizeBoard", sizeBoard);
+                if(rdoOffline.isChecked()&&(rdoSize21.isChecked()||rdoSize15.isChecked()||rdoSize9.isChecked())) {
+                    NavController navController = Navigation.findNavController(v);
+                    navController.navigate(R.id.action_pvpFragment_to_inGameFragment, bundle);
+                }
             }
         });
 
@@ -106,7 +125,9 @@ public class PvpFragment extends Fragment {
         btnCallBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().getOnBackPressedDispatcher().onBackPressed();
+                //getActivity().getOnBackPressedDispatcher().onBackPressed();
+                NavController navController=Navigation.findNavController(v);
+                navController.navigate(R.id.action_pvpFragment_to_gameModeFragment);
             }
         });
 

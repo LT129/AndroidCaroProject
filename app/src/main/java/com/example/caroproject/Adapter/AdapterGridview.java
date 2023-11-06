@@ -13,11 +13,12 @@ import com.example.caroproject.R;
 public class AdapterGridview extends BaseAdapter {
     private Context context;
     private int[] board; // Mảng lưu trạng thái các ô (1: người chơi 1, 2: người chơi 2, 0: ô trống)
-    private int currentPlayer = 1;
+    private int currentPlayer = 1, sizeBoard;
 
-    public AdapterGridview(Context context) {
+    public AdapterGridview(Context context, int sizeBoard) {
+        this.sizeBoard=sizeBoard;
         this.context = context;
-        board = new int[15 * 15]; // Ban đầu, tất cả ô đều trống (0)
+        board = new int[sizeBoard * sizeBoard]; // Ban đầu, tất cả ô đều trống (0)
     }
 
     @Override
@@ -38,7 +39,6 @@ public class AdapterGridview extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View gridItem = convertView;
-
         if (gridItem == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
             gridItem = inflater.inflate(R.layout.gridview_item, null);

@@ -1,5 +1,6 @@
 package com.example.caroproject;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
@@ -10,13 +11,16 @@ import androidx.navigation.Navigation;
 
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.PointerIcon;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,7 +65,8 @@ public class InGameAIFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
+    private int sizeBoard;
+    private Bundle bundle;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,22 +74,37 @@ public class InGameAIFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        Bundle args = getArguments();
+        if (args != null) {
+            // Lấy dữ liệu từ Bundle
+            sizeBoard = args.getInt("sizeBoard");
+        }
+        // Tạo một Bundle để chứa dữ liệu
+        bundle = new Bundle();
+        // Đặt dữ liệu vào Bundle, ví dụ:
+        bundle.putInt("sizeBoard", sizeBoard);
     }
     private int currentPlayer, countAI=0, countPlayer=0;
     private int bestMovePosition=0;
+    private LinearLayout linearLayout;
+    private GridView gridView;
     private int[] savePlayerPosition, saveAIPosition;
     private boolean gameOver;
+    private ScaleGestureDetector scaleGestureDetector;
+    private float scaleFactor = 1.0f;
+    private static final float MIN_SCALE = 1.0f;
+    private static final float MAX_SCALE = 3.0f;
     private int[][] board;  // Bảng lưu trạng thái của ô cờ
     private AIPlayer aiPlayer;
 
-    private int times=15000;
+    private int times=46000;
     private void initializeBoard(View v) {
-        board = new int[15][15];  // Bảng 15x15
-        savePlayerPosition=new int[15*15/2];
-        saveAIPosition=new int[15*15/2];
+        board = new int[sizeBoard][sizeBoard];  // Bảng sizeBoardxsizeBoard
+        savePlayerPosition=new int[sizeBoard*sizeBoard/2];
+        saveAIPosition=new int[sizeBoard*sizeBoard/2];
         // Khởi tạo tất cả ô cờ là trống
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) {
+        for (int i = 0; i < sizeBoard; i++) {
+            for (int j = 0; j < sizeBoard; j++) {
                 board[i][j] = 0;
             }
         }
@@ -104,8 +124,8 @@ public class InGameAIFragment extends Fragment {
             TextView txtWatch2=v.findViewById(R.id.txtBottomInGameAI);
             ImageView imgBottom=v.findViewById(R.id.imgBottomInGameAI);
             ImageView imgTop=v.findViewById(R.id.imgTopInGameAI);
-            int row = position / 15; // Lấy hàng dựa trên vị trí ô
-            int col = position % 15; // Lấy cột dựa trên vị trí ô
+            int row = position / sizeBoard; // Lấy hàng dựa trên vị trí ô
+            int col = position % sizeBoard; // Lấy cột dựa trên vị trí ô
             // Kiểm tra nếu ô đã được đánh
             if (adapter.isCellEmpty(position)) {
                 // Đánh dấu ô và thay đổi hình ảnh
@@ -143,7 +163,7 @@ public class InGameAIFragment extends Fragment {
                         return;
                     }
                     int[] bestMove = aiPlayer.findBestMove(board, position, bestMovePosition);
-                    bestMovePosition = bestMove[0] * 15 + bestMove[1];
+                    bestMovePosition = bestMove[0] * sizeBoard + bestMove[1];
                     onCellClicked(bestMovePosition, v, adapter);
                 }
             } else {
@@ -155,7 +175,7 @@ public class InGameAIFragment extends Fragment {
 
     // Hàm kiểm tra trạng thái thắng/thua
     public boolean checkWin(int player) {
-        int boardSize =15;
+        int boardSize =sizeBoard;
         // Kiểm tra hàng ngang
         for (int row = 0; row < boardSize; row++) {
             for (int col = 0; col < boardSize - 4; col++) {
@@ -228,7 +248,7 @@ public class InGameAIFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameAIFragment_self);
+                navController.navigate(R.id.action_inGameAIFragment_self, bundle);
             }
         });
         builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
@@ -281,32 +301,130 @@ public class InGameAIFragment extends Fragment {
             countDownTimer.cancel();
         }
     }
+    float xOriginal,yOriginal;
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            scaleFactor *= detector.getScaleFactor();
+            scaleFactor = Math.max(MIN_SCALE, Math.min(scaleFactor, MAX_SCALE));
 
+            // Update the scale of your GridView here
+            gridView.setScaleX(scaleFactor);
+            gridView.setScaleY(scaleFactor);
+
+            return true;
+        }
+    }
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_in_game_a_i, container, false);
-        aiPlayer = new AIPlayer(2,4);
-        GridView gridView = view.findViewById(R.id.gridViewAI);
-        AdapterGridview adapter = new AdapterGridview(view.getContext());
+        scaleGestureDetector = new ScaleGestureDetector(requireContext(), new InGameAIFragment.ScaleListener());
+
+        aiPlayer = new AIPlayer(2,4, sizeBoard);
+        gridView = view.findViewById(R.id.gridViewAI);
+        linearLayout=view.findViewById(R.id.linearGrid);
+        AdapterGridview adapter = new AdapterGridview(view.getContext(),sizeBoard);
         // Khởi tạo bảng cờ và bắt đầu trò chơi
         gridView.setAdapter(adapter);
+        gridView.setNumColumns(sizeBoard);
         initializeBoard(view);
+        int[] locationOriginal = new int[2];
+        gridView.getLocationOnScreen(locationOriginal);
+
+        xOriginal = locationOriginal[0];
+        yOriginal = locationOriginal[1];
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 // Xử lý đánh cờ
+                if(adapter.isCellEmpty(position)==false&&countAI>0) {
+                    position=savePlayerPosition[countAI-1];
+                    countAI--;
+                    countPlayer--;
+                }
                 onCellClicked(position, view, adapter);
-//                adapter.markCellBackground2(bestMovePosition);
-//                if(countAI>0) {
-//                    adapter.markCellAsPlayer2(saveAIPosition[countAI - 1]);
-//                }
-//                adapter.markCellBackgroundNew(position);
-//                if(countAI>0) {
-//                    adapter.markCellBackgroundLast(savePlayerPosition[countPlayer - 1]);
-//                }
                 saveAIPosition[countAI++]=bestMovePosition;
                 savePlayerPosition[countPlayer++]=position;
+            }
+        });
+        gridView.setOnTouchListener(new View.OnTouchListener() {
+            private float startX, startY;
+            private float offsetX=0, offsetY=0;
+
+            private boolean isZooming = false;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(scaleFactor==1){
+                    gridView.setTranslationX(xOriginal);
+                    gridView.setTranslationY(yOriginal);
+                }
+                int pointerCount = event.getPointerCount();
+                if (pointerCount > 1) {
+                    isZooming = true;
+                    scaleGestureDetector.onTouchEvent(event);
+                } else {
+                    if (scaleFactor > 1) {
+                        isZooming = false;
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                if (!isZooming) {
+                                    startX = event.getX();
+                                    startY = event.getY();
+                                }
+                                break;
+
+                            case MotionEvent.ACTION_MOVE:
+                                if (!isZooming) {
+                                    float endX = event.getX();
+                                    float endY = event.getY();
+                                    float dx = endX - startX;
+                                    float dy = endY - startY;
+
+                                    offsetX += dx;
+                                    offsetY += dy;
+
+                                    gridView.setTranslationX(offsetX);
+                                    gridView.setTranslationY(offsetY);
+
+                                    startX = endX;
+                                    startY = endY;
+                                }
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                if (!isZooming) {
+                                    break;
+                                }
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+
+        Button btnZoom=view.findViewById(R.id.btnZoomPVE);
+        btnZoom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                float newScale = 1.5f; // Scale X 2 lần
+                float newScale2 = 3f; // Scale X 3 lần
+
+                if (scaleFactor < newScale) {
+                    scaleFactor = newScale; // Cập nhật scaleFactor
+                } else if (scaleFactor < newScale2) {
+                    scaleFactor = newScale2; // Cập nhật scaleFactor
+                } else {
+                    scaleFactor = 1.0f; // Trở về tỷ lệ ban đầu
+                }
+
+                // Cập nhật tỷ lệ phóng to của gridView bằng scaleFactor
+                gridView.setScaleX(scaleFactor);
+                gridView.setScaleY(scaleFactor);
+
+                gridView.setTranslationX(xOriginal);
+                gridView.setTranslationY(yOriginal);
             }
         });
         btnBack=view.findViewById(R.id.btnBackOneTurnInGameAI);
@@ -318,9 +436,12 @@ public class InGameAIFragment extends Fragment {
                     int c1 = --countPlayer;
                     int c2 = --countAI;
                     adapter.markCellAsPlayer0(savePlayerPosition[c1]);
-                    board[savePlayerPosition[c1] / 15][savePlayerPosition[c1] % 15] = 0;
+                    board[savePlayerPosition[c1] / sizeBoard][savePlayerPosition[c1] % sizeBoard] = 0;
                     adapter.markCellAsPlayer0(saveAIPosition[c2]);
-                    board[saveAIPosition[c2] / 15][saveAIPosition[c2] % 15] = 0;
+                    board[saveAIPosition[c2] / sizeBoard][saveAIPosition[c2] % sizeBoard] = 0;
+                    if (countAI > 0) {
+                        adapter.markCellBackground2(saveAIPosition[countAI - 1]);
+                    }
                 }
             }
         });
@@ -332,7 +453,7 @@ public class InGameAIFragment extends Fragment {
             public void onClick(View v) {
                 countDownTimer.cancel();
                 NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameAIFragment_self);
+                navController.navigate(R.id.action_inGameAIFragment_self, bundle);
             }
         });
         btnTop.setOnClickListener(new View.OnClickListener() {
@@ -340,7 +461,7 @@ public class InGameAIFragment extends Fragment {
             public void onClick(View v) {
                 countDownTimer.cancel();
                 NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameAIFragment_to_gameModeFragment);
+                navController.navigate(R.id.action_inGameAIFragment_to_pveFragment);
             }
         });
         return view;

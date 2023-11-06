@@ -96,7 +96,7 @@ public class GameModeFragment extends Fragment {
             public void onClick(View v) {
 //                SoundMaking.buttonClickedSound();
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_gameModeFragment_to_inGameAIFragment);
+                navController.navigate(R.id.action_gameModeFragment_to_pveFragment);
             }
         });
 

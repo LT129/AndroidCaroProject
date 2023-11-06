@@ -136,28 +136,30 @@
             android:orientation="horizontal">
 
             <RadioButton
-                android:id="@+id/boardSize5x5"
+                android:id="@+id/boardSize9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:textColor="@color/word_color_gray"
-                android:text="@string/x5"/>
+                android:layout_marginRight="5dp"
+                android:text="10x10"/>
 
             <RadioButton
-                android:id="@+id/boardSize8x8"
+                android:id="@+id/boardSize15"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
+                android:layout_marginRight="5dp"
                 android:textColor="@color/word_color_gray"
-                android:text="@string/x8"/>
+                android:text="15x15"/>
 
             <RadioButton
-                android:id="@+id/boardSize11x11"
+                android:id="@+id/boardSize21"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:textColor="@color/word_color_gray"
-                android:text="@string/x11"/>
+                android:text="20x20"/>
         </RadioGroup>
         <View
             android:layout_width="wrap_content"
