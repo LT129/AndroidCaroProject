@@ -1,6 +1,7 @@
 package com.example.caroproject;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
@@ -31,6 +32,7 @@ import com.example.caroproject.Adapter.AdapterGridview;
  * create an instance of this fragment.
  */
 public class InGameFragment extends Fragment{
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -64,6 +66,7 @@ public class InGameFragment extends Fragment{
     }
 
     private int sizeBoard;
+    private int times;
     private Bundle bundle;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,11 +79,13 @@ public class InGameFragment extends Fragment{
         if (args != null) {
             // Lấy dữ liệu từ Bundle
             sizeBoard = args.getInt("sizeBoard");
+            times=args.getInt("time");
         }
         // Tạo một Bundle để chứa dữ liệu
         bundle = new Bundle();
         // Đặt dữ liệu vào Bundle, ví dụ:
         bundle.putInt("sizeBoard", sizeBoard);
+        bundle.putInt("time", times);
 
     }
     private GridView gridView;
@@ -96,7 +101,6 @@ public class InGameFragment extends Fragment{
     private static final float MAX_SCALE = 3.0f;
 
     private int[][] board;  // Bảng lưu trạng thái của ô cờ
-    private int times=46000;
     private void initializeBoard(View v) {
         board = new int[sizeBoard][sizeBoard];  // Bảng sizeBoardxsizeBoard
         savePlayerPosition=new int[sizeBoard*sizeBoard/2];
@@ -240,7 +244,7 @@ public class InGameFragment extends Fragment{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_to_gameModeFragment);
+                navController.navigate(R.id.action_inGameFragment_to_pvpFragment);
             }
         });
         builder.show();
@@ -263,15 +267,16 @@ public class InGameFragment extends Fragment{
             @Override
             public void onFinish() {
                 // Xử lý khi đếm ngược kết thúc (hết thời gian)
-                if(txtWatch.getText().toString().equals("00:00")) {
-                    gameOver = true;
-                }
-                if(currentPlayer==1) {
-                    currentPlayer = 2;
-                }
-                else currentPlayer=1;
-                {
-                    showWinDialog(currentPlayer, v);
+                if(times!=-1) {
+                    if (txtWatch.getText().toString().equals("00:00")) {
+                        gameOver = true;
+                    }
+                    if (currentPlayer == 1) {
+                        currentPlayer = 2;
+                    } else currentPlayer = 1;
+                    {
+                        showWinDialog(currentPlayer, v);
+                    }
                 }
             }
         }.start();
@@ -452,4 +457,6 @@ public class InGameFragment extends Fragment{
 
         return view;
     }
+
+
 }

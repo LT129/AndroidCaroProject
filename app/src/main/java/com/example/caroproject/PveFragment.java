@@ -30,7 +30,7 @@ public class PveFragment extends Fragment {
     private String mParam2;
 
     private Button btnStartPlay;
-    private RadioButton rdoSize9, rdoSize15, rdoSize21;
+    private RadioButton rdoSize9, rdoSize15, rdoSize21, time15, time45, timeUnlimited;
 
     public PveFragment() {
         // Required empty public constructor
@@ -71,6 +71,9 @@ public class PveFragment extends Fragment {
         rdoSize9=view.findViewById(R.id.boardSize9PVE);
         rdoSize15=view.findViewById(R.id.boardSize15PVE);
         rdoSize21=view.findViewById(R.id.boardSize21PVE);
+        time45=view.findViewById(R.id.time45sPVE);
+        time15=view.findViewById(R.id.time15sPVE);
+        timeUnlimited=view.findViewById(R.id.timeUnlimitedPVE);
         btnStartPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,8 +88,18 @@ public class PveFragment extends Fragment {
                 } else {
                     sizeBoard = 20;
                 }
+                int time;
+                if(time15.isChecked()){
+                    time=16000;
+                } else if (time45.isChecked()) {
+                    time=46000;
+                }else{
+                    time=-1;
+                }
+                bundle.putInt("time", time);
                 bundle.putInt("sizeBoard", sizeBoard);
-                if ((rdoSize21.isChecked() || rdoSize15.isChecked() || rdoSize9.isChecked())) {
+                if ((rdoSize21.isChecked() || rdoSize15.isChecked() || rdoSize9.isChecked())
+                &&(time15.isChecked()||time45.isChecked()||timeUnlimited.isChecked())) {
                     NavController navController = Navigation.findNavController(v);
                     navController.navigate(R.id.action_pveFragment_to_inGameAIFragment, bundle);
                 }

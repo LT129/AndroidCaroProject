@@ -66,6 +66,7 @@ public class InGameAIFragment extends Fragment {
         return fragment;
     }
     private int sizeBoard;
+    private int times;
     private Bundle bundle;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,11 +79,13 @@ public class InGameAIFragment extends Fragment {
         if (args != null) {
             // Lấy dữ liệu từ Bundle
             sizeBoard = args.getInt("sizeBoard");
+            times=args.getInt("time");
         }
         // Tạo một Bundle để chứa dữ liệu
         bundle = new Bundle();
         // Đặt dữ liệu vào Bundle, ví dụ:
         bundle.putInt("sizeBoard", sizeBoard);
+        bundle.putInt("time", times);
     }
     private int currentPlayer, countAI=0, countPlayer=0;
     private int bestMovePosition=0;
@@ -97,7 +100,7 @@ public class InGameAIFragment extends Fragment {
     private int[][] board;  // Bảng lưu trạng thái của ô cờ
     private AIPlayer aiPlayer;
 
-    private int times=46000;
+
     private void initializeBoard(View v) {
         board = new int[sizeBoard][sizeBoard];  // Bảng sizeBoardxsizeBoard
         savePlayerPosition=new int[sizeBoard*sizeBoard/2];
@@ -255,7 +258,7 @@ public class InGameAIFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameAIFragment_to_gameModeFragment);
+                navController.navigate(R.id.action_inGameAIFragment_to_pveFragment);
             }
         });
         builder.show();
@@ -279,15 +282,16 @@ public class InGameAIFragment extends Fragment {
             @Override
             public void onFinish() {
                 // Xử lý khi đếm ngược kết thúc (hết thời gian)
-                if(txtWatch.getText().toString().equals("00:00")) {
-                    gameOver = true;
-                }
-                if(currentPlayer==1) {
-                    currentPlayer = 2;
-                }
-                else currentPlayer=1;
-                {
-                    showWinDialog(currentPlayer, v);
+                if(times!=-1) {
+                    if (txtWatch.getText().toString().equals("00:00")) {
+                        gameOver = true;
+                    }
+                    if (currentPlayer == 1) {
+                        currentPlayer = 2;
+                    } else currentPlayer = 1;
+                    {
+                        showWinDialog(currentPlayer, v);
+                    }
                 }
             }
         }.start();

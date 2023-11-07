@@ -17,6 +17,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getWindow().setBackgroundDrawableResource(R.drawable.background_1);
     }
+    @Override
+    public void onBackPressed() {
+        //vô hiệu hóa nút back trên điện thoại để tránh lỗi không mong muốn
+        }
+
 
     @Override
     protected void onPause() {
