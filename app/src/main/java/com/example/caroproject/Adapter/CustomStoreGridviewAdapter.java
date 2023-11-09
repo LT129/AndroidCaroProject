@@ -30,7 +30,7 @@ public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItems> {
         imageView.setImageResource(items[position].getTempImage());
 
         TextView numberOfCoins = view.findViewById(R.id.numberOfCoins);
-        numberOfCoins.setText("200");
+        numberOfCoins.setText(String.valueOf(items[position].getItemCoins().getCopperCoins()));
         return (view);
     }
 }

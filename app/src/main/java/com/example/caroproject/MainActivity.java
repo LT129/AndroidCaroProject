@@ -8,7 +8,10 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
+import com.example.caroproject.Data.Coins;
+
 public class MainActivity extends AppCompatActivity {
+    private Coins userCoins;
     private static NavHostFragment navHostFragment;
 
     @Override
@@ -16,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getWindow().setBackgroundDrawableResource(R.drawable.background_1);
+        userCoins = new Coins(2000);
     }
 
     @Override

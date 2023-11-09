@@ -1,7 +1,10 @@
 package com.example.caroproject;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -16,6 +19,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.example.caroproject.Adapter.CustomStoreGridviewAdapter;
+import com.example.caroproject.Data.Coins;
 import com.example.caroproject.Data.StoreItems;
 
 /**
@@ -90,11 +94,11 @@ public class StoreFragment extends Fragment {
             }
         });
 
+        //TODO get buy button to set listenner
         LinearLayout buy = inflater.inflate(R.layout.store_item_gridview, container, false).findViewById(R.id.buyId);
         buy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO show dialog ask are u sure to buy this item
             }
         });
 
@@ -111,9 +115,28 @@ public class StoreFragment extends Fragment {
 
     private void getData() {
         storeItems = new StoreItems[4];
-        storeItems[0] = new StoreItems(R.drawable.temp_background_1, R.drawable.background_1, R.drawable.custom_button_1, R.drawable.custom_edittext);
-        storeItems[1] = new StoreItems(R.drawable.temp_background_2, R.drawable.background_2, R.drawable.custom_button_2, R.drawable.custom_edittext);
-        storeItems[2] = new StoreItems(R.drawable.temp_background_3, R.drawable.background_3, R.drawable.custom_button_1, R.drawable.custom_edittext);
-        storeItems[3] = new StoreItems(R.drawable.temp_background_4, R.drawable.background_4, R.drawable.custom_button_2, R.drawable.custom_edittext);
+        storeItems[0] = new StoreItems(R.drawable.temp_background_1, R.drawable.background_1, R.drawable.custom_button_1, R.drawable.custom_edittext, new Coins(200));
+        storeItems[1] = new StoreItems(R.drawable.temp_background_2, R.drawable.background_2, R.drawable.custom_button_2, R.drawable.custom_edittext, new Coins(300));
+        storeItems[2] = new StoreItems(R.drawable.temp_background_3, R.drawable.background_3, R.drawable.custom_button_1, R.drawable.custom_edittext, new Coins(400));
+        storeItems[3] = new StoreItems(R.drawable.temp_background_4, R.drawable.background_4, R.drawable.custom_button_2, R.drawable.custom_edittext, new Coins(500));
+    }
+
+    private Dialog showBuyDialog() {
+        //TODO create a dialog ask to buy item
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.dialog_ask_to_buy_item)
+                .setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //TODO check the usercoins
+                    }
+                })
+                .setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //TODO nothing happen
+                    }
+                });
+        return builder.create();
     }
 }

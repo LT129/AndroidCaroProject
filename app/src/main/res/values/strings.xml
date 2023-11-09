@@ -30,4 +30,8 @@
     <string name="password">Password</string>
     <string name="ok">Choose</string>
     <string name="cancel">Cancel</string>
+
+    <string name="dialog_ask_to_buy_item">Are you sure to buy this item</string>
+    <string name="dialog_yes">Yes</string>
+    <string name="dialog_no">No</string>
 </resources>
