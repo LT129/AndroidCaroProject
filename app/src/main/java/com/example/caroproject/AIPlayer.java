@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AIPlayer {
-    private int player;
+    private int player, sizeBoard;
     private Map<String, Integer> transpositionTable;
     private int searchDepth;
 
-    public AIPlayer(int player, int searchDepth) {
+    public AIPlayer(int player, int searchDepth, int sizeBoard) {
         this.player = player;
+        this.sizeBoard=sizeBoard;
         this.transpositionTable = new HashMap<>();
         this.searchDepth = searchDepth;
     }
@@ -18,15 +19,15 @@ public class AIPlayer {
     public int[] findBestMove(int[][] board, int position, int bestMovePosition) {
         int[] bestMove = new int[]{-1, -1};
         int bestScore = Integer.MIN_VALUE;
-        int row = position / 15; // Lấy hàng dựa trên vị trí ô
-        int col = position % 15; // Lấy cột dựa trên vị trí ô
-        int row2 = bestMovePosition / 15; // Lấy hàng dựa trên vị trí ô
-        int col2 = bestMovePosition % 15; // Lấy cột dựa trên vị trí ô
+        int row = position / sizeBoard; // Lấy hàng dựa trên vị trí ô
+        int col = position % sizeBoard; // Lấy cột dựa trên vị trí ô
+        int row2 = bestMovePosition / sizeBoard; // Lấy hàng dựa trên vị trí ô
+        int col2 = bestMovePosition % sizeBoard; // Lấy cột dựa trên vị trí ô
         int score;
         int near = 2020;
         int far =0;
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) {
+        for (int i = 0; i < sizeBoard; i++) {
+            for (int j = 0; j < sizeBoard; j++) {
                 if (board[i][j] == 0) {
                     board[i][j] = player;
                     score = minimax(board, searchDepth, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -83,8 +84,8 @@ public class AIPlayer {
 
         if (isMaximizing) {
             int maxScore = Integer.MIN_VALUE;
-            for (int i = 0; i < 15; i++) {
-                for (int j = 0; j < 15; j++) {
+            for (int i = 0; i < sizeBoard; i++) {
+                for (int j = 0; j < sizeBoard; j++) {
                     if (board[i][j] == 0) {
                         board[i][j] = player;
                         int score = minimax(board, depth + 1, false, alpha, beta);
@@ -101,8 +102,8 @@ public class AIPlayer {
             return maxScore;
         } else {
             int minScore = Integer.MAX_VALUE;
-            for (int i = 0; i < 15; i++) {
-                for (int j = 0; j < 15; j++) {
+            for (int i = 0; i < sizeBoard; i++) {
+                for (int j = 0; j < sizeBoard; j++) {
                     if (board[i][j] == 0) {
                         board[i][j] = (player == 1) ? 2 : 1;
                         int score = minimax(board, depth + 1, true, alpha, beta);
@@ -125,7 +126,7 @@ public class AIPlayer {
         int player2 = 2; // Người chơi 2
         int score = 0;
         int five=6000, four = 4000, three = 2000, two = 200, one = 50, zero = 0;
-        int size=15;
+        int size=sizeBoard;
         int countPlayer1;
         int countPlayer2;
         // Đánh giá hàng ngang

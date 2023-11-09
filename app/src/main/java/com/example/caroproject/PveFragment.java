@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.RadioButton;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +30,7 @@ public class PveFragment extends Fragment {
     private String mParam2;
 
     private Button btnStartPlay;
+    private RadioButton rdoSize9, rdoSize15, rdoSize21, time15, time45, timeUnlimited;
 
     public PveFragment() {
         // Required empty public constructor
@@ -64,13 +67,51 @@ public class PveFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pve, container, false);
-        btnStartPlay = view.findViewById(R.id.btnStartPlay);
+        btnStartPlay = view.findViewById(R.id.btnPlayPVE);
+        rdoSize9=view.findViewById(R.id.boardSize9PVE);
+        rdoSize15=view.findViewById(R.id.boardSize15PVE);
+        rdoSize21=view.findViewById(R.id.boardSize21PVE);
+        time45=view.findViewById(R.id.time45sPVE);
+        time15=view.findViewById(R.id.time15sPVE);
+        timeUnlimited=view.findViewById(R.id.timeUnlimitedPVE);
         btnStartPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TODO create an argument and pass it to next fragment
-                NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_pveFragment_to_inGameAIFragment);
+                Bundle bundle = new Bundle();
+                // Đặt dữ liệu vào Bundle, ví dụ:
+                int sizeBoard;
+                if (rdoSize9.isChecked()) {
+                    sizeBoard = 10;
+                } else if (rdoSize15.isChecked()) {
+                    sizeBoard = 15;
+                } else {
+                    sizeBoard = 20;
+                }
+                int time;
+                if(time15.isChecked()){
+                    time=16000;
+                } else if (time45.isChecked()) {
+                    time=46000;
+                }else{
+                    time=-1;
+                }
+                bundle.putInt("time", time);
+                bundle.putInt("sizeBoard", sizeBoard);
+                if ((rdoSize21.isChecked() || rdoSize15.isChecked() || rdoSize9.isChecked())
+                &&(time15.isChecked()||time45.isChecked()||timeUnlimited.isChecked())) {
+                    NavController navController = Navigation.findNavController(v);
+                    navController.navigate(R.id.action_pveFragment_to_inGameAIFragment, bundle);
+                }
+            }
+        });
+        ImageButton btnCallBack = view.findViewById(R.id.btnCallBackPVE);
+        btnCallBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //getActivity().getOnBackPressedDispatcher().onBackPressed();
+                NavController navController=Navigation.findNavController(v);
+                navController.navigate(R.id.action_pveFragment_to_gameModeFragment);
             }
         });
 

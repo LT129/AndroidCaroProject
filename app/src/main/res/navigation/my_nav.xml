@@ -74,8 +74,8 @@
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_gameModeFragment_to_inGameAIFragment"
-            app:destination="@id/inGameAIFragment"
+            android:id="@+id/action_gameModeFragment_to_pveFragment"
+            app:destination="@id/pveFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
@@ -91,13 +91,13 @@
         android:label="fragment_in_game"
         tools:layout="@layout/fragment_in_game" >
         <action
-            android:id="@+id/action_inGameFragment_to_gameModeFragment"
-            app:destination="@id/gameModeFragment"
+            android:id="@+id/action_inGameFragment_self"
+            app:destination="@id/inGameFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_inGameFragment_self"
-            app:destination="@id/inGameFragment"
+            android:id="@+id/action_inGameFragment_to_pvpFragment"
+            app:destination="@id/pvpFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
     </fragment>
@@ -116,6 +116,11 @@
         <action
             android:id="@+id/action_pvpFragment_to_inGameFragment"
             app:destination="@id/inGameFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_pvpFragment_to_gameModeFragment"
+            app:destination="@id/gameModeFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
     </fragment>
@@ -145,6 +150,27 @@
         <action
             android:id="@+id/action_inGameAIFragment_self"
             app:destination="@id/inGameAIFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_inGameAIFragment_to_pveFragment"
+            app:destination="@id/pveFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/pveFragment"
+        android:name="com.example.caroproject.PveFragment"
+        android:label="fragment_pve"
+        tools:layout="@layout/fragment_pve" >
+        <action
+            android:id="@+id/action_pveFragment_to_inGameAIFragment"
+            app:destination="@id/inGameAIFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_pveFragment_to_gameModeFragment"
+            app:destination="@id/gameModeFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
     </fragment>

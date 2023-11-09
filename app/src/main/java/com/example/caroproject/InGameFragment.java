@@ -1,5 +1,6 @@
 package com.example.caroproject;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -11,12 +12,15 @@ import androidx.navigation.Navigation;
 
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +31,8 @@ import com.example.caroproject.Adapter.AdapterGridview;
  * Use the {@link InGameFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class InGameFragment extends Fragment {
+public class InGameFragment extends Fragment{
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -60,6 +65,9 @@ public class InGameFragment extends Fragment {
         return fragment;
     }
 
+    private int sizeBoard;
+    private int times;
+    private Bundle bundle;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,16 +75,38 @@ public class InGameFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-    }
+        Bundle args = getArguments();
+        if (args != null) {
+            // Lấy dữ liệu từ Bundle
+            sizeBoard = args.getInt("sizeBoard");
+            times=args.getInt("time");
+        }
+        // Tạo một Bundle để chứa dữ liệu
+        bundle = new Bundle();
+        // Đặt dữ liệu vào Bundle, ví dụ:
+        bundle.putInt("sizeBoard", sizeBoard);
+        bundle.putInt("time", times);
 
-    private int currentPlayer;
+    }
+    private GridView gridView;
+    private LinearLayout linearLayout;
+    private int currentPlayer, countPlayer=0;
     private boolean gameOver;
+    private Button btnTop, btnBottom, btnBack, btnZoom;
+    private int[] savePlayerPosition;
+    private CountDownTimer countDownTimer;
+    private ScaleGestureDetector scaleGestureDetector;
+    private float scaleFactor = 1.0f;
+    private static final float MIN_SCALE = 1.0f;
+    private static final float MAX_SCALE = 3.0f;
+
     private int[][] board;  // Bảng lưu trạng thái của ô cờ
     private void initializeBoard(View v) {
-        board = new int[15][15];  // Bảng 15x15
+        board = new int[sizeBoard][sizeBoard];  // Bảng sizeBoardxsizeBoard
+        savePlayerPosition=new int[sizeBoard*sizeBoard/2];
         // Khởi tạo tất cả ô cờ là trống
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) {
+        for (int i = 0; i < sizeBoard; i++) {
+            for (int j = 0; j < sizeBoard; j++) {
                 board[i][j] = 0;
             }
         }
@@ -84,7 +114,7 @@ public class InGameFragment extends Fragment {
         gameOver = false;
 
         TextView txtWatch=v.findViewById(R.id.txtBottomInGame);
-        startCountdownTimer(46000, txtWatch, v);
+        startCountdownTimer(times, txtWatch, v);
         ImageView imgBottom = v.findViewById(R.id.imgBottomInGame);
         imgBottom.setBackgroundResource(R.drawable.custom_picture2);
     }
@@ -96,23 +126,29 @@ public class InGameFragment extends Fragment {
             TextView txtWatch2=v.findViewById(R.id.txtBottomInGame);
             ImageView imgBottom=v.findViewById(R.id.imgBottomInGame);
             ImageView imgTop=v.findViewById(R.id.imgTopInGame);
-            int row = position / 15; // Lấy hàng dựa trên vị trí ô
-            int col = position % 15; // Lấy cột dựa trên vị trí ô
+            int row = position / sizeBoard; // Lấy hàng dựa trên vị trí ô
+            int col = position % sizeBoard; // Lấy cột dựa trên vị trí ô
             // Kiểm tra nếu ô đã được đánh
             if (adapter.isCellEmpty(position)) {
                 // Đánh dấu ô và thay đổi hình ảnh
                 if (currentPlayer == 1) {
                     countDownTimer.cancel();
                     board[row][col]=1;
-                    adapter.markCellAsPlayer1(position);
-                    startCountdownTimer(46000, txtWatch1, v);
+                    adapter.markCellBackground1(position);
+                    if(countPlayer>0) {
+                        adapter.markCellAsPlayer2(savePlayerPosition[countPlayer - 1]);
+                    }
+                    startCountdownTimer(times, txtWatch1, v);
                     imgBottom.setBackgroundResource(R.drawable.custom_picture);
                     imgTop.setBackgroundResource(R.drawable.custom_picture2);
                 } else if (currentPlayer == 2) {
                     countDownTimer.cancel();
                     board[row][col]=2;
-                    adapter.markCellAsPlayer2(position);
-                    startCountdownTimer(46000, txtWatch2, v);
+                    adapter.markCellBackground2(position);
+                    if(countPlayer>0) {
+                        adapter.markCellAsPlayer1(savePlayerPosition[countPlayer - 1]);
+                    }
+                    startCountdownTimer(times, txtWatch2, v);
                     imgTop.setBackgroundResource(R.drawable.custom_picture);
                     imgBottom.setBackgroundResource(R.drawable.custom_picture2);
                 }
@@ -135,7 +171,7 @@ public class InGameFragment extends Fragment {
 
     // Hàm kiểm tra trạng thái thắng/thua
     public boolean checkWin(int player) {
-        int boardSize =15;
+        int boardSize =sizeBoard;
         // Kiểm tra hàng ngang
         for (int row = 0; row < boardSize; row++) {
             for (int col = 0; col < boardSize - 4; col++) {
@@ -201,20 +237,19 @@ public class InGameFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_self);
+                navController.navigate(R.id.action_inGameFragment_self,bundle);
             }
         });
         builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_to_gameModeFragment);
+                navController.navigate(R.id.action_inGameFragment_to_pvpFragment);
             }
         });
         builder.show();
     }
-    private Button btnTop, btnBottom;
-    private CountDownTimer countDownTimer;
+
 
     private void startCountdownTimer(long millisInFuture, TextView txtWatch, View v) {
         // millisInFuture là thời gian đếm ngược theo mili giây
@@ -232,15 +267,16 @@ public class InGameFragment extends Fragment {
             @Override
             public void onFinish() {
                 // Xử lý khi đếm ngược kết thúc (hết thời gian)
-                if(txtWatch.getText().toString().equals("00:00")) {
-                    gameOver = true;
-                }
-                if(currentPlayer==1) {
-                    currentPlayer = 2;
-                }
-                else currentPlayer=1;
-                {
-                    showWinDialog(currentPlayer, v);
+                if(times!=-1) {
+                    if (txtWatch.getText().toString().equals("00:00")) {
+                        gameOver = true;
+                    }
+                    if (currentPlayer == 1) {
+                        currentPlayer = 2;
+                    } else currentPlayer = 1;
+                    {
+                        showWinDialog(currentPlayer, v);
+                    }
                 }
             }
         }.start();
@@ -254,25 +290,151 @@ public class InGameFragment extends Fragment {
             countDownTimer.cancel();
         }
     }
+    float xOriginal,yOriginal;
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            scaleFactor *= detector.getScaleFactor();
+            scaleFactor = Math.max(MIN_SCALE, Math.min(scaleFactor, MAX_SCALE));
 
+            // Update the scale of your GridView here
+            gridView.setScaleX(scaleFactor);
+            gridView.setScaleY(scaleFactor);
+
+            return true;
+        }
+    }
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_in_game, container, false);
+        scaleGestureDetector = new ScaleGestureDetector(requireContext(), new ScaleListener());
 
-        GridView gridView = view.findViewById(R.id.gridView);
-        AdapterGridview adapter = new AdapterGridview(view.getContext());
+        gridView = view.findViewById(R.id.gridView);
+        linearLayout=view.findViewById(R.id.linearGrid);
+        AdapterGridview adapter = new AdapterGridview(view.getContext(),sizeBoard);
         // Khởi tạo bảng cờ và bắt đầu trò chơi
         gridView.setAdapter(adapter);
+        gridView.setNumColumns(sizeBoard);
+        initializeBoard(view);
+
+        int[] locationOriginal = new int[2];
+        gridView.getLocationOnScreen(locationOriginal);
+
+        xOriginal = locationOriginal[0];
+        yOriginal = locationOriginal[1];
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 // Xử lý đánh cờ
+                 if(adapter.isCellEmpty(position)==false&&countPlayer>0) {
+                     position=savePlayerPosition[countPlayer-1];
+                     countPlayer--;
+                 }
                 onCellClicked(position, view, adapter);
+                savePlayerPosition[countPlayer++] = position;
             }
         });
-        initializeBoard(view);
 
+        gridView.setOnTouchListener(new View.OnTouchListener() {
+            private float startX, startY;
+            private float offsetX=0, offsetY=0;
+
+            private boolean isZooming = false;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(scaleFactor==1){
+                    gridView.setTranslationX(xOriginal);
+                    gridView.setTranslationY(yOriginal);
+                }
+                int pointerCount = event.getPointerCount();
+                if (pointerCount > 1) {
+                    isZooming = true;
+                    scaleGestureDetector.onTouchEvent(event);
+                } else {
+                    if (scaleFactor > 1) {
+                        isZooming = false;
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                if (!isZooming) {
+                                    startX = event.getX();
+                                    startY = event.getY();
+                                }
+                                break;
+
+                            case MotionEvent.ACTION_MOVE:
+                                if (!isZooming) {
+                                    float endX = event.getX();
+                                    float endY = event.getY();
+                                    float dx = endX - startX;
+                                    float dy = endY - startY;
+
+                                    offsetX += dx;
+                                    offsetY += dy;
+
+                                    gridView.setTranslationX(offsetX);
+                                    gridView.setTranslationY(offsetY);
+
+                                    startX = endX;
+                                    startY = endY;
+                                }
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                if (!isZooming) {
+                                    break;
+                                }
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+
+        btnZoom=view.findViewById(R.id.btnZoomPVPOfline);
+        btnZoom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                float newScale = 1.5f; // Scale X 2 lần
+                float newScale2 = 3f; // Scale X 3 lần
+
+                if (scaleFactor < newScale) {
+                    scaleFactor = newScale; // Cập nhật scaleFactor
+                } else if (scaleFactor < newScale2) {
+                    scaleFactor = newScale2; // Cập nhật scaleFactor
+                } else {
+                    scaleFactor = 1.0f; // Trở về tỷ lệ ban đầu
+                }
+
+                // Cập nhật tỷ lệ phóng to của gridView bằng scaleFactor
+                gridView.setScaleX(scaleFactor);
+                gridView.setScaleY(scaleFactor);
+
+                gridView.setTranslationX(xOriginal);
+                gridView.setTranslationY(yOriginal);
+            }
+        });
+
+        btnBack=view.findViewById(R.id.btnBackOneTurnInGame);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (countPlayer > 0) {
+                    countDownTimer.cancel();
+                    int c = --countPlayer;
+                    adapter.markCellAsPlayer0(savePlayerPosition[c]);
+                    if(currentPlayer==1&&countPlayer > 0){
+                        adapter.markCellBackground1(savePlayerPosition[countPlayer-1]);
+                    }else if(currentPlayer==2&&countPlayer > 0) {
+                        adapter.markCellBackground2(savePlayerPosition[countPlayer-1]);
+                    }
+                    board[savePlayerPosition[c] / sizeBoard][savePlayerPosition[c] % sizeBoard] = 0;
+                    currentPlayer = (currentPlayer == 1) ? 2 : 1;
+                }
+            }
+        });
         btnTop=view.findViewById(R.id.btnTopInGame);
         btnBottom =view.findViewById(R.id.btnBottomInGame);
         btnBottom.setOnClickListener(new View.OnClickListener() {
@@ -280,7 +442,7 @@ public class InGameFragment extends Fragment {
             public void onClick(View v) {
                 countDownTimer.cancel();
                 NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_self);
+                navController.navigate(R.id.action_inGameFragment_self,bundle);
             }
         });
         btnTop.setOnClickListener(new View.OnClickListener() {
@@ -288,9 +450,13 @@ public class InGameFragment extends Fragment {
             public void onClick(View v) {
                 countDownTimer.cancel();
                 NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_to_gameModeFragment);
+                navController.navigate(R.id.action_inGameFragment_to_pvpFragment);
             }
         });
+
+
         return view;
     }
+
+
 }

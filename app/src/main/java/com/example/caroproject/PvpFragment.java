@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -25,6 +24,7 @@ public class PvpFragment extends Fragment {
 
     private RadioGroup playMode;
     private RadioGroup boardSize;
+    private RadioButton rdoOffline, rdoOnline, rdoSize9, rdoSize15, rdoSize21, time15, time45, timeUnlimited;
 
     private ImageButton chooseShape;
     private ImageButton chooseColor;
@@ -92,13 +92,44 @@ public class PvpFragment extends Fragment {
         });
 
         btnPlay = view.findViewById(R.id.btnPlay);
+        rdoOffline=view.findViewById(R.id.offlinePlayMode);
+        rdoSize9=view.findViewById(R.id.boardSize9);
+        rdoSize15=view.findViewById(R.id.boardSize15);
+        rdoSize21=view.findViewById(R.id.boardSize21);
+        time45=view.findViewById(R.id.time45sPVE);
+        time15=view.findViewById(R.id.time15sPVE);
+        timeUnlimited=view.findViewById(R.id.timeUnlimitedPVE);
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TODO create an argument and pass it to next fragment
-                NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_pvpFragment_to_inGameFragment);
 
+                // Tạo một Bundle để chứa dữ liệu
+                Bundle bundle = new Bundle();
+                // Đặt dữ liệu vào Bundle, ví dụ:
+                int sizeBoard;
+                if(rdoSize9.isChecked()){
+                    sizeBoard=10;
+                } else if (rdoSize15.isChecked()) {
+                    sizeBoard=15;
+                } else{
+                    sizeBoard=20;
+                }
+                int time;
+                if(time15.isChecked()){
+                    time=16000;
+                } else if (time45.isChecked()) {
+                    time=46000;
+                }else{
+                    time=-1;
+                }
+                bundle.putInt("sizeBoard", sizeBoard);
+                bundle.putInt("time", time);
+                if(rdoOffline.isChecked()&&(rdoSize21.isChecked()||rdoSize15.isChecked()||rdoSize9.isChecked())
+                        &&(time15.isChecked()||time45.isChecked()||timeUnlimited.isChecked())) {
+                    NavController navController = Navigation.findNavController(v);
+                    navController.navigate(R.id.action_pvpFragment_to_inGameFragment, bundle);
+                }
             }
         });
 
@@ -106,7 +137,9 @@ public class PvpFragment extends Fragment {
         btnCallBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().getOnBackPressedDispatcher().onBackPressed();
+                //getActivity().getOnBackPressedDispatcher().onBackPressed();
+                NavController navController=Navigation.findNavController(v);
+                navController.navigate(R.id.action_pvpFragment_to_gameModeFragment);
             }
         });
 
