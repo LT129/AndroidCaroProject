@@ -1,5 +1,7 @@
 package com.example.caroproject;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,6 +13,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -25,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.caroproject.Adapter.AdapterGridview;
+import com.example.caroproject.Adapter.CaroCenter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,7 +71,22 @@ public class InGameFragment extends Fragment{
 
     private int sizeBoard;
     private int times;
+    private float offsetX=0, offsetY=0;
     private Bundle bundle;
+    private CaroCenter caroCenter=new CaroCenter();
+    private GridView gridView;
+    private LinearLayout linearLayout;
+    private int currentPlayer, countPlayer=0;
+    private boolean gameOver;
+    private Button btnTop, btnBottom, btnBack, btnZoom;
+    private int[] savePlayerPosition;
+    private CountDownTimer countDownTimer;
+    private ScaleGestureDetector scaleGestureDetector;
+    private float scaleFactor = 1.0f;
+    private static final float MIN_SCALE = 1.0f;
+    private static final float MAX_SCALE = 3.0f;
+
+    private int[][] board;  // Bảng lưu trạng thái của ô cờ
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,19 +107,6 @@ public class InGameFragment extends Fragment{
         bundle.putInt("time", times);
 
     }
-    private GridView gridView;
-    private LinearLayout linearLayout;
-    private int currentPlayer, countPlayer=0;
-    private boolean gameOver;
-    private Button btnTop, btnBottom, btnBack, btnZoom;
-    private int[] savePlayerPosition;
-    private CountDownTimer countDownTimer;
-    private ScaleGestureDetector scaleGestureDetector;
-    private float scaleFactor = 1.0f;
-    private static final float MIN_SCALE = 1.0f;
-    private static final float MAX_SCALE = 3.0f;
-
-    private int[][] board;  // Bảng lưu trạng thái của ô cờ
     private void initializeBoard(View v) {
         board = new int[sizeBoard][sizeBoard];  // Bảng sizeBoardxsizeBoard
         savePlayerPosition=new int[sizeBoard*sizeBoard/2];
@@ -154,7 +160,7 @@ public class InGameFragment extends Fragment{
                 }
 
                 // Kiểm tra thắng
-                if (checkWin(currentPlayer)) {
+                if (caroCenter.checkWin(currentPlayer, sizeBoard, board)) {
                     gameOver = true;
                     countDownTimer.cancel();
                     showWinDialog(currentPlayer, v);
@@ -169,64 +175,6 @@ public class InGameFragment extends Fragment{
         }
     }
 
-    // Hàm kiểm tra trạng thái thắng/thua
-    public boolean checkWin(int player) {
-        int boardSize =sizeBoard;
-        // Kiểm tra hàng ngang
-        for (int row = 0; row < boardSize; row++) {
-            for (int col = 0; col < boardSize - 4; col++) {
-                if (board[row][col] == player &&
-                        board[row][col + 1] == player &&
-                        board[row][col + 2] == player &&
-                        board[row][col + 3] == player &&
-                        board[row][col + 4] == player) {
-                    return true;
-                }
-            }
-        }
-
-        // Kiểm tra hàng dọc
-        for (int row = 0; row < boardSize - 4; row++) {
-            for (int col = 0; col < boardSize; col++) {
-                if (board[row][col] == player &&
-                        board[row + 1][col] == player &&
-                        board[row + 2][col] == player &&
-                        board[row + 3][col] == player &&
-                        board[row + 4][col] == player) {
-                    return true;
-                }
-            }
-        }
-
-        // Kiểm tra đường chéo chính
-        for (int row = 0; row < boardSize - 4; row++) {
-            for (int col = 0; col < boardSize - 4; col++) {
-                if (board[row][col] == player &&
-                        board[row + 1][col + 1] == player &&
-                        board[row + 2][col + 2] == player &&
-                        board[row + 3][col + 3] == player &&
-                        board[row + 4][col + 4] == player) {
-                    return true;
-                }
-            }
-        }
-
-        // Kiểm tra đường chéo phụ
-        for (int row = 4; row < boardSize; row++) {
-            for (int col = 0; col < boardSize - 4; col++) {
-                if (board[row][col] == player &&
-                        board[row - 1][col + 1] == player &&
-                        board[row - 2][col + 2] == player &&
-                        board[row - 3][col + 3] == player &&
-                        board[row - 4][col + 4] == player) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     // Hàm hiển thị thông báo thắng
     private void showWinDialog(int player, View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
@@ -236,15 +184,13 @@ public class InGameFragment extends Fragment{
         builder.setPositiveButton("New Game", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_self,bundle);
+               onClickNew(v);
             }
         });
         builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_to_pvpFragment);
+                onClickBack(v);
             }
         });
         builder.show();
@@ -297,13 +243,33 @@ public class InGameFragment extends Fragment{
             scaleFactor *= detector.getScaleFactor();
             scaleFactor = Math.max(MIN_SCALE, Math.min(scaleFactor, MAX_SCALE));
 
-            // Update the scale of your GridView here
-            gridView.setScaleX(scaleFactor);
-            gridView.setScaleY(scaleFactor);
+            ObjectAnimator scaleAnimatorX = ObjectAnimator.ofFloat(gridView, "scaleX", scaleFactor);
+            ObjectAnimator scaleAnimatorY = ObjectAnimator.ofFloat(gridView, "scaleY", scaleFactor);
+
+            AnimatorSet animatorSet = new AnimatorSet();
+            animatorSet.playTogether(scaleAnimatorX, scaleAnimatorY);
+
+            int duration=1000;
+            if(scaleFactor==1){
+                duration=0;
+            }
+            animatorSet.setDuration(duration);
+            animatorSet.start();
 
             return true;
         }
     }
+    public void onClickNew(View v){
+        countDownTimer.cancel();
+        NavController navController=Navigation.findNavController(v);
+        navController.navigate(R.id.action_inGameFragment_self, bundle);
+    }
+    public void onClickBack(View v){
+        countDownTimer.cancel();
+        NavController navController=Navigation.findNavController(v);
+        navController.navigate(R.id.action_inGameFragment_to_pvpFragment);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -314,9 +280,12 @@ public class InGameFragment extends Fragment{
         gridView = view.findViewById(R.id.gridView);
         linearLayout=view.findViewById(R.id.linearGrid);
         AdapterGridview adapter = new AdapterGridview(view.getContext(),sizeBoard);
+
         // Khởi tạo bảng cờ và bắt đầu trò chơi
         gridView.setAdapter(adapter);
         gridView.setNumColumns(sizeBoard);
+
+
         initializeBoard(view);
 
         int[] locationOriginal = new int[2];
@@ -340,8 +309,6 @@ public class InGameFragment extends Fragment{
 
         gridView.setOnTouchListener(new View.OnTouchListener() {
             private float startX, startY;
-            private float offsetX=0, offsetY=0;
-
             private boolean isZooming = false;
 
             @Override
@@ -354,6 +321,7 @@ public class InGameFragment extends Fragment{
                 if (pointerCount > 1) {
                     isZooming = true;
                     scaleGestureDetector.onTouchEvent(event);
+
                 } else {
                     if (scaleFactor > 1) {
                         isZooming = false;
@@ -374,6 +342,11 @@ public class InGameFragment extends Fragment{
 
                                     offsetX += dx;
                                     offsetY += dy;
+
+                                    float[] max= caroCenter.calculateMaxOffset(gridView,scaleFactor);
+
+                                    offsetX = Math.min(Math.max(offsetX, -max[0]), max[0]);
+                                    offsetY = Math.min(Math.max(offsetY, -max[1]), max[1]);
 
                                     gridView.setTranslationX(offsetX);
                                     gridView.setTranslationY(offsetY);
@@ -436,24 +409,19 @@ public class InGameFragment extends Fragment{
             }
         });
         btnTop=view.findViewById(R.id.btnTopInGame);
+        btnTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickBack(v);
+            }
+        });
         btnBottom =view.findViewById(R.id.btnBottomInGame);
         btnBottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                countDownTimer.cancel();
-                NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_self,bundle);
+                onClickNew(v);
             }
         });
-        btnTop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                countDownTimer.cancel();
-                NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_to_pvpFragment);
-            }
-        });
-
 
         return view;
     }

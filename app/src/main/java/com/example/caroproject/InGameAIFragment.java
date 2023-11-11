@@ -1,5 +1,7 @@
 package com.example.caroproject;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -25,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.caroproject.Adapter.AdapterGridview;
+import com.example.caroproject.Adapter.CaroCenter;
 
 import java.util.ArrayList;
 
@@ -68,6 +71,21 @@ public class InGameAIFragment extends Fragment {
     private int sizeBoard;
     private int times;
     private Bundle bundle;
+    private int currentPlayer, countAI=0, countPlayer=0;
+    private int bestMovePosition=0;
+    private LinearLayout linearLayout;
+    private float offsetX=0, offsetY=0;
+    private CaroCenter caroCenter=new CaroCenter();
+    private GridView gridView;
+    private int[] savePlayerPosition, saveAIPosition;
+    private boolean gameOver;
+    private ScaleGestureDetector scaleGestureDetector;
+    private float scaleFactor = 1.0f;
+    private static final float MIN_SCALE = 1.0f;
+    private static final float MAX_SCALE = 3.0f;
+    private int[][] board;  // Bảng lưu trạng thái của ô cờ
+    private AIPlayer aiPlayer;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,19 +105,6 @@ public class InGameAIFragment extends Fragment {
         bundle.putInt("sizeBoard", sizeBoard);
         bundle.putInt("time", times);
     }
-    private int currentPlayer, countAI=0, countPlayer=0;
-    private int bestMovePosition=0;
-    private LinearLayout linearLayout;
-    private GridView gridView;
-    private int[] savePlayerPosition, saveAIPosition;
-    private boolean gameOver;
-    private ScaleGestureDetector scaleGestureDetector;
-    private float scaleFactor = 1.0f;
-    private static final float MIN_SCALE = 1.0f;
-    private static final float MAX_SCALE = 3.0f;
-    private int[][] board;  // Bảng lưu trạng thái của ô cờ
-    private AIPlayer aiPlayer;
-
 
     private void initializeBoard(View v) {
         board = new int[sizeBoard][sizeBoard];  // Bảng sizeBoardxsizeBoard
@@ -155,7 +160,7 @@ public class InGameAIFragment extends Fragment {
                 }
 
                 // Kiểm tra thắng
-                if (checkWin(currentPlayer)) {
+                if (caroCenter.checkWin(currentPlayer, sizeBoard,board)) {
                     gameOver = true;
                     countDownTimer.cancel();
                     showWinDialog(currentPlayer, v);
@@ -176,64 +181,6 @@ public class InGameAIFragment extends Fragment {
         }
     }
 
-    // Hàm kiểm tra trạng thái thắng/thua
-    public boolean checkWin(int player) {
-        int boardSize =sizeBoard;
-        // Kiểm tra hàng ngang
-        for (int row = 0; row < boardSize; row++) {
-            for (int col = 0; col < boardSize - 4; col++) {
-                if (board[row][col] == player &&
-                        board[row][col + 1] == player &&
-                        board[row][col + 2] == player &&
-                        board[row][col + 3] == player &&
-                        board[row][col + 4] == player) {
-                    return true;
-                }
-            }
-        }
-
-        // Kiểm tra hàng dọc
-        for (int row = 0; row < boardSize - 4; row++) {
-            for (int col = 0; col < boardSize; col++) {
-                if (board[row][col] == player &&
-                        board[row + 1][col] == player &&
-                        board[row + 2][col] == player &&
-                        board[row + 3][col] == player &&
-                        board[row + 4][col] == player) {
-                    return true;
-                }
-            }
-        }
-
-        // Kiểm tra đường chéo (từ trái trên xuống phải dưới)
-        for (int row = 0; row < boardSize - 4; row++) {
-            for (int col = 0; col < boardSize - 4; col++) {
-                if (board[row][col] == player &&
-                        board[row + 1][col + 1] == player &&
-                        board[row + 2][col + 2] == player &&
-                        board[row + 3][col + 3] == player &&
-                        board[row + 4][col + 4] == player) {
-                    return true;
-                }
-            }
-        }
-
-        // Kiểm tra đường chéo (từ trái trên xuống phải dưới)
-        for (int row = 4; row < boardSize; row++) {
-            for (int col = 0; col < boardSize - 4; col++) {
-                if (board[row][col] == player &&
-                        board[row - 1][col + 1] == player &&
-                        board[row - 2][col + 2] == player &&
-                        board[row - 3][col + 3] == player &&
-                        board[row - 4][col + 4] == player) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     // Hàm hiển thị thông báo thắng
     private void showWinDialog(int player, View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
@@ -250,15 +197,13 @@ public class InGameAIFragment extends Fragment {
         builder.setPositiveButton("New Game", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameAIFragment_self, bundle);
+                onClickNew(v);
             }
         });
         builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameAIFragment_to_pveFragment);
+                onClickBack(v);
             }
         });
         builder.show();
@@ -312,12 +257,31 @@ public class InGameAIFragment extends Fragment {
             scaleFactor *= detector.getScaleFactor();
             scaleFactor = Math.max(MIN_SCALE, Math.min(scaleFactor, MAX_SCALE));
 
-            // Update the scale of your GridView here
-            gridView.setScaleX(scaleFactor);
-            gridView.setScaleY(scaleFactor);
+            ObjectAnimator scaleAnimatorX = ObjectAnimator.ofFloat(gridView, "scaleX", scaleFactor);
+            ObjectAnimator scaleAnimatorY = ObjectAnimator.ofFloat(gridView, "scaleY", scaleFactor);
+
+            AnimatorSet animatorSet = new AnimatorSet();
+            animatorSet.playTogether(scaleAnimatorX, scaleAnimatorY);
+
+            int duration=1000;
+            if(scaleFactor==1){
+                duration=0;
+            }
+            animatorSet.setDuration(duration);
+            animatorSet.start();
 
             return true;
         }
+    }
+    public void onClickNew(View v){
+        countDownTimer.cancel();
+        NavController navController=Navigation.findNavController(v);
+        navController.navigate(R.id.action_inGameAIFragment_self, bundle);
+    }
+    public void onClickBack(View v){
+        countDownTimer.cancel();
+        NavController navController=Navigation.findNavController(v);
+        navController.navigate(R.id.action_inGameAIFragment_to_pveFragment);
     }
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -355,7 +319,6 @@ public class InGameAIFragment extends Fragment {
         });
         gridView.setOnTouchListener(new View.OnTouchListener() {
             private float startX, startY;
-            private float offsetX=0, offsetY=0;
 
             private boolean isZooming = false;
 
@@ -389,6 +352,11 @@ public class InGameAIFragment extends Fragment {
 
                                     offsetX += dx;
                                     offsetY += dy;
+
+                                    float[] max= caroCenter.calculateMaxOffset(gridView,scaleFactor);
+
+                                    offsetX = Math.min(Math.max(offsetX, -max[0]), max[0]);
+                                    offsetY = Math.min(Math.max(offsetY, -max[1]), max[1]);
 
                                     gridView.setTranslationX(offsetX);
                                     gridView.setTranslationY(offsetY);
@@ -451,21 +419,18 @@ public class InGameAIFragment extends Fragment {
         });
 
         btnTop=view.findViewById(R.id.btnTopInGameAI);
+
+        btnTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickBack(v);
+            }
+        });
         btnBottom =view.findViewById(R.id.btnBottomInGameAI);
         btnBottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                countDownTimer.cancel();
-                NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameAIFragment_self, bundle);
-            }
-        });
-        btnTop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                countDownTimer.cancel();
-                NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameAIFragment_to_pveFragment);
+                onClickNew(v);
             }
         });
         return view;
