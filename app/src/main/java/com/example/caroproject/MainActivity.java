@@ -10,21 +10,26 @@ import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
+import com.example.caroproject.Data.Background;
 import com.example.caroproject.Data.Coins;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private Coins userCoins;
+    private ArrayList<Background> userBackground;
     private static NavHostFragment navHostFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getWindow().setBackgroundDrawableResource(R.drawable.background_1);
-        userCoins = new Coins(2000);
+        initialData();
+        getWindow().setBackgroundDrawableResource(userBackground.get(0).getLayoutBackground());
     }
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         new AlertDialog.Builder(this)
                 .setTitle("Confirm Exit")
                 .setMessage("Are you sure you want to exit the application?")
@@ -50,6 +55,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    private void initialData() {
+        userCoins = new Coins(2000);
+        userBackground = new ArrayList<>();
+        userBackground.add(new Background(R.drawable.temp_background_1, R.drawable.background_1, R.drawable.custom_button_1, R.drawable.custom_edittext));
+        userBackground.add(new Background(R.drawable.temp_background_2, R.drawable.background_2, R.drawable.custom_button_2, R.drawable.custom_edittext));
     }
 
 }

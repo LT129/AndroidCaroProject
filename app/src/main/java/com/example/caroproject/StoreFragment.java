@@ -67,6 +67,7 @@ public class StoreFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_store, container, false);
+        showBuyDialog();
         showItem = view.findViewById(R.id.showItem);
         viewItems = view.findViewById(R.id.viewItems);
         CustomStoreGridviewAdapter customStoreGridviewAdapter =
@@ -94,14 +95,6 @@ public class StoreFragment extends Fragment {
             }
         });
 
-        //TODO get buy button to set listenner
-        LinearLayout buy = inflater.inflate(R.layout.store_item_gridview, container, false).findViewById(R.id.buyId);
-        buy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-
         btnCallBack = view.findViewById(R.id.btnCallBack);
         btnCallBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +115,6 @@ public class StoreFragment extends Fragment {
     }
 
     private Dialog showBuyDialog() {
-        //TODO create a dialog ask to buy item
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.dialog_ask_to_buy_item)
                 .setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
@@ -139,4 +131,5 @@ public class StoreFragment extends Fragment {
                 });
         return builder.create();
     }
+
 }
