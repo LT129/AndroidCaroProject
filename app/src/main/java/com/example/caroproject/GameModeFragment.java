@@ -3,6 +3,8 @@ package com.example.caroproject;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -12,8 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 
 public class GameModeFragment extends Fragment {
 
@@ -32,10 +32,7 @@ public class GameModeFragment extends Fragment {
     private Button btnExit;
     private ImageView userAvatar;
 
-    private RadioGroup groupButton;
-    private RadioButton btnMenu;
-    private RadioButton btnFriendList;
-    private RadioButton btnHistory;
+
 
     public GameModeFragment() {
         // Required empty public constructor
@@ -68,19 +65,6 @@ public class GameModeFragment extends Fragment {
         btnSetting = view.findViewById(R.id.btnSetting);
         btnExit = view.findViewById(R.id.btnExit);
         btnStore = view.findViewById(R.id.btnStore);
-        groupButton = view.findViewById(R.id.groupButton);
-        btnMenu = view.findViewById(R.id.btnMenu);
-        btnFriendList = view.findViewById(R.id.btnFriendList);
-        btnHistory = view.findViewById(R.id.btnHistory);
-        groupButton.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                btnMenu.setBackgroundResource(R.drawable.game_mode_wait_choose_button);
-                btnFriendList.setBackgroundResource(R.drawable.game_mode_wait_choose_button);
-                btnHistory.setBackgroundResource(R.drawable.game_mode_wait_choose_button);
-                view.findViewById(checkedId).setBackgroundResource(R.drawable.game_mode_on_choose_button);
-            }
-        });
 
         btnPvp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,6 +117,7 @@ public class GameModeFragment extends Fragment {
                 navController.navigate(R.id.action_gameModeFragment_to_storeFragment);
             }
         });
+
         return view;
     }
 }

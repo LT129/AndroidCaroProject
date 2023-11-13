@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         userCoins = new Coins(2000);
         userBackground = new ArrayList<>();
         userBackground.add(new Background(R.drawable.temp_background_1, R.drawable.background_1, R.drawable.custom_button_1, R.drawable.custom_edittext));
-        userBackground.add(new Background(R.drawable.temp_background_2, R.drawable.background_2, R.drawable.custom_button_2, R.drawable.custom_edittext));
+        userBackground.add(new Background(R.drawable.temp_background_2, R.drawable.background_2, R.drawable.custom_button_1, R.drawable.custom_edittext));
     }
 
 }
