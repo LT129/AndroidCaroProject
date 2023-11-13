@@ -47,7 +47,7 @@
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in" >
         <action
-            android:id="@+id/action_signInFragment_to_gameModeFragment"
+            android:id="@+id/action_signInFragment_to_mainMenuFragment"
             app:destination="@id/gameModeFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
@@ -55,9 +55,9 @@
 
     <fragment
         android:id="@+id/gameModeFragment"
-        android:name="com.example.caroproject.GameModeFragment"
-        android:label="fragment_game_mode"
-        tools:layout="@layout/fragment_game_mode" >
+        android:name="com.example.caroproject.MainMenuFragment"
+        android:label="fragment_main_menu"
+        tools:layout="@layout/fragment_main_menu" >
         <action
             android:id="@+id/action_gameModeFragment_to_settingFragment"
             app:destination="@id/settingFragment"

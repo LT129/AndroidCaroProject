@@ -86,7 +86,7 @@ public class SignInFragment extends Fragment {
                     if(checkCredentials == true){
                         Toast.makeText(requireContext(), "Login Successfully!", Toast.LENGTH_SHORT).show();
                         NavController navController = Navigation.findNavController(v);
-                        navController.navigate(R.id.action_signInFragment_to_gameModeFragment);
+                        navController.navigate(R.id.action_signInFragment_to_mainMenuFragment);
                     }else{
                         Toast.makeText(requireContext(), "Invalid Credentials", Toast.LENGTH_SHORT).show();
                     }
