@@ -19,21 +19,24 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:src="@drawable/back_arrow"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="@string/store"
+                android:textColor="@color/word_color_gray"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="@color/word_color_gray"
-                android:gravity="center"
-                android:text="What layout"/>
+                android:background="@drawable/custom_edittext_2"/>
             <TextView
+                android:id="@+id/txtUserCoins"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:text="show coin"/>
+                android:background="@drawable/custom_edittext_2"/>
 
         </RelativeLayout>
 

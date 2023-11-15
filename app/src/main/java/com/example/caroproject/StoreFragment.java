@@ -1,12 +1,16 @@
 package com.example.caroproject;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +21,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.example.caroproject.Adapter.CustomStoreGridviewAdapter;
+import com.example.caroproject.Data.Background;
 import com.example.caroproject.Data.Coins;
 import com.example.caroproject.Data.StoreItems;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,14 +43,19 @@ public class StoreFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private String mParam1;
     private String mParam2;
+    private TextView txtUserCoins;
     private GridView viewItems;
-    private StoreItems storeItems[];
+    private ArrayList<StoreItems> storeItems;
     private ImageButton btnCallBack;
     private ImageView showItem;
 
     private RadioGroup groupButton;
     private RadioButton btnBackground;
     private RadioButton btnShape;
+
+    private SharedPreferences storePref;
+    private Gson gson;
+    private Coins userCoins;
 
     public StoreFragment() {
         // Required empty public constructor
@@ -67,8 +83,31 @@ public class StoreFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_store, container, false);
-        showBuyDialog();
+
+        // Get user coins from Preferences
+        txtUserCoins = view.findViewById(R.id.txtUserCoins);
+        storePref = requireContext().getSharedPreferences("CARO", Context.MODE_PRIVATE);
+        gson = new Gson();
+        String json = storePref.getString("USER_COINS", "");
+        userCoins = gson.fromJson(json, Coins.class);
+        txtUserCoins.setText(String.valueOf(userCoins.getCopperCoins()));
+        SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String key) {
+                if (key.equals("USER_COINS")) {
+                    String json = sharedPreferences.getString("USER_COINS", "");
+                    userCoins = gson.fromJson(json, Coins.class);
+                    txtUserCoins.setText(String.valueOf(userCoins.getCopperCoins()));
+                }
+            }
+        };
+        storePref.registerOnSharedPreferenceChangeListener(listener);
+
+
+        // Show template of the ite
         showItem = view.findViewById(R.id.showItem);
+
+        // Show store items
         viewItems = view.findViewById(R.id.viewItems);
         CustomStoreGridviewAdapter customStoreGridviewAdapter =
                 new CustomStoreGridviewAdapter(view.getContext(), R.layout.store_item_gridview, storeItems);
@@ -78,7 +117,7 @@ public class StoreFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 viewItems.setItemChecked(position, true);
-                showItem.setImageResource(storeItems[position].getLayoutBackground());
+                showItem.setImageResource(storeItems.get(position).getLayoutBackground());
             }
         });
 
@@ -107,29 +146,11 @@ public class StoreFragment extends Fragment {
     }
 
     private void getData() {
-        storeItems = new StoreItems[4];
-        storeItems[0] = new StoreItems(R.drawable.temp_background_1, R.drawable.background_1, R.drawable.custom_button_1, R.drawable.custom_edittext, new Coins(200));
-        storeItems[1] = new StoreItems(R.drawable.temp_background_2, R.drawable.background_2, R.drawable.custom_button_2, R.drawable.custom_edittext, new Coins(300));
-        storeItems[2] = new StoreItems(R.drawable.temp_background_3, R.drawable.background_3, R.drawable.custom_button_1, R.drawable.custom_edittext, new Coins(400));
-        storeItems[3] = new StoreItems(R.drawable.temp_background_4, R.drawable.background_4, R.drawable.custom_button_2, R.drawable.custom_edittext, new Coins(500));
-    }
-
-    private Dialog showBuyDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.dialog_ask_to_buy_item)
-                .setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //TODO check the usercoins
-                    }
-                })
-                .setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //TODO nothing happen
-                    }
-                });
-        return builder.create();
+        storePref = requireActivity().getSharedPreferences("CARO", Context.MODE_PRIVATE);
+        gson = new Gson();
+        String json = storePref.getString("STORE_ITEMS", null);
+        Type type = new TypeToken<ArrayList<StoreItems>>(){}.getType();
+        storeItems = gson.fromJson(json, type);
     }
 
 }

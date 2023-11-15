@@ -7,7 +7,7 @@
     <string name="history">History</string>
 
     <string name="pvp">PvP</string>
-    <string name="pvc">PvE</string>
+    <string name="pve">PvE</string>
     <string name="setting">Setting</string>
     <string name="exit">Exit</string>
 
@@ -19,6 +19,7 @@
     <string name="choose_color">Color: </string>
     <string name="background">Background</string>
     <string name="shape">Shape</string>
+    <string name="store">Store</string>
 
     <string name="x5">5x5</string>
     <string name="x8">8x8</string>

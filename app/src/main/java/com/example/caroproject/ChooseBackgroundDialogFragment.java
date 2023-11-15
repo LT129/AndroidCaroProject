@@ -1,7 +1,9 @@
 package com.example.caroproject;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +16,17 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.caroproject.Adapter.CustomChooseBackgroundAdapter;
 import com.example.caroproject.Data.Background;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 public class ChooseBackgroundDialogFragment extends DialogFragment {
-    private Background[] items;
+    private ArrayList<Background> items;
     private GridView gridView;
+    private SharedPreferences pref;
+    private Gson gson;
 
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -43,8 +52,9 @@ public class ChooseBackgroundDialogFragment extends DialogFragment {
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 getActivity().getWindow().setBackgroundDrawableResource(
-                        items[gridView.getCheckedItemPosition()].getLayoutBackground()
+                        items.get(gridView.getCheckedItemPosition()).getLayoutBackground()
                 );
+                pref.edit().putString("BG_POSITION", String.valueOf(gridView.getCheckedItemPosition())).apply();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -57,11 +67,11 @@ public class ChooseBackgroundDialogFragment extends DialogFragment {
     }
 
     private void getData() {
-        items = new Background[4];
-        items[0] = new Background(R.drawable.temp_background_1, R.drawable.background_1, R.drawable.custom_button_1, R.drawable.custom_edittext);
-        items[1] = new Background(R.drawable.temp_background_2, R.drawable.background_2, R.drawable.custom_button_2, R.drawable.custom_edittext);
-        items[2] = new Background(R.drawable.temp_background_3, R.drawable.background_3, R.drawable.custom_button_1, R.drawable.custom_edittext);
-        items[3] = new Background(R.drawable.temp_background_4, R.drawable.background_4, R.drawable.custom_button_2, R.drawable.custom_edittext);
+        pref = requireActivity().getSharedPreferences("CARO", Context.MODE_PRIVATE);
+        gson = new Gson();
+        String json = pref.getString("USER_BACKGROUND", null);
+        Type type = new TypeToken<ArrayList<Background>>(){}.getType();
+        items = gson.fromJson(json, type);
     }
 
 }

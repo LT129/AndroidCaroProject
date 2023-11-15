@@ -11,10 +11,12 @@ import android.widget.ImageView;
 import com.example.caroproject.Data.Background;
 import com.example.caroproject.R;
 
+import java.util.ArrayList;
+
 public class CustomChooseBackgroundAdapter extends ArrayAdapter<Background> {
     private Context context;
-    private Background[] items;
-    public CustomChooseBackgroundAdapter(Context context, int layoutToBeInflated, Background[] items) {
+    private ArrayList<Background> items;
+    public CustomChooseBackgroundAdapter(Context context, int layoutToBeInflated, ArrayList<Background> items) {
         super(context, layoutToBeInflated, items);
         this.context = context;
         this.items = items;
@@ -25,7 +27,7 @@ public class CustomChooseBackgroundAdapter extends ArrayAdapter<Background> {
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         View view = inflater.inflate(R.layout.custom_item_choose_background_gridview, null);
         ImageView imageView = view.findViewById(R.id.tempImage);
-        imageView.setImageResource(items[position].getTempImage());
+        imageView.setImageResource(items.get(position).getTempImage());
         return (view);
     }
 }
