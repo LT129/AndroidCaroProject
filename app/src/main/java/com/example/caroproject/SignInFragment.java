@@ -64,6 +64,7 @@ public class SignInFragment extends Fragment {
 
     private Button btnSignIn;
     private EditText edtUsername, edtPassword;
+    private Button btnSignUp;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,6 +73,7 @@ public class SignInFragment extends Fragment {
         btnSignIn=view.findViewById(R.id.btnSignInSignIn);
         edtPassword=view.findViewById(R.id.edtPasswordSignIn);
         edtUsername=view.findViewById(R.id.edtUsernameSignIn);
+        btnSignUp = view.findViewById(R.id.btnSignUp);
 
         myDatabaseHelper = new com.example.caroproject.MyDatabaseHelper(requireContext());
         btnSignIn.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +94,14 @@ public class SignInFragment extends Fragment {
                     }
                 }
 
+            }
+        });
+
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.action_signInFragment_to_signUpFragment);
             }
         });
         return view;
