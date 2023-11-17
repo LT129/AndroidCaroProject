@@ -106,7 +106,8 @@ public class GameModeFragment extends Fragment {
         userAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO change to fragment_user_info
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.action_gameModeFragment_to_userInfoFragment);
             }
         });
 

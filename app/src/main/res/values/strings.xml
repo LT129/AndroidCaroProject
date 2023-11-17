@@ -6,6 +6,7 @@
     <string name="friend_list">Friend</string>
     <string name="history">History</string>
 
+    <string name="user_info">My Account</string>
     <string name="pvp">PvP</string>
     <string name="pve">PvE</string>
     <string name="setting">Setting</string>
@@ -41,4 +42,7 @@
     <string name="dialog_ask_to_buy_item">Are you sure to buy this item</string>
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
+
+    <string name="email">Email</string>
+    <string name="phone">Phone</string>
 </resources>

@@ -66,6 +66,11 @@
             app:destination="@id/pveFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_gameModeFragment_to_userInfoFragment"
+            app:destination="@id/userInfoFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
     </fragment>
 
     <fragment
@@ -144,6 +149,13 @@
             app:destination="@id/gameModeFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/userInfoFragment"
+        android:name="com.example.caroproject.UserInfoFragment"
+        android:label="fragment_user_info"
+        tools:layout="@layout/fragment_user_info" >
     </fragment>
 
 </navigation>

@@ -76,13 +76,13 @@ public class StoreFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        getData();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_store, container, false);
+        getData();
 
         // Get user coins from Preferences
         txtUserCoins = view.findViewById(R.id.txtUserCoins);
