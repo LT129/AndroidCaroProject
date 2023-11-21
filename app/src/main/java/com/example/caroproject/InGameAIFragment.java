@@ -280,8 +280,7 @@ public class InGameAIFragment extends Fragment {
     }
     public void onClickBack(View v){
         countDownTimer.cancel();
-        NavController navController=Navigation.findNavController(v);
-        navController.navigate(R.id.action_inGameAIFragment_to_pveFragment);
+        getActivity().getOnBackPressedDispatcher().onBackPressed();
     }
     @SuppressLint("ClickableViewAccessibility")
     @Override

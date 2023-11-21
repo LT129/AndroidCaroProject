@@ -109,9 +109,7 @@ public class PveFragment extends Fragment {
         btnCallBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //getActivity().getOnBackPressedDispatcher().onBackPressed();
-                NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_pveFragment_to_gameModeFragment);
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
 

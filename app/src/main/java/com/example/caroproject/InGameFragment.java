@@ -266,8 +266,7 @@ public class InGameFragment extends Fragment{
     }
     public void onClickBack(View v){
         countDownTimer.cancel();
-        NavController navController=Navigation.findNavController(v);
-        navController.navigate(R.id.action_inGameFragment_to_pvpFragment);
+        getActivity().getOnBackPressedDispatcher().onBackPressed();
     }
 
     @SuppressLint("ClickableViewAccessibility")

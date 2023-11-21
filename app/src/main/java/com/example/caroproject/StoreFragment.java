@@ -94,7 +94,7 @@ public class StoreFragment extends Fragment {
         SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String key) {
-                if (key.equals("USER_COINS")) {
+                if (key != null && key.equals("USER_COINS")) {
                     String json = sharedPreferences.getString("USER_COINS", "");
                     userCoins = gson.fromJson(json, Coins.class);
                     txtUserCoins.setText(String.valueOf(userCoins.getCopperCoins()));

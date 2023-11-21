@@ -144,8 +144,9 @@ public class UserInfoFragment extends Fragment {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                //TODO clear sharedPreferences
                                 pref.edit().clear().apply();
+                                NavController navController = Navigation.findNavController(v);
+                                navController.navigate(R.id.action_userInfoFragment_to_signInFragment);
                             }
                         })
                         .setNegativeButton("No", null)
