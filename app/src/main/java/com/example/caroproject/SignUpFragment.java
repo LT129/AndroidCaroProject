@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.caroproject.Adapter.MyDatabaseHelper;
 //import com.example.caroproject.databinding
 /**
  * A simple {@link Fragment} subclass.
@@ -69,7 +71,7 @@ public class SignUpFragment extends Fragment {
     private String myData= "MyPreferences";
     private EditText edtUsername, edtPassword, edtRetype;
 
-    com.example.caroproject.MyDatabaseHelper myDatabaseHelper;
+    MyDatabaseHelper myDatabaseHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,7 +82,7 @@ public class SignUpFragment extends Fragment {
         edtPassword=view.findViewById(R.id.edtPasswordSecond);
         edtRetype=view.findViewById(R.id.edtRetypeSecond);
         edtUsername=view.findViewById(R.id.edtUsernameSecond);
-        myDatabaseHelper = new com.example.caroproject.MyDatabaseHelper(requireContext());
+        myDatabaseHelper = new MyDatabaseHelper(requireContext());
         btnSignUpSecond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
