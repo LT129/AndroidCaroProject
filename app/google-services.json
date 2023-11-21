@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "811404110047",
+    "project_id": "caroproject-b04bc",
+    "storage_bucket": "caroproject-b04bc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:811404110047:android:f35c70b6efe99f16b1216a",
+        "android_client_info": {
+          "package_name": "com.example.caroproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcxNV7ljp6JpI4xeATomUNkaLY3VTN9MQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

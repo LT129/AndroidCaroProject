@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
-    app:startDestination="@id/signInFragment">
+    app:startDestination="@id/pvpFragment">
 
     <fragment
         android:id="@+id/signUpFragment"
@@ -111,6 +111,11 @@
             app:destination="@id/gameModeFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_pvpFragment_to_inGameOnlineFragment"
+            app:destination="@id/inGameOnlineFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
     </fragment>
 
     <fragment
@@ -157,5 +162,10 @@
         android:label="fragment_user_info"
         tools:layout="@layout/fragment_user_info" >
     </fragment>
+    <fragment
+        android:id="@+id/inGameOnlineFragment"
+        android:name="com.example.caroproject.inGameOnlineFragment"
+        android:label="fragment_in_game_online"
+        tools:layout="@layout/fragment_in_game_online" />
 
 </navigation>

@@ -38,28 +38,28 @@ public class MainActivity extends AppCompatActivity {
 
         loadData();
     }
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        new AlertDialog.Builder(this)
-                .setTitle("Confirm Exit")
-                .setMessage("Are you sure you want to exit the application?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Thoát ứng dụng
-                        finish();
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Đóng hộp thoại và tiếp tục hoạt động ứng dụng
-                        dialog.dismiss();
-                    }
-                })
-                .show();
-    }
+//    @Override
+//    public void onBackPressed() {
+//        super.onBackPressed();
+//        new AlertDialog.Builder(this)
+//                .setTitle("Confirm Exit")
+//                .setMessage("Are you sure you want to exit the application?")
+//                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        // Thoát ứng dụng
+//                        finish();
+//                    }
+//                })
+//                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        // Đóng hộp thoại và tiếp tục hoạt động ứng dụng
+//                        dialog.dismiss();
+//                    }
+//                })
+//                .show();
+//    }
 
 
 

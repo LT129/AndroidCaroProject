@@ -23,7 +23,6 @@ public class PvpFragment extends Fragment {
     private ImageButton btnCallBack;
 
     private RadioGroup playMode;
-    private RadioGroup boardSize;
     private RadioButton rdoOffline, rdoOnline, rdoSize9, rdoSize15, rdoSize21, time15, time45, timeUnlimited;
 
     private ImageButton chooseShape;
@@ -93,6 +92,7 @@ public class PvpFragment extends Fragment {
 
         btnPlay = view.findViewById(R.id.btnPlay);
         rdoOffline=view.findViewById(R.id.offlinePlayMode);
+        rdoOnline=view.findViewById(R.id.onlinePlayMode);
         rdoSize9=view.findViewById(R.id.boardSize9);
         rdoSize15=view.findViewById(R.id.boardSize15);
         rdoSize21=view.findViewById(R.id.boardSize21);
@@ -125,10 +125,16 @@ public class PvpFragment extends Fragment {
                 }
                 bundle.putInt("sizeBoard", sizeBoard);
                 bundle.putInt("time", time);
-                if(rdoOffline.isChecked()&&(rdoSize21.isChecked()||rdoSize15.isChecked()||rdoSize9.isChecked())
+                if((rdoSize21.isChecked()||rdoSize15.isChecked()||rdoSize9.isChecked())
                         &&(time15.isChecked()||time45.isChecked()||timeUnlimited.isChecked())) {
-                    NavController navController = Navigation.findNavController(v);
-                    navController.navigate(R.id.action_pvpFragment_to_inGameFragment, bundle);
+                    if (rdoOffline.isChecked()) {
+                        NavController navController = Navigation.findNavController(v);
+                        navController.navigate(R.id.action_pvpFragment_to_inGameFragment, bundle);
+                    }
+                    else{
+                        NavController navController = Navigation.findNavController(v);
+                        navController.navigate(R.id.action_pvpFragment_to_inGameOnlineFragment, bundle);
+                    }
                 }
             }
         });
