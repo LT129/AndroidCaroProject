@@ -15,9 +15,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.caroproject.Adapter.MyDatabaseHelper;
+import com.example.caroproject.Adapter.DBHelper;
 import com.example.caroproject.Data.Background;
 import com.example.caroproject.Data.Coins;
+import com.example.caroproject.Data.PlayerInfo;
 import com.example.caroproject.Data.StoreItems;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -35,7 +36,6 @@ public class SignInFragment extends Fragment {
     public SignInFragment() {
         // Required empty public constructor
     }
-    MyDatabaseHelper myDatabaseHelper;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +48,7 @@ public class SignInFragment extends Fragment {
     private Button btnSignIn;
     private EditText edtUsername, edtPassword;
     private Button btnSignUp;
+    DBHelper dbHelper;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -58,33 +59,38 @@ public class SignInFragment extends Fragment {
         edtUsername=view.findViewById(R.id.edtUsernameSignIn);
         btnSignUp = view.findViewById(R.id.btnSignUp);
 
-        myDatabaseHelper = new MyDatabaseHelper(requireContext());
+        //myDatabaseHelper = new MyDatabaseHelper(requireContext());
+        dbHelper = new DBHelper();
+
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String username = edtUsername.getText().toString().trim();
                 String password = edtPassword.getText().toString().trim();
+                PlayerInfo player = new PlayerInfo(username,password);
                 if(username.equals("")||password.equals(""))
                     Toast.makeText(requireContext(), "All fields are mandatory", Toast.LENGTH_SHORT).show();
                 else{
-                    Boolean checkCredentials = myDatabaseHelper.checkUsernamePassword(username,password);
-                    if(checkCredentials == true){
-                        Toast.makeText(requireContext(), "Login Successfully!", Toast.LENGTH_SHORT).show();
+                    dbHelper.checkCredentials(player, new DBHelper.OnCredentialsCheckListener() {
+                        @Override
+                        public void onCredentialsCheckResult(boolean credentialsMatch) {
+                            if (credentialsMatch){
+                                Toast.makeText(requireContext(), "Login Successfully!", Toast.LENGTH_SHORT).show();
 
-                        String position;
+                                String position;
 
-                        if(pref != null && pref.contains("BG_POSITION")) {
-                            position = pref.getString("BG_POSITION", "0");
-                        } else {
-                            position = "0";
+                                if(pref != null && pref.contains("BG_POSITION")) {
+                                    position = pref.getString("BG_POSITION", "0");
+                                } else {
+                                    position = "0";
+                                }
+                                getActivity().getWindow().setBackgroundDrawableResource(userBackground.get(Integer.parseInt(position)).getLayoutBackground());
+                                NavController navController = Navigation.findNavController(v);
+                                navController.navigate(R.id.action_signInFragment_to_mainMenuFragment);
+                            }
+                            else Toast.makeText(requireContext(), "Invalid Credentials", Toast.LENGTH_SHORT).show();
                         }
-
-                        getActivity().getWindow().setBackgroundDrawableResource(userBackground.get(Integer.parseInt(position)).getLayoutBackground());
-                        NavController navController = Navigation.findNavController(v);
-                        navController.navigate(R.id.action_signInFragment_to_mainMenuFragment);
-                    }else{
-                        Toast.makeText(requireContext(), "Invalid Credentials", Toast.LENGTH_SHORT).show();
-                    }
+                    });
                 }
 
             }
