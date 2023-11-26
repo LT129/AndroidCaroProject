@@ -5,8 +5,11 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -19,6 +22,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class UserInfoFragment extends Fragment {
+
+    public static final String NICKNAME = "Nickname";
+    public static final String USERNAME = "Username";
+    public static final String EMAIL = "Email";
+    public static final String PHONE = "Phone";
+    public static final String PASSWORD = "Password";
 
     private ImageButton userAvatar;
     private TextView txtNickName;
@@ -40,6 +49,7 @@ public class UserInfoFragment extends Fragment {
     private RelativeLayout logOut;
 
 
+    private DialogFragment dialog;
 
     private SharedPreferences pref;
 
@@ -64,6 +74,24 @@ public class UserInfoFragment extends Fragment {
         pref = requireContext().getSharedPreferences("CARO", Context.MODE_PRIVATE);
 
 
+        dialog = new ChangeUserInfoDialogFragment();
+        getChildFragmentManager().setFragmentResultListener(ChangeUserInfoDialogFragment.REQUEST_KEY_DIALOG, this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                if(result.containsKey(NICKNAME)) {
+                    txtNickName.setText(result.getString(NICKNAME));
+                }
+
+                if(result.containsKey(EMAIL)) {
+                    txtEmail.setText(result.getString(EMAIL));
+                }
+
+                if(result.containsKey(PHONE)) {
+                    txtPhone.setText(result.getString(PHONE));
+                }
+            }
+        });
+        Bundle args = new Bundle();
 
 
         userAvatar = view.findViewById(R.id.userAvatar);
@@ -79,7 +107,9 @@ public class UserInfoFragment extends Fragment {
         usernameDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO change layout
+                args.putString("UserInfoType", USERNAME);
+                dialog.setArguments(args);
+                dialog.show(getChildFragmentManager(), "dialog");
             }
         });
         txtUsername = view.findViewById(R.id.txtUsername);
@@ -88,7 +118,9 @@ public class UserInfoFragment extends Fragment {
         emailDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO change layout
+                args.putString("UserInfoType", EMAIL);
+                dialog.setArguments(args);
+                dialog.show(getChildFragmentManager(), "dialog");
             }
         });
         txtEmail = view.findViewById(R.id.txtEmail);
@@ -97,7 +129,9 @@ public class UserInfoFragment extends Fragment {
         phoneDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO change layout
+                args.putString("UserInfoType", PHONE);
+                dialog.setArguments(args);
+                dialog.show(getChildFragmentManager(), "dialog");
             }
         });
         txtPhone = view.findViewById(R.id.txtPhone);
@@ -106,7 +140,9 @@ public class UserInfoFragment extends Fragment {
         passwordDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO change layout
+                args.putString("UserInfoType", PASSWORD);
+                dialog.setArguments(args);
+                dialog.show(getChildFragmentManager(), "dialog");
             }
         });
 
@@ -158,4 +194,5 @@ public class UserInfoFragment extends Fragment {
 
         return view;
     }
+
 }

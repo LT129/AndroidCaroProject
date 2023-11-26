@@ -56,7 +56,7 @@
                 android:textAllCaps="false"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:text="NickName"
+                android:text="@string/nickname"
                 android:background="@drawable/custom_edittext_2"/>
 
         </RelativeLayout>
@@ -140,7 +140,7 @@
                 android:layout_toStartOf="@id/imgEmail"
                 android:layout_centerVertical="true"
                 android:gravity="right"
-                android:ems="12"
+                android:ems="10"
                 android:maxLines="1"
                 android:textSize="18sp"
                 android:textColor="@color/black"/>
@@ -265,7 +265,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_button_1"
-                android:text="Cancel"
+                android:text="@string/cancel"
                 android:textAllCaps="false"
                 android:textColor="@color/black"
                 android:textSize="24sp"
@@ -281,7 +281,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_button_1"
-                android:text="Save"
+                android:text="@string/save"
                 android:textAllCaps="false"
                 android:textColor="@color/black"
                 android:textSize="24sp"

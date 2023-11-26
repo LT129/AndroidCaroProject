@@ -33,11 +33,13 @@
     <string name="choose_board_size">Board Size:</string>
 
     <string name="username">Username</string>
+    <string name="nickname">Nickname</string>
     <string name="password">Password</string>
     <string name="retype">Retype Password</string>
     <string name="reset">Reset</string>
     <string name="ok">Choose</string>
     <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
 
     <string name="dialog_ask_to_buy_item">Are you sure to buy this item</string>
     <string name="dialog_yes">Yes</string>
