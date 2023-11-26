@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
-    app:startDestination="@id/pvpFragment">
+    app:startDestination="@id/signInFragment">
 
     <fragment
         android:id="@+id/signUpFragment"
@@ -177,7 +177,7 @@
     </fragment>
     <fragment
         android:id="@+id/inGameOnlineFragment"
-        android:name="com.example.caroproject.inGameOnlineFragment"
+        android:name="com.example.caroproject.InGameOnlineFragment"
         android:label="fragment_in_game_online"
         tools:layout="@layout/fragment_in_game_online" />
 

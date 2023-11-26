@@ -67,8 +67,8 @@ public class FriendFragment extends Fragment {
         edtSearchBar = (EditText) fragment_1.findViewById(R.id.edtSearchBar);
         listViewFriend = (ListView) fragment_1.findViewById(R.id.listViewFriend);
         items = new PlayerInfo[] {
-                new PlayerInfo("Username1", "Password1", null, R.drawable.custom_picture2, null),
-                new PlayerInfo("Username2", "Password2", null, R.drawable.custom_picture2, null),
+                new PlayerInfo(null,"Username1", "Password1", null, R.drawable.custom_picture2, null),
+                new PlayerInfo(null,"Username2", "Password2", null, R.drawable.custom_picture2, null),
                 // Add more PlayerInfo objects as needed
         };
         FriendListAdapter adapter = new FriendListAdapter(context,

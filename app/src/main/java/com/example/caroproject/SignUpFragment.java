@@ -14,7 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.caroproject.Adapter.MyDatabaseHelper;
+import com.example.caroproject.Adapter.DBHelper;
+import com.example.caroproject.Data.PlayerInfo;
 //import com.example.caroproject.databinding
 /**
  * A simple {@link Fragment} subclass.
@@ -70,8 +71,8 @@ public class SignUpFragment extends Fragment {
     private Button btnReset, btnSignUpSecond;
     private String myData= "MyPreferences";
     private EditText edtUsername, edtPassword, edtRetype;
+    DBHelper dbHelper = new DBHelper();
 
-    MyDatabaseHelper myDatabaseHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,31 +83,37 @@ public class SignUpFragment extends Fragment {
         edtPassword=view.findViewById(R.id.edtPasswordSecond);
         edtRetype=view.findViewById(R.id.edtRetypeSecond);
         edtUsername=view.findViewById(R.id.edtUsernameSecond);
-        myDatabaseHelper = new MyDatabaseHelper(requireContext());
         btnSignUpSecond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String username = edtUsername.getText().toString().trim();
                 String password = edtPassword.getText().toString().trim();
                 String retypePassword = edtRetype.getText().toString().trim();
+
+                PlayerInfo newPlayer ;
+
                 if(username.equals("")||password.equals("")||retypePassword.equals(""))
                     Toast.makeText(requireContext(), "All fields are mandatory", Toast.LENGTH_SHORT).show();
                 else{
                     if(password.equals(retypePassword)){
-                        Boolean checkUsername =  myDatabaseHelper.checkUsername(username);
-                        if(checkUsername == false){
-                            Boolean insert = myDatabaseHelper.UpgradePlayerInfo(username, password);
-                            if(insert == true){
-                                Toast.makeText(requireContext(), "Signup Successfully!", Toast.LENGTH_SHORT).show();
-                                NavController navController = Navigation.findNavController(v);
-                                navController.navigate(R.id.action_secondFragment_to_gameModeFragment);
-                            }else{
-                                Toast.makeText(requireContext(), "Signup Failed!", Toast.LENGTH_SHORT).show();
+                        //Boolean checkUsername =  myDatabaseHelper.checkUsername(username);
+                        newPlayer = new PlayerInfo(username,password);
+                        dbHelper.checkUser(username, new DBHelper.CheckUserCallback() {
+                            @Override
+                            public void onResult(boolean userExists) {
+                                if(!userExists){
+                                    Boolean insert = dbHelper.AddPlayer(newPlayer);
+                                    if(insert == true){
+                                        Toast.makeText(requireContext(), "Signup Successfully!", Toast.LENGTH_SHORT).show();
+                                        NavController navController = Navigation.findNavController(v);
+                                        navController.navigate(R.id.action_secondFragment_to_gameModeFragment);
+                                    }else{
+                                        Toast.makeText(requireContext(), "Signup Failed!", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                                else Toast.makeText(requireContext(), "User already exists! Please login", Toast.LENGTH_SHORT).show();
                             }
-                        }
-                        else{
-                            Toast.makeText(requireContext(), "User already exists! Please login", Toast.LENGTH_SHORT).show();
-                        }
+                        });
                     }else{
                         Toast.makeText(requireContext(), "Invalid Password!", Toast.LENGTH_SHORT).show();
                     }
