@@ -51,9 +51,10 @@ public class ChangeUserInfoDialogFragment extends DialogFragment {
         switch (userInfoType) {
             case UserInfoFragment.USERNAME: {
                 firstBox.setHint(R.string.username);
-                firstBoxText.setText("USERNAME");
+                firstBoxText.setText(args.getString(UserInfoFragment.USERNAME));
                 firstBoxText.setEnabled(false);
                 secondBox.setHint(R.string.nickname);
+                secondBoxText.setText(args.getString(UserInfoFragment.NICKNAME));
                 thirdBoxText.setVisibility(View.GONE);
                 builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -68,7 +69,7 @@ public class ChangeUserInfoDialogFragment extends DialogFragment {
 
             case UserInfoFragment.EMAIL: {
                 firstBox.setHint(R.string.email);
-                firstBoxText.setText("Your email");
+                firstBoxText.setText(args.getString(UserInfoFragment.EMAIL));
                 secondBox.setVisibility(View.GONE);
                 thirdBoxText.setVisibility(View.GONE);
                 builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
@@ -85,7 +86,7 @@ public class ChangeUserInfoDialogFragment extends DialogFragment {
 
             case UserInfoFragment.PHONE: {
                 firstBox.setHint(R.string.phone);
-                firstBoxText.setText("Your phone number");
+                firstBoxText.setText(args.getString(UserInfoFragment.PHONE));
                 secondBox.setVisibility(View.GONE);
                 thirdBoxText.setVisibility(View.GONE);
                 builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
@@ -119,16 +120,20 @@ public class ChangeUserInfoDialogFragment extends DialogFragment {
                                 String pass2 = thirdBoxText.getText().toString();
                                 String oldPass = firstBoxText.getText().toString();
 
-                                if(!oldPass.equals(null)) {
+                                if(!oldPass.equals(args.getString(UserInfoFragment.PASSWORD))) {
+                                    firstBox.setErrorEnabled(true);
                                     firstBox.setError("Wrong password");
                                 } else {
+                                    firstBox.setErrorEnabled(false);
                                     if (pass1.equals(pass2)) {
+                                        thirdBox.setErrorEnabled(false);
                                         String newPass = secondBoxText.getText().toString();
                                         Bundle result = new Bundle();
                                         result.putString(UserInfoFragment.PASSWORD, newPass);
                                         getParentFragmentManager().setFragmentResult(REQUEST_KEY_DIALOG, result);
                                         dialog.dismiss();
                                     } else {
+                                        thirdBox.setErrorEnabled(true);
                                         thirdBox.setError("Password is not equal");
                                     }
                                 }

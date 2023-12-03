@@ -8,12 +8,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import com.example.caroproject.Data.SoundMaking;
 
 public class GameModeFragment extends Fragment {
 
@@ -50,10 +53,6 @@ public class GameModeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -69,7 +68,6 @@ public class GameModeFragment extends Fragment {
         btnPvp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                SoundMaking.buttonClickedSound();
                 NavController navController = Navigation.findNavController(v);
                 navController.navigate(R.id.action_gameModeFragment_to_pvpFragment);
             }
@@ -78,7 +76,6 @@ public class GameModeFragment extends Fragment {
         btnPve.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                SoundMaking.buttonClickedSound();
                 NavController navController = Navigation.findNavController(v);
                 navController.navigate(R.id.action_gameModeFragment_to_pveFragment);
             }
@@ -87,7 +84,6 @@ public class GameModeFragment extends Fragment {
         btnSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                SoundMaking.buttonClickedSound();
 
                 NavController navController = Navigation.findNavController(v);
                 navController.navigate(R.id.action_gameModeFragment_to_settingFragment);
@@ -97,7 +93,6 @@ public class GameModeFragment extends Fragment {
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                SoundMaking.buttonClickedSound();
                 getActivity().finishAffinity();
             }
         });

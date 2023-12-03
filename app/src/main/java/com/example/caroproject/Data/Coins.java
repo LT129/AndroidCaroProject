@@ -3,6 +3,8 @@ package com.example.caroproject.Data;
 public class Coins {
     private int copperCoins;
 
+    public Coins() {
+    }
 
     public Coins(int copperCoins) {
         this.copperCoins = copperCoins;

@@ -1,16 +1,15 @@
 package com.example.caroproject.Data;
 
-public class Background {
+public class Background extends StoreItem{
     private int tempImage;
     private int layoutBackground;
-    private int imageButtonBackground;
-    private int textViewBackground;
 
-    public Background(int tempImage, int layoutBackground, int imageButtonBackground, int textViewBackground) {
+    public int getTempImage() {
+        return tempImage;
+    }
+
+    public void setTempImage(int tempImage) {
         this.tempImage = tempImage;
-        this.layoutBackground = layoutBackground;
-        this.imageButtonBackground = imageButtonBackground;
-        this.textViewBackground = textViewBackground;
     }
 
     public int getLayoutBackground() {
@@ -21,27 +20,14 @@ public class Background {
         this.layoutBackground = layoutBackground;
     }
 
-    public int getImageButtonBackground() {
-        return imageButtonBackground;
-    }
-
-    public void setImageButtonBackground(int imageButtonBackground) {
-        this.imageButtonBackground = imageButtonBackground;
-    }
-
-    public int getTextViewBackground() {
-        return textViewBackground;
-    }
-
-    public void setTextViewBackground(int textViewBackground) {
-        this.textViewBackground = textViewBackground;
-    }
-
-    public int getTempImage() {
-        return tempImage;
-    }
-
-    public void setTempImage(int tempImage) {
+    public Background(int tempImage, int layoutBackground) {
         this.tempImage = tempImage;
+        this.layoutBackground = layoutBackground;
+    }
+
+    public Background(Boolean status, int tempImage, int layoutBackground) {
+        super(status);
+        this.tempImage = tempImage;
+        this.layoutBackground = layoutBackground;
     }
 }

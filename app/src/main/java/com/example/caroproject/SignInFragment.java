@@ -19,7 +19,7 @@ import com.example.caroproject.Adapter.DBHelper;
 import com.example.caroproject.Data.Background;
 import com.example.caroproject.Data.Coins;
 import com.example.caroproject.Data.PlayerInfo;
-import com.example.caroproject.Data.StoreItems;
+import com.example.caroproject.Data.StoreItem;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 public class SignInFragment extends Fragment {
     private Coins userCoins;
     private ArrayList<Background> userBackground;
-    private ArrayList<StoreItems> storeItems;
+    private ArrayList<StoreItem> storeItems;
     private SharedPreferences pref;
 
 
@@ -39,10 +39,6 @@ public class SignInFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActivity().getWindow().setBackgroundDrawableResource(R.drawable.background_1);
-        initialData();
-        pref = getActivity().getSharedPreferences("CARO", Context.MODE_PRIVATE);
-        loadData();
     }
 
     private Button btnSignIn;
@@ -59,6 +55,8 @@ public class SignInFragment extends Fragment {
         edtUsername=view.findViewById(R.id.edtUsernameSignIn);
         btnSignUp = view.findViewById(R.id.btnSignUp);
 
+        pref = requireActivity().getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE);
+
         //myDatabaseHelper = new MyDatabaseHelper(requireContext());
         dbHelper = new DBHelper();
 
@@ -73,18 +71,11 @@ public class SignInFragment extends Fragment {
                 else{
                     dbHelper.checkCredentials(player, new DBHelper.OnCredentialsCheckListener() {
                         @Override
-                        public void onCredentialsCheckResult(boolean credentialsMatch) {
-                            if (credentialsMatch){
+                        public void onCredentialsCheckResult(PlayerInfo userInfo) {
+                            if (userInfo != null){
                                 Toast.makeText(requireContext(), "Login Successfully!", Toast.LENGTH_SHORT).show();
 
-                                String position;
-
-                                if(pref != null && pref.contains("BG_POSITION")) {
-                                    position = pref.getString("BG_POSITION", "0");
-                                } else {
-                                    position = "0";
-                                }
-                                getActivity().getWindow().setBackgroundDrawableResource(userBackground.get(Integer.parseInt(position)).getLayoutBackground());
+                                updateSharedPreferences(userInfo);
                                 NavController navController = Navigation.findNavController(v);
                                 navController.navigate(R.id.action_signInFragment_to_mainMenuFragment);
                             }
@@ -106,58 +97,12 @@ public class SignInFragment extends Fragment {
         return view;
     }
 
-
-    private void initialData() {
-        userCoins = new Coins(2000);
-        userBackground = new ArrayList<>();
-        userBackground.add(new Background(R.drawable.temp_background_1, R.drawable.background_1, R.drawable.custom_button_1, R.drawable.custom_edittext));
-
-        storeItems = new ArrayList<>();
-        storeItems.add(new StoreItems(R.drawable.temp_background_2, R.drawable.background_2, R.drawable.custom_button_2, R.drawable.custom_edittext, new Coins(300)));
-        storeItems.add(new StoreItems(R.drawable.temp_background_3, R.drawable.background_3, R.drawable.custom_button_1, R.drawable.custom_edittext, new Coins(400)));
-        storeItems.add(new StoreItems(R.drawable.temp_background_4, R.drawable.background_4, R.drawable.custom_button_2, R.drawable.custom_edittext, new Coins(500)));
-    }
-
-    private void loadData() {
+    private void updateSharedPreferences(PlayerInfo userInfo) {
         Gson gson = new Gson();
         String json;
-
-        if(pref != null) {
-            System.out.println("ins");
-            Type type;
-            if(pref.contains("USER_COINS")) {
-                // Get user coins from Shared Preferences
-                json = pref.getString("USER_COINS", null);
-                userCoins = gson.fromJson(json, Coins.class);
-            } else {
-                // Save user coins to preferences
-                json = gson.toJson(userCoins);
-                pref.edit().putString("USER_COINS", json).apply();
-
-            }
-
-            if(pref.contains("USER_BACKGROUND")) {
-                // Get user background
-                json = pref.getString("USER_BACKGROUND", null);
-                type = new TypeToken<ArrayList<Background>>() {
-                }.getType();
-                userBackground = gson.fromJson(json, type);
-            } else {
-                // Save user background to preferences
-                json = gson.toJson(userBackground);
-                pref.edit().putString("USER_BACKGROUND", json).apply();
-            }
-
-            if(pref.contains("STORE_ITEMS")) {
-                // Get storeItems
-                json = pref.getString("STORE_ITEMS", null);
-                type = new TypeToken<ArrayList<StoreItems>>(){}.getType();
-                storeItems = gson.fromJson(json, type);
-            } else {
-                // Save store items to preferences
-                json = gson.toJson(storeItems);
-                pref.edit().putString("STORE_ITEMS", json).apply();
-            }
-        }
+        json = gson.toJson(userInfo);
+        pref.edit().putString("USER_INFORMATION", json).apply();
+        pref.edit().putBoolean(MainActivity.LOGGED_IN_ACCOUNT, true).apply();
     }
+
 }

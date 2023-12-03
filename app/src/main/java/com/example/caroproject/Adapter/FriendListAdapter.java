@@ -29,7 +29,7 @@ public class FriendListAdapter extends ArrayAdapter<PlayerInfo> {
         ImageView avatar = (ImageView) row.findViewById(R.id.imgViewAvatar);
         TextView status = (TextView) row.findViewById(R.id.txtViewStatus);
         Button btnRemove = (Button) row.findViewById(R.id.btnRemove);
-        name.setText(items[position].getUserName());
+        name.setText(items[position].getUsername());
         avatar.setImageResource(items[position].getAvatar());
 //        if (items[position].getStatus())
 //            status.setText("Online");

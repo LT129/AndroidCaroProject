@@ -56,12 +56,8 @@ public class DBHelper {
                 if (playerId != -1) {
                     String ID = String.valueOf(playerId);
                     DatabaseReference myRef = rootRef.getReference("PlayerInfo").child(ID);
-                    myRef.child("UserName").setValue(newPlayer.getUserName());
-                    myRef.child("PassWord").setValue(newPlayer.getPassword());
-                    myRef.child("Status").setValue(false);
-                    myRef.child("FriendList").setValue("");
-                    myRef.child("MatchHistory").setValue("");
-                    myRef.child("Avatar").setValue("");
+                    myRef.setValue(newPlayer);
+                    myRef.child("ID").setValue(playerId);
 
                     // Do other actions if needed
                 } else {
@@ -102,7 +98,7 @@ public class DBHelper {
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("PlayerInfo");
 
         // Check for the existence of the UserName
-        myRef.orderByChild("UserName").equalTo(player.getUserName()).addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.orderByChild("username").equalTo(player.getUsername()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -110,31 +106,56 @@ public class DBHelper {
                     DataSnapshot userSnapshot = dataSnapshot.getChildren().iterator().next();
 
                     // Check if the password matches
-                    String storedPassword = userSnapshot.child("PassWord").getValue(String.class);
+                    String storedPassword = userSnapshot.child("password").getValue(String.class);
                     if (storedPassword != null && storedPassword.equals(player.getPassword())) {
                         // Password matches
-                        listener.onCredentialsCheckResult(true);
+                        listener.onCredentialsCheckResult(userSnapshot.getValue(PlayerInfo.class));
                     } else {
                         // Password does not match
-                        listener.onCredentialsCheckResult(false);
+                        listener.onCredentialsCheckResult(null);
                     }
                 } else {
                     // User does not exist
-                    listener.onCredentialsCheckResult(false);
+                    listener.onCredentialsCheckResult(null);
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Handle the error
-                listener.onCredentialsCheckResult(false); // Assume failure in case of error
+                listener.onCredentialsCheckResult(null); // Assume failure in case of error
             }
         });
     }
 
     // Define an interface for the callback
     public interface OnCredentialsCheckListener {
-        void onCredentialsCheckResult(boolean credentialsMatch);
+        //Return playerInfo if db has
+//        void onCredentialsCheckResult(boolean isMatch);
+        void onCredentialsCheckResult(PlayerInfo userInfo);
+    }
+
+    public void updateUserInfo(PlayerInfo updateUser) {
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("PlayerInfo").child(String.valueOf(updateUser.getID()));
+        myRef.setValue(updateUser);
+    }
+
+    public PlayerInfo getUserInfo(int userId) {
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("PlayerInfo").child(String.valueOf(userId));
+        final PlayerInfo[] userInfo = new PlayerInfo[1];
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                userInfo[0] = snapshot.getValue(PlayerInfo.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // DO NOTHING
+            }
+        });
+
+        return userInfo[0];
     }
 
 

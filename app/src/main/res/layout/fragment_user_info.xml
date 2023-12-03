@@ -12,11 +12,12 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <ImageButton
                 android:id="@+id/btnCallBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
+                android:background="@drawable/custom_edittext_2"
                 android:src="@drawable/back_arrow"/>
 
             <TextView
@@ -261,7 +262,7 @@
                 android:layout_weight="1"/>
 
             <Button
-                android:id="@+id/btnSave"
+                android:id="@+id/btnCancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_button_1"
@@ -277,7 +278,7 @@
                 android:layout_weight="1"/>
 
             <Button
-                android:id="@+id/btnCancel"
+                android:id="@+id/btnSave"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_button_1"

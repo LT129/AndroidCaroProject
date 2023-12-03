@@ -1,7 +1,10 @@
 package com.example.caroproject;
 
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -13,6 +16,7 @@ import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +24,16 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.example.caroproject.Adapter.DBHelper;
+import com.example.caroproject.Data.Background;
+import com.example.caroproject.Data.PlayerInfo;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 public class UserInfoFragment extends Fragment {
 
@@ -72,6 +86,7 @@ public class UserInfoFragment extends Fragment {
 
         // Get SharedPreferences
         pref = requireContext().getSharedPreferences("CARO", Context.MODE_PRIVATE);
+        PlayerInfo userInfo = getUserInfoFromSharedPreferences();
 
 
         dialog = new ChangeUserInfoDialogFragment();
@@ -79,15 +94,26 @@ public class UserInfoFragment extends Fragment {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                 if(result.containsKey(NICKNAME)) {
-                    txtNickName.setText(result.getString(NICKNAME));
+                    String nickname = result.getString(NICKNAME);
+                    txtNickName.setText(nickname);
+                    userInfo.setNickname(nickname);
                 }
 
                 if(result.containsKey(EMAIL)) {
-                    txtEmail.setText(result.getString(EMAIL));
+                    String email = result.getString(EMAIL);
+                    txtEmail.setText(email);
+                    userInfo.setEmail(email);
                 }
 
                 if(result.containsKey(PHONE)) {
-                    txtPhone.setText(result.getString(PHONE));
+                    String phone = result.getString(PHONE);
+                    txtPhone.setText(phone);
+                    userInfo.setPhoneNumber(phone);
+                }
+
+                if(result.containsKey(PASSWORD)) {
+                    String password = result.getString(PASSWORD);
+                    userInfo.setPassword(password);
                 }
             }
         });
@@ -99,6 +125,7 @@ public class UserInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //TODO change layout to change avatar
+                imageChooser();
             }
         });
         txtNickName = view.findViewById(R.id.txtNickName);
@@ -108,6 +135,8 @@ public class UserInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 args.putString("UserInfoType", USERNAME);
+                args.putString(NICKNAME, userInfo.getNickname());
+                args.putString(USERNAME, userInfo.getUsername());
                 dialog.setArguments(args);
                 dialog.show(getChildFragmentManager(), "dialog");
             }
@@ -119,6 +148,7 @@ public class UserInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 args.putString("UserInfoType", EMAIL);
+                args.putString(EMAIL, userInfo.getEmail());
                 dialog.setArguments(args);
                 dialog.show(getChildFragmentManager(), "dialog");
             }
@@ -130,6 +160,7 @@ public class UserInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 args.putString("UserInfoType", PHONE);
+                args.putString(PHONE, userInfo.getPhoneNumber());
                 dialog.setArguments(args);
                 dialog.show(getChildFragmentManager(), "dialog");
             }
@@ -141,6 +172,7 @@ public class UserInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 args.putString("UserInfoType", PASSWORD);
+                args.putString(PASSWORD, userInfo.getPassword());
                 dialog.setArguments(args);
                 dialog.show(getChildFragmentManager(), "dialog");
             }
@@ -151,7 +183,8 @@ public class UserInfoFragment extends Fragment {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO reset information and go back to home
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.action_userInfoFragment_to_gameModeFragment);
             }
         });
 
@@ -160,7 +193,16 @@ public class UserInfoFragment extends Fragment {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO ask user to save and save information to db
+                new AlertDialog.Builder(requireContext()).setMessage("Save all change?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            updateUserInfoToSharedPreferences(userInfo);
+                            updateUserInfoToDatabase(userInfo);
+                        }
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
             }
         });
 
@@ -176,7 +218,7 @@ public class UserInfoFragment extends Fragment {
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AlertDialog.Builder(getContext()).setMessage("Log Out from your account?")
+                new AlertDialog.Builder(requireContext()).setMessage("Log Out from your account?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -191,8 +233,37 @@ public class UserInfoFragment extends Fragment {
         });
 
 
-
+        init(userInfo);
         return view;
+    }
+
+    private PlayerInfo getUserInfoFromSharedPreferences() {
+        Gson gson = new Gson();
+        String json = pref.getString("USER_INFORMATION", null);
+        Type type = new TypeToken<PlayerInfo>() {
+        }.getType();
+        return gson.fromJson(json, type);
+    }
+    private void updateUserInfoToSharedPreferences(PlayerInfo userInfo) {
+        Gson gson = new Gson();
+        String json = gson.toJson(userInfo);
+        pref.edit().putString("USER_INFORMATION", json).apply();
+    }
+
+    private void init(PlayerInfo userInfo) {
+        txtNickName.setText(userInfo.getNickname());
+        txtUsername.setText(userInfo.getUsername());
+        txtEmail.setText(userInfo.getEmail());
+        txtPhone.setText(userInfo.getPhoneNumber());
+    }
+
+    private void updateUserInfoToDatabase(PlayerInfo userInfo) {
+        DBHelper dbHelper = new DBHelper();
+        dbHelper.updateUserInfo(userInfo);
+    }
+
+
+    private void imageChooser() {
     }
 
 }

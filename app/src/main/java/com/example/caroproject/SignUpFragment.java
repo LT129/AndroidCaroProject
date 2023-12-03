@@ -106,7 +106,7 @@ public class SignUpFragment extends Fragment {
                                     if(insert == true){
                                         Toast.makeText(requireContext(), "Signup Successfully!", Toast.LENGTH_SHORT).show();
                                         NavController navController = Navigation.findNavController(v);
-                                        navController.navigate(R.id.action_secondFragment_to_gameModeFragment);
+                                        navController.navigate(R.id.action_signUpFragment_to_signInFragment);
                                     }else{
                                         Toast.makeText(requireContext(), "Signup Failed!", Toast.LENGTH_SHORT).show();
                                     }
