@@ -78,7 +78,7 @@ public class InGameFragment extends Fragment{
     private LinearLayout linearLayout;
     private int currentPlayer, countPlayer=0;
     private boolean gameOver;
-    private Button btnTop, btnBottom, btnBack, btnZoom;
+    private Button btnTop, btnBottom, btnBack, btnZoom, btnHome;
     private int[] savePlayerPosition;
     private CountDownTimer countDownTimer;
     private ScaleGestureDetector scaleGestureDetector;
@@ -419,6 +419,15 @@ public class InGameFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 onClickNew(v);
+            }
+        });
+        btnHome=view.findViewById(R.id.btnHomeInGame);
+        btnHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                countDownTimer.cancel();
+                NavController navController=Navigation.findNavController(v);
+                navController.navigate(R.id.action_inGameFragment_to_gameModeFragment);
             }
         });
 

@@ -14,13 +14,28 @@
                 android:layout_height="0dp"
                 android:layout_weight="1.5"
                 android:orientation="horizontal">
-                <Button
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:background="@drawable/left"
-                    android:layout_margin="10dp"
-                    android:id="@+id/btnTopInGame"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+                    <Button
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/left"
+                        android:layout_margin="10dp"
+                        android:id="@+id/btnTopInGameOnline"
+                        android:layout_weight="1"/>
+                    <Button
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/home"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginBottom="30dp"
+                        android:layout_marginRight="5dp"
+                        android:id="@+id/btnHomeInGameOnline"
+                        android:layout_weight="1"/>
+                </LinearLayout>
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -105,11 +120,19 @@
                     <Button
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_margin="20dp"
-                        android:background="@drawable/plus"
-                        android:id="@+id/btnBottomInGame"
+                        android:background="@drawable/surrender"
+                        android:id="@+id/btnSurrenderInGame"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="25dp"
                         android:layout_weight="1"/>
-
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:background="@drawable/handshake"
+                        android:id="@+id/btnDrawInGame"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="25dp"
+                        android:layout_weight="1"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
