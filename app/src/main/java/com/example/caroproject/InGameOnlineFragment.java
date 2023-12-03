@@ -3,7 +3,6 @@ package com.example.caroproject;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
@@ -15,8 +14,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.os.CountDownTimer;
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -40,10 +37,10 @@ import com.google.firebase.database.ValueEventListener;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link inGameOnlineFragment#newInstance} factory method to
+ * Use the {@link InGameOnlineFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class inGameOnlineFragment extends Fragment{
+public class InGameOnlineFragment extends Fragment{
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -55,7 +52,7 @@ public class inGameOnlineFragment extends Fragment{
     private String mParam1;
     private String mParam2;
 
-    public inGameOnlineFragment() {
+    public InGameOnlineFragment() {
         // Required empty public constructor
     }
 
@@ -68,8 +65,8 @@ public class inGameOnlineFragment extends Fragment{
      * @return A new instance of fragment inGameOnlineFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static inGameOnlineFragment newInstance(String param1, String param2) {
-        inGameOnlineFragment fragment = new inGameOnlineFragment();
+    public static InGameOnlineFragment newInstance(String param1, String param2) {
+        InGameOnlineFragment fragment = new InGameOnlineFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -342,7 +339,7 @@ public class inGameOnlineFragment extends Fragment{
 //                }
                 onCellClicked(position, view, adapter);
                 writeData(position, view, adapter);
-                readData(view,adapter);
+                //readData(view,adapter);
                 //savePlayerPosition[countPlayer++] = position;
             }
 

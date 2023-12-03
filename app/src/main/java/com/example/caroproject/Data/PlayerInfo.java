@@ -3,6 +3,7 @@ package com.example.caroproject.Data;
 import android.media.Image;
 
 public class PlayerInfo {
+    private Integer ID;
     private String userName;
     private String password;
     private PlayerInfo[] friends;
@@ -18,13 +19,27 @@ public class PlayerInfo {
         Status = status;
     }
 
-    public PlayerInfo(String userName, String password, PlayerInfo[] friends, Integer avatar, MatchHistory[] matchHistory) {
+    public Integer getID() {
+        return ID;
+    }
+
+    public void setID(Integer ID) {
+        this.ID = ID;
+    }
+
+    public PlayerInfo(Integer ID, String userName, String password, PlayerInfo[] friends, Integer avatar, MatchHistory[] matchHistory) {
+        this.ID = ID;
         this.userName = userName;
         this.password = password;
         this.friends = null;
         this.avatar = avatar;
         this.matchHistory = null;
     }
+    public PlayerInfo(String username,String password){
+        this.userName = username;
+        this.password = password;
+    }
+
 
     public String getUserName() {
         return userName;
