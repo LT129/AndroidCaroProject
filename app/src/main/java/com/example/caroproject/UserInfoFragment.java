@@ -18,6 +18,8 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class UserInfoFragment extends Fragment {
 
     private ImageButton userAvatar;
@@ -145,6 +147,7 @@ public class UserInfoFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 pref.edit().clear().apply();
+                                FirebaseAuth.getInstance().signOut();
                                 NavController navController = Navigation.findNavController(v);
                                 navController.navigate(R.id.action_userInfoFragment_to_signInFragment);
                             }

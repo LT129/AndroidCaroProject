@@ -39,7 +39,15 @@ public class PlayerInfo {
         this.userName = username;
         this.password = password;
     }
+    public PlayerInfo(String username,boolean status,Integer avatar){
+        this.userName = username;
+        this.Status = status;
+        this.avatar = avatar;
+    }
 
+    public PlayerInfo() {
+        //default constructor
+    }
 
     public String getUserName() {
         return userName;
@@ -67,5 +75,8 @@ public class PlayerInfo {
 
     public MatchHistory[] getMatchHistory() {
         return matchHistory;
+    }
+    public PlayerInfo[] getFriends() {
+        return friends;
     }
 }
