@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import com.example.caroproject.Data.AppData;
 import com.example.caroproject.Data.Background;
 import com.example.caroproject.R;
 
@@ -26,8 +27,10 @@ public class CustomChooseBackgroundAdapter extends ArrayAdapter<Background> {
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         View view = inflater.inflate(R.layout.custom_item_choose_background_gridview, null);
+
         ImageView imageView = view.findViewById(R.id.tempImage);
         imageView.setImageResource(items.get(position).getTempImage());
         return (view);
     }
+
 }

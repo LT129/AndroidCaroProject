@@ -15,9 +15,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.example.caroproject.Data.AppData;
 import com.example.caroproject.Data.Background;
-import com.example.caroproject.Data.Coins;
-import com.example.caroproject.Data.StoreItems;
+import com.example.caroproject.Data.UserInfo;
+import com.example.caroproject.Data.StoreItem;
+import com.example.caroproject.MainActivity;
 import com.example.caroproject.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -25,20 +27,17 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItems> {
+public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItem> {
     private Context context;
-    private ArrayList<StoreItems> items;
-    private SharedPreferences storePref;
-    private Gson gson;
-    private Coins userCoins;
-    public CustomStoreGridviewAdapter(Context context, int layoutToBeInflated, ArrayList<StoreItems> items) {
+    private ArrayList<StoreItem> items;
+    private SharedPreferences pref;
+    private UserInfo userInfo;
+    public CustomStoreGridviewAdapter(Context context, int layoutToBeInflated, ArrayList<StoreItem> items) {
         super(context, layoutToBeInflated, items);
         this.context = context;
         this.items = items;
-        storePref = context.getSharedPreferences("CARO", Context.MODE_PRIVATE);
-        gson = new Gson();
-        String json = storePref.getString("USER_COINS", null);
-        userCoins = gson.fromJson(json, Coins.class);
+        pref = context.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE);
+        userInfo = getUserInfoFromSharedPreferences();
     }
 
     @Override
@@ -54,26 +53,34 @@ public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItems> {
                 showBuyDialog(context, items.get(position), v).show();
             }
         });
-        if(items.get(position).getWasSold()) {
+
+        if(items.get(position).wasSold()) {
             buyItems.setVisibility(View.INVISIBLE);
         }
 
         ImageView imageView = view.findViewById(R.id.tempImage);
-        imageView.setImageResource(items.get(position).getTempImage());
+        StoreItem item = items.get(position).getItem();
+
+        if (item.getClass() == Background.class) {
+            imageView.setImageResource(((Background) item).getTempImage());
+        } else {
+            //TODO change to view music
+        }
 
         TextView numberOfCoins = view.findViewById(R.id.numberOfCoins);
         numberOfCoins.setText(String.valueOf(items.get(position).getItemCoins().getCopperCoins()));
         return (view);
     }
 
-    private Dialog showBuyDialog(Context context, StoreItems item, View view) {
+    private Dialog showBuyDialog(Context context, StoreItem item, View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(R.string.dialog_ask_to_buy_item)
                 .setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        int coins = userInfo.getCoins().getCopperCoins() - item.getItemCoins().getCopperCoins();
 
-                        if(userCoins.getCopperCoins() < item.getItemCoins().getCopperCoins()) {
+                        if(coins < 0) {
                             new AlertDialog.Builder(context)
                                     .setMessage("Not enough coins")
                                     .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
@@ -83,29 +90,19 @@ public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItems> {
                                         }
                                     }).show();
                         } else {
-                            // Update user coins
-                            userCoins.setCopperCoins(userCoins.getCopperCoins() - item.getItemCoins().getCopperCoins());
-                            String json = gson.toJson(userCoins);
-                            storePref.edit().putString("USER_COINS", json).apply();
+                            // update usercoins
+                            userInfo.getCoins().setCopperCoins(coins);
 
                             // Set view can not buy anymore
                             view.setVisibility(View.INVISIBLE);
 
                             // Update user Background
-                            json = storePref.getString("USER_BACKGROUND", null);
-                            Type type = new TypeToken<ArrayList<Background>>(){}.getType();
-                            ArrayList<Background> userBackground = gson.fromJson(json, type);
-                            userBackground.add(item);
-                            json = gson.toJson(userBackground);
-                            storePref.edit().putString("USER_BACKGROUND", json).apply();
+                            AppData.getInstance().getBackgrounds().get(getPosition(item)).setStatus(true);
 
                             // Update store items
-                            json = storePref.getString("STORE_ITEMS", null);
-                            type = new TypeToken<ArrayList<StoreItems>>(){}.getType();
-                            ArrayList<StoreItems> storeItems = gson.fromJson(json, type);
-                            storeItems.get(getPosition(item)).setWasSold(true);
-                            json = gson.toJson(storeItems);
-                            storePref.edit().putString("STORE_ITEMS", json).apply();
+                            item.setStatus(true);
+                            FirebaseHelper.getInstance().addDataToDatabase("UserInfo",userInfo.getID(), userInfo);
+                            updateUserInfoToSharedPreferences(userInfo);
                         }
                     }
                 })
@@ -117,4 +114,19 @@ public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItems> {
                 });
         return builder.create();
     }
+
+    private UserInfo getUserInfoFromSharedPreferences() {
+        Gson gson = new Gson();
+        String json = pref.getString("USER_INFORMATION", null);
+        Type type = new TypeToken<UserInfo>() {
+        }.getType();
+        return gson.fromJson(json, type);
+    }
+
+    private void updateUserInfoToSharedPreferences(UserInfo userInfo) {
+        Gson gson = new Gson();
+        String json = gson.toJson(userInfo);
+        pref.edit().putString("USER_INFORMATION", json).apply();
+    }
+
 }

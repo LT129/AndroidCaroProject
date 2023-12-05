@@ -90,7 +90,7 @@
                     android:background="@drawable/store_on_choose_button"
                     android:text="@string/background"/>
                 <RadioButton
-                    android:id="@+id/btnShape"
+                    android:id="@+id/btnMusic"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -102,7 +102,7 @@
                     android:clickable="true"
                     android:button="@null"
                     android:background="@drawable/store_wait_choose_button"
-                    android:text="@string/shape"/>
+                    android:text="@string/music"/>
         </RadioGroup>
         </LinearLayout>
 

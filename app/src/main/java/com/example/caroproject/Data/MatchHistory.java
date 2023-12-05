@@ -3,21 +3,21 @@ package com.example.caroproject.Data;
 import java.sql.Time;
 
 public class MatchHistory {
-    private PlayerInfo opponent;
+    private UserInfo opponent;
     private Time time;
     private boolean result;
 
-    public MatchHistory(PlayerInfo opponent, Time time, boolean result) {
+    public MatchHistory(UserInfo opponent, Time time, boolean result) {
         this.opponent = opponent;
         this.time = time;
         this.result = result;
     }
 
-    public PlayerInfo getOpponent() {
+    public UserInfo getOpponent() {
         return opponent;
     }
 
-    public void setOpponent(PlayerInfo opponent) {
+    public void setOpponent(UserInfo opponent) {
         this.opponent = opponent;
     }
 

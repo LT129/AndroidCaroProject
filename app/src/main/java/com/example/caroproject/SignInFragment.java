@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,27 +17,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.caroproject.Adapter.DBHelper;
+import com.example.caroproject.Adapter.FirebaseHelper;
 import com.example.caroproject.Data.Background;
 import com.example.caroproject.Data.Coins;
-import com.example.caroproject.Data.PlayerInfo;
-import com.example.caroproject.Data.StoreItems;
+import com.example.caroproject.Data.UserInfo;
+import com.example.caroproject.Data.StoreItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SignInFragment extends Fragment {
     private Coins userCoins;
     private ArrayList<Background> userBackground;
-    private ArrayList<StoreItems> storeItems;
+    private ArrayList<StoreItem> storeItems;
     private SharedPreferences pref;
     private FirebaseAuth auth;
 
@@ -48,10 +45,6 @@ public class SignInFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActivity().getWindow().setBackgroundDrawableResource(R.drawable.background_1);
-        initialData();
-        pref = getActivity().getSharedPreferences("CARO", Context.MODE_PRIVATE);
-        loadData();
     }
 
     @Override
@@ -67,7 +60,7 @@ public class SignInFragment extends Fragment {
     }
 
     private Button btnSignIn;
-    private EditText edtUsername, edtPassword;
+    private EditText edtEmail, edtPassword;
     private TextView forgotPassword;
     private Button btnSignUp;
     @Override
@@ -82,7 +75,7 @@ public class SignInFragment extends Fragment {
         View view= inflater.inflate(R.layout.fragment_sign_in, container, false);
         btnSignIn=view.findViewById(R.id.btnSignInSignIn);
         edtPassword=view.findViewById(R.id.edtPasswordSignIn);
-        edtUsername=view.findViewById(R.id.edtUsernameSignIn);
+        edtEmail=view.findViewById(R.id.edtEmail);
         btnSignUp = view.findViewById(R.id.btnSignUp);
         forgotPassword = view.findViewById(R.id.forgotPassword);
         forgotPassword.setOnClickListener(new View.OnClickListener() {
@@ -93,22 +86,34 @@ public class SignInFragment extends Fragment {
             }
         });
 
+        pref = requireActivity().getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE);
+
+        
         auth = FirebaseAuth.getInstance();
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = edtUsername.getText().toString().trim();
+                String email = edtEmail.getText().toString().trim();
                 String password = edtPassword.getText().toString().trim();
-                PlayerInfo player = new PlayerInfo(username,password);
-                if(username.equals("")||password.equals(""))
+                if(email.equals("")||password.equals(""))
                     Toast.makeText(requireContext(), "All fields are mandatory", Toast.LENGTH_SHORT).show();
                 else {
-                    auth.signInWithEmailAndPassword(player.getUserName(), player.getPassword())
+                    auth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
+                                        //Get information of new user to firestore
+                                        FirebaseUser user = task.getResult().getUser();
+                                        FirebaseHelper.getInstance().retrieveDataFromDatabase("UserInfo", user.getUid(), UserInfo.class,
+                                                new FirebaseHelper.OnCompleteRetrieveDataListener() {
+                                                    @Override
+                                                    public<T> void onComplete(List<T> list) {
+                                                        updateSharedPreferences((UserInfo) list.get(0));
+                                                    }
+                                                });
+
                                         // Sign in success, update UI with the signed-in user's information
                                         NavController navController = Navigation.findNavController(v);
                                         navController.navigate(R.id.action_signInFragment_to_mainMenuFragment);
@@ -133,58 +138,12 @@ public class SignInFragment extends Fragment {
         return view;
     }
 
-
-    private void initialData() {
-        userCoins = new Coins(2000);
-        userBackground = new ArrayList<>();
-        userBackground.add(new Background(R.drawable.temp_background_1, R.drawable.background_1, R.drawable.custom_button_1, R.drawable.custom_edittext));
-
-        storeItems = new ArrayList<>();
-        storeItems.add(new StoreItems(R.drawable.temp_background_2, R.drawable.background_2, R.drawable.custom_button_2, R.drawable.custom_edittext, new Coins(300)));
-        storeItems.add(new StoreItems(R.drawable.temp_background_3, R.drawable.background_3, R.drawable.custom_button_1, R.drawable.custom_edittext, new Coins(400)));
-        storeItems.add(new StoreItems(R.drawable.temp_background_4, R.drawable.background_4, R.drawable.custom_button_2, R.drawable.custom_edittext, new Coins(500)));
-    }
-
-    private void loadData() {
+    private void updateSharedPreferences(UserInfo userInfo) {
         Gson gson = new Gson();
         String json;
-
-        if(pref != null) {
-            System.out.println("ins");
-            Type type;
-            if(pref.contains("USER_COINS")) {
-                // Get user coins from Shared Preferences
-                json = pref.getString("USER_COINS", null);
-                userCoins = gson.fromJson(json, Coins.class);
-            } else {
-                // Save user coins to preferences
-                json = gson.toJson(userCoins);
-                pref.edit().putString("USER_COINS", json).apply();
-
-            }
-
-            if(pref.contains("USER_BACKGROUND")) {
-                // Get user background
-                json = pref.getString("USER_BACKGROUND", null);
-                type = new TypeToken<ArrayList<Background>>() {
-                }.getType();
-                userBackground = gson.fromJson(json, type);
-            } else {
-                // Save user background to preferences
-                json = gson.toJson(userBackground);
-                pref.edit().putString("USER_BACKGROUND", json).apply();
-            }
-
-            if(pref.contains("STORE_ITEMS")) {
-                // Get storeItems
-                json = pref.getString("STORE_ITEMS", null);
-                type = new TypeToken<ArrayList<StoreItems>>(){}.getType();
-                storeItems = gson.fromJson(json, type);
-            } else {
-                // Save store items to preferences
-                json = gson.toJson(storeItems);
-                pref.edit().putString("STORE_ITEMS", json).apply();
-            }
-        }
+        json = gson.toJson(userInfo);
+        pref.edit().putString("USER_INFORMATION", json).apply();
+        pref.edit().putBoolean(MainActivity.LOGGED_IN_ACCOUNT, true).apply();
     }
+
 }

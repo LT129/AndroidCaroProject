@@ -4,66 +4,73 @@ import static androidx.core.content.ContentProviderCompat.requireContext;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.Navigation;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 
-import com.example.caroproject.Data.Background;
-import com.example.caroproject.Data.Coins;
-import com.example.caroproject.Data.StoreItems;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
+import com.example.caroproject.Data.AppData;
+import com.example.caroproject.Data.SoundMaking;
 
 public class MainActivity extends AppCompatActivity {
-    private static NavHostFragment navHostFragment;
+    public final static String PREF_FILE = "CARO";
+    public final static String LOGGED_IN_ACCOUNT = "username";
+    public final static String BACKGROUND = "background";
+    public final static String MUSIC = "music";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        startSetUpAppSetting();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 
 
+    private void startSetUpAppSetting() {
+        SharedPreferences pref = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
+        int backgroundPosition;
+        int musicPosition;
+//        pref.edit().clear().apply();
 
-//    @Override
-//    public void onBackPressed() {
-//        super.onBackPressed();
-//        new AlertDialog.Builder(this)
-//                .setTitle("Confirm Exit")
-//                .setMessage("Are you sure you want to exit the application?")
-//                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        // Thoát ứng dụng
-//                        finish();
-//                    }
-//                })
-//                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        // Đóng hộp thoại và tiếp tục hoạt động ứng dụng
-//                        dialog.dismiss();
-//                    }
-//                })
-//                .show();
-//    }
+        if(pref != null) {
+            backgroundPosition = pref.getInt(BACKGROUND, 0);
+            musicPosition = pref.getInt(MUSIC, 0);
+        } else {
+            backgroundPosition = 0;
+            musicPosition = 0;
+        }
+        //TODO create sharedPreferences for setting
 
+        AppData appData = AppData.getInstance();
+        getWindow().setBackgroundDrawableResource(appData.getBackgrounds().get(backgroundPosition).getLayoutBackground());
+        SoundMaking.getInstance().createMusic(this, appData.getMusicList().get(musicPosition));
+//        SoundMaking.getInstance().playMusic();
+        //TODO check is logged in?
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        pref.edit().clear().apply();
+//        SoundMaking.getInstance().pauseMusic();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        SoundMaking.getInstance().playMusic();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        SoundMaking.getInstance().releaseMusic();
+    }
+
 }

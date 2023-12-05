@@ -33,7 +33,7 @@
                 android:textSize="24sp"
                 android:clickable="true"
                 android:button="@null"
-                android:background="@drawable/game_mode_on_choose_button"
+                android:background="@drawable/main_menu_background_button"
                 android:text="@string/menu"/>
             <RadioButton
                 android:id="@+id/btnFriendList"
@@ -47,7 +47,7 @@
                 android:textSize="24sp"
                 android:clickable="true"
                 android:button="@null"
-                android:background="@drawable/game_mode_wait_choose_button"
+                android:background="@drawable/main_menu_background_button"
                 android:text="@string/friend_list"/>
             <RadioButton
                 android:id="@+id/btnHistory"
@@ -61,7 +61,7 @@
                 android:textSize="24sp"
                 android:clickable="true"
                 android:button="@null"
-                android:background="@drawable/game_mode_wait_choose_button"
+                android:background="@drawable/main_menu_background_button"
                 android:text="@string/history"/>
         </RadioGroup>
     </FrameLayout>

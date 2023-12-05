@@ -10,12 +10,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.caroproject.Data.PlayerInfo;
+import com.example.caroproject.Data.UserInfo;
 import com.example.caroproject.R;
-public class FriendListAdapter extends ArrayAdapter<PlayerInfo> {
+public class FriendListAdapter extends ArrayAdapter<UserInfo> {
     private Context context;
-    private PlayerInfo[] items;
-    public FriendListAdapter(Context context,int layout,PlayerInfo[] items){
+    private UserInfo[] items;
+    public FriendListAdapter(Context context, int layout, UserInfo[] items){
         super(context, R.layout.custom_friendlist_view,items);
         this.context = context;
         this.items = items;
@@ -29,7 +29,7 @@ public class FriendListAdapter extends ArrayAdapter<PlayerInfo> {
         ImageView avatar = (ImageView) row.findViewById(R.id.imgViewAvatar);
         TextView status = (TextView) row.findViewById(R.id.txtViewStatus);
         Button btnRemove = (Button) row.findViewById(R.id.btnRemove);
-        name.setText(items[position].getUserName());
+        name.setText(items[position].getUsername());
         avatar.setImageResource(items[position].getAvatar());
 //        if (items[position].getStatus())
 //            status.setText("Online");

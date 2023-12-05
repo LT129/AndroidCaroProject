@@ -3,8 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
-app:startDestination="@id/pvpFragment">
-    
+    app:startDestination="@id/mainMenuFragment">
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.example.caroproject.ForgotPasswordFragment"
+        android:label="fragment_forgot_password"
+        tools:layout="@layout/fragment_forgot_password" >
+        <action
+            android:id="@+id/action_forgotPasswordFragment_to_SignInFragment"
+            app:destination="@id/signInFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+    </fragment>
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.caroproject.SignUpFragment"
@@ -71,6 +81,11 @@ app:startDestination="@id/pvpFragment">
         <action
             android:id="@+id/action_mainMenuFragment_to_userInfoFragment"
             app:destination="@id/userInfoFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_mainMenuFragment_to_signInFragment"
+            app:destination="@id/signInFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
     </fragment>
@@ -186,6 +201,11 @@ app:startDestination="@id/pvpFragment">
             app:exitAnim="@android:anim/fade_out"
             app:popUpTo="@id/signInFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_userInfoFragment_to_gameModeFragment"
+            app:destination="@id/mainMenuFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
     </fragment>
     <fragment
         android:id="@+id/inGameOnlineFragment"

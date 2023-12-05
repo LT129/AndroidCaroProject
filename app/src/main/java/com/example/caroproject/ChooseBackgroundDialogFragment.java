@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.caroproject.Adapter.CustomChooseBackgroundAdapter;
+import com.example.caroproject.Data.AppData;
 import com.example.caroproject.Data.Background;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -31,7 +32,10 @@ public class ChooseBackgroundDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        getData();
+        // initiate data
+        initiateData();
+        pref = requireActivity().getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE);
+
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.custom_choose_background_dialog, null);
         gridView = view.findViewById(R.id.backgroundGridView);
@@ -54,7 +58,7 @@ public class ChooseBackgroundDialogFragment extends DialogFragment {
                 getActivity().getWindow().setBackgroundDrawableResource(
                         items.get(gridView.getCheckedItemPosition()).getLayoutBackground()
                 );
-                pref.edit().putString("BG_POSITION", String.valueOf(gridView.getCheckedItemPosition())).apply();
+                pref.edit().putInt(MainActivity.BACKGROUND, toDataBackgroundPosition(gridView.getCheckedItemPosition())).apply();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -66,12 +70,28 @@ public class ChooseBackgroundDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-    private void getData() {
-        pref = requireActivity().getSharedPreferences("CARO", Context.MODE_PRIVATE);
-        gson = new Gson();
-        String json = pref.getString("USER_BACKGROUND", null);
-        Type type = new TypeToken<ArrayList<Background>>(){}.getType();
-        items = gson.fromJson(json, type);
+    private void initiateData() {
+        items = new ArrayList<>();
+
+        for (Background item :
+                AppData.getInstance().getBackgrounds()) {
+            if (item.wasSold()) {
+                items.add(item);
+            }
+        }
+    }
+
+    private int toDataBackgroundPosition(int pos) {
+        int i = 0;
+        ArrayList<Background> backgrounds = AppData.getInstance().getBackgrounds();
+        while(pos >= 0) {
+            if(backgrounds.get(i).wasSold()) {
+                pos--;
+            }
+            i++;
+        }
+
+        return i - 1;
     }
 
 }
