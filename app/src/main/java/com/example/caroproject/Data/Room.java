@@ -4,55 +4,29 @@ package com.example.caroproject.Data;
 import java.util.Map;
 
 public class Room {
-    private int currentPlayer;
+    private String currentPlayer;
     private int position;
-    private int timeCurrentPlayer;
+    private int timeTurn;
+    private String player1;
+    private String player2;
     private String roomId;
-    private String userId1;
-    private String userId2;
+    private String winner;
+    private boolean isGameOver;
 
-    public String getUserId1() {
-        return userId1;
-    }
-
-    public void setUserId1(String userId1) {
-        this.userId1 = userId1;
-    }
-
-    public String getUserId2() {
-        return userId2;
-    }
-
-    public void setUserId2(String userId2) {
-        this.userId2 = userId2;
-    }
-
-    public Room(String roomId, int timeCurrentPlayer) {
+    public Room(int timeTurn, String roomId, boolean isGameOver) {
+        this.timeTurn = timeTurn;
         this.roomId = roomId;
-        this.timeCurrentPlayer = timeCurrentPlayer;
+        this.isGameOver = isGameOver;
     }
-
-
-    // Các hàm getter và setter
 
     public Room() {
-        // Hàm tạo mặc định để phục vụ cho Firebase
     }
 
-    public String getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(String roomId) {
-        this.roomId = roomId;
-    }
-
-
-    public int getCurrentPlayer() {
+    public String getCurrentPlayer() {
         return currentPlayer;
     }
 
-    public void setCurrentPlayer(int currentPlayer) {
+    public void setCurrentPlayer(String currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
 
@@ -64,12 +38,51 @@ public class Room {
         this.position = position;
     }
 
-    public int getTimeCurrentPlayer() {
-        return timeCurrentPlayer;
+    public int getTimeTurn() {
+        return timeTurn;
     }
 
-    public void setTimeCurrentPlayer(int timeCurrentPlayer) {
-        this.timeCurrentPlayer = timeCurrentPlayer;
+    public void setTimeTurn(int timeTurn) {
+        this.timeTurn = timeTurn;
     }
 
+    public String getPlayer1() {
+        return player1;
+    }
+
+    public void setPlayer1(String player1) {
+        this.player1 = player1;
+    }
+
+    public String getPlayer2() {
+        return player2;
+    }
+
+    public void setPlayer2(String player2) {
+        this.player2 = player2;
+    }
+
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
+    }
+
+    public String getWinner() {
+        return winner;
+    }
+
+    public void setWinner(String winner) {
+        this.winner = winner;
+    }
+
+    public boolean isGameOver() {
+        return isGameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        isGameOver = gameOver;
+    }
 }

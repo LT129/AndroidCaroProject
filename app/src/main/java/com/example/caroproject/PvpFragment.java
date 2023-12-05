@@ -39,7 +39,7 @@ public class PvpFragment extends Fragment {
 
     private RadioGroup playMode, rdoRoom;
     private RadioButton rdoOffline, rdoOnline, rdoSize9, rdoSize15, rdoSize21, time15, time45,
-            timeUnlimited, rdoJoinRoom, edoCreateRoom, rdoRandomRoom;
+            timeUnlimited, rdoJoinRoom, rdoCreateRoom, rdoRandomRoom;
 
     private ImageButton chooseShape;
     private ImageButton chooseColor;
@@ -95,7 +95,7 @@ public class PvpFragment extends Fragment {
         });
 
         rdoRoom=view.findViewById(R.id.Room);
-        edtRoomID=view.findViewById(R.id.RoomID);
+        edtRoomID=view.findViewById(R.id.edtRoomID);
         rdoRoom.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -134,6 +134,9 @@ public class PvpFragment extends Fragment {
         time45=view.findViewById(R.id.time45sPVE);
         time15=view.findViewById(R.id.time15sPVE);
         timeUnlimited=view.findViewById(R.id.timeUnlimitedPVE);
+        rdoJoinRoom=view.findViewById(R.id.joinRoom);
+        rdoCreateRoom=view.findViewById(R.id.createRoom);
+        rdoRandomRoom=view.findViewById(R.id.randomRoom);
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -177,26 +180,9 @@ public class PvpFragment extends Fragment {
                     }
                 });
 
-                Random random=new Random();
-                String idRoom;
-                int i=0;
-                do {
-                    idRoom = "" + random.nextInt(10) + random.nextInt(10)
-                            + random.nextInt(10) + random.nextInt(10);
-                    for (Room room : listIdRoom) {
-                        if (room.getRoomId().equals(idRoom)) {
-                            i=1;
-                        }
-                    }
-                } while (i!=0);
-
-                Room room=new Room(idRoom,time);
-                roomRef.child(idRoom).setValue(room);
-
                 bundle.putInt("sizeBoard", sizeBoard);
                 bundle.putInt("time", time);
-                bundle.putString("idRoom", idRoom);
-
+                String idRoom="";
                 if((rdoSize21.isChecked()||rdoSize15.isChecked()||rdoSize9.isChecked())
                         &&(time15.isChecked()||time45.isChecked()||timeUnlimited.isChecked())) {
                     if (rdoOffline.isChecked()) {
@@ -204,6 +190,35 @@ public class PvpFragment extends Fragment {
                         navController.navigate(R.id.action_pvpFragment_to_inGameFragment, bundle);
                     }
                     else{
+                        if(rdoCreateRoom.isChecked()){
+                            Random random=new Random();
+                            int i=0;
+                            do {
+                                idRoom = "r" + random.nextInt(10) + random.nextInt(10)
+                                        + random.nextInt(10) + random.nextInt(10);
+                                for (Room room : listIdRoom) {
+                                    if (room.getRoomId().equals(idRoom)) {
+                                        i=1;
+                                        break;
+                                    }
+                                }
+                            } while (i!=0);
+
+                            Room room=new Room(time, idRoom, false);
+                            roomRef.child(idRoom).setValue(room);
+
+
+                            //nạp currentPlayer, player1
+                        } else if (rdoJoinRoom.isChecked()) {
+                            idRoom=edtRoomID.getText().toString().trim();
+                            for (Room room : listIdRoom) {
+                                if (room.getRoomId().equals(idRoom)) {
+                                    //nap player2
+                                    break;
+                                }
+                            }
+                        }
+                        bundle.putString("idRoom", idRoom);
                         NavController navController = Navigation.findNavController(v);
                         navController.navigate(R.id.action_pvpFragment_to_inGameOnlineFragment, bundle);
                     }

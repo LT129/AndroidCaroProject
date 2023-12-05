@@ -286,24 +286,12 @@ public class InGameOnlineFragment extends Fragment{
         database = FirebaseDatabase.getInstance();
         gameRoomRef = database.getReference( "room/"+idRoom);
         gameRoomRef.child("position").setValue(position);
-        gameRoomRef.child("currentPlayer").setValue(currentPlayer);
+        //gameRoomRef.child("currentPlayer").setValue(currentPlayer);
     }
     public void readData(View view, AdapterGridview adapter){
         // Read from the database
         database = FirebaseDatabase.getInstance();
-//        myRef = database.getReference("position");
-//        myRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                // This method is called once with the initial value and again
-//                // whenever data at this location is updated.
-//                positionUpdate= dataSnapshot.getValue(int.class);
-//                onCellClicked(positionUpdate, view, adapter);
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//            }
-//        });
+
     }
     @SuppressLint("ClickableViewAccessibility")
     @Override

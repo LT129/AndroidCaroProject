@@ -257,7 +257,7 @@
                     android:textColor="@color/word_color_gray"
                     android:text="Join Room"/>
                     <EditText
-                        android:id="@+id/RoomID"
+                        android:id="@+id/edtRoomID"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="10dp"
