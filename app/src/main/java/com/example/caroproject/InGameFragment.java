@@ -427,7 +427,7 @@ public class InGameFragment extends Fragment{
             public void onClick(View v) {
                 countDownTimer.cancel();
                 NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameFragment_to_gameModeFragment);
+                navController.navigate(R.id.action_inGameFragment_to_mainMenuFragment);
             }
         });
 
