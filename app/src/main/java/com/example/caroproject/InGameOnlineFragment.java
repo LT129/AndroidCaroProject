@@ -437,7 +437,7 @@ public class InGameOnlineFragment extends Fragment{
             public void onClick(View v) {
                 countDownTimer.cancel();
                 NavController navController=Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameOnlineFragment_to_gameModeFragment);
+                navController.navigate(R.id.action_inGameOnlineFragment_to_mainMenuFragment);
             }
         });
         return view;
