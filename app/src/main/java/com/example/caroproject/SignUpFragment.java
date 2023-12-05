@@ -69,7 +69,7 @@ public class SignUpFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_signUpFragment_to_SignInFragment);
+                navController.navigate(R.id.action_signUpFragment_to_signInFragment);
             }
         });
         btnSignUpSecond.setOnClickListener(new View.OnClickListener() {
@@ -96,7 +96,7 @@ public class SignUpFragment extends Fragment {
 
                                             // Sign in success, update UI with the signed-in user's information
                                             NavController navController = Navigation.findNavController(v);
-                                            navController.navigate(R.id.action_signUpFragment_to_SignInFragment);
+                                            navController.navigate(R.id.action_signUpFragment_to_signInFragment);
                                         } else {
                                             // If sign in fails, display a message to the user.
                                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
