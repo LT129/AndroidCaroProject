@@ -25,7 +25,7 @@
         android:layout_weight="2"/>
 
     <EditText
-        android:id="@+id/edtUsernameSignIn"
+        android:id="@+id/edtEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -35,9 +35,9 @@
         android:imeOptions="actionNext"
         android:maxLines="1"
         android:textSize="32sp"
-        android:hint="@string/username"
+        android:hint="@string/email"
         android:textAllCaps="false"
-        android:inputType="text"
+        android:inputType="textEmailAddress"
         android:background="@drawable/custom_edittext_3"/>
 
     <EditText

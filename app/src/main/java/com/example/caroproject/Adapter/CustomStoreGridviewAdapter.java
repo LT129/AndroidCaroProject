@@ -17,8 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.example.caroproject.Data.AppData;
 import com.example.caroproject.Data.Background;
-import com.example.caroproject.Data.Coins;
-import com.example.caroproject.Data.PlayerInfo;
+import com.example.caroproject.Data.UserInfo;
 import com.example.caroproject.Data.StoreItem;
 import com.example.caroproject.MainActivity;
 import com.example.caroproject.R;
@@ -32,7 +31,7 @@ public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItem> {
     private Context context;
     private ArrayList<StoreItem> items;
     private SharedPreferences pref;
-    private PlayerInfo userInfo;
+    private UserInfo userInfo;
     public CustomStoreGridviewAdapter(Context context, int layoutToBeInflated, ArrayList<StoreItem> items) {
         super(context, layoutToBeInflated, items);
         this.context = context;
@@ -102,7 +101,7 @@ public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItem> {
 
                             // Update store items
                             item.setStatus(true);
-                            updateUserInfoToDatabase(userInfo);
+                            FirebaseHelper.getInstance().addDataToDatabase("UserInfo",userInfo.getID(), userInfo);
                             updateUserInfoToSharedPreferences(userInfo);
                         }
                     }
@@ -116,22 +115,18 @@ public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItem> {
         return builder.create();
     }
 
-    private PlayerInfo getUserInfoFromSharedPreferences() {
+    private UserInfo getUserInfoFromSharedPreferences() {
         Gson gson = new Gson();
         String json = pref.getString("USER_INFORMATION", null);
-        Type type = new TypeToken<PlayerInfo>() {
+        Type type = new TypeToken<UserInfo>() {
         }.getType();
         return gson.fromJson(json, type);
     }
 
-    private void updateUserInfoToSharedPreferences(PlayerInfo userInfo) {
+    private void updateUserInfoToSharedPreferences(UserInfo userInfo) {
         Gson gson = new Gson();
         String json = gson.toJson(userInfo);
         pref.edit().putString("USER_INFORMATION", json).apply();
     }
 
-    private void updateUserInfoToDatabase(PlayerInfo userInfo) {
-        DBHelper dbHelper = new DBHelper();
-        dbHelper.updateUserInfo(userInfo);
-    }
 }

@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,22 +17,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.caroproject.Adapter.DBHelper;
+import com.example.caroproject.Adapter.FirebaseHelper;
 import com.example.caroproject.Data.Background;
 import com.example.caroproject.Data.Coins;
-import com.example.caroproject.Data.PlayerInfo;
+import com.example.caroproject.Data.UserInfo;
 import com.example.caroproject.Data.StoreItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SignInFragment extends Fragment {
     private Coins userCoins;
@@ -63,7 +60,7 @@ public class SignInFragment extends Fragment {
     }
 
     private Button btnSignIn;
-    private EditText edtUsername, edtPassword;
+    private EditText edtEmail, edtPassword;
     private TextView forgotPassword;
     private Button btnSignUp;
     @Override
@@ -78,7 +75,7 @@ public class SignInFragment extends Fragment {
         View view= inflater.inflate(R.layout.fragment_sign_in, container, false);
         btnSignIn=view.findViewById(R.id.btnSignInSignIn);
         edtPassword=view.findViewById(R.id.edtPasswordSignIn);
-        edtUsername=view.findViewById(R.id.edtUsernameSignIn);
+        edtEmail=view.findViewById(R.id.edtEmail);
         btnSignUp = view.findViewById(R.id.btnSignUp);
         forgotPassword = view.findViewById(R.id.forgotPassword);
         forgotPassword.setOnClickListener(new View.OnClickListener() {
@@ -97,17 +94,26 @@ public class SignInFragment extends Fragment {
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = edtUsername.getText().toString().trim();
+                String email = edtEmail.getText().toString().trim();
                 String password = edtPassword.getText().toString().trim();
-                PlayerInfo player = new PlayerInfo(username,password);
-                if(username.equals("")||password.equals(""))
+                if(email.equals("")||password.equals(""))
                     Toast.makeText(requireContext(), "All fields are mandatory", Toast.LENGTH_SHORT).show();
                 else {
-                    auth.signInWithEmailAndPassword(player.getUserName(), player.getPassword())
+                    auth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
+                                        //Get information of new user to firestore
+                                        FirebaseUser user = task.getResult().getUser();
+                                        FirebaseHelper.getInstance().retrieveDataFromDatabase("UserInfo", user.getUid(), UserInfo.class,
+                                                new FirebaseHelper.OnCompleteRetrieveDataListener() {
+                                                    @Override
+                                                    public<T> void onComplete(List<T> list) {
+                                                        updateSharedPreferences((UserInfo) list.get(0));
+                                                    }
+                                                });
+
                                         // Sign in success, update UI with the signed-in user's information
                                         NavController navController = Navigation.findNavController(v);
                                         navController.navigate(R.id.action_signInFragment_to_mainMenuFragment);
@@ -132,7 +138,7 @@ public class SignInFragment extends Fragment {
         return view;
     }
 
-    private void updateSharedPreferences(PlayerInfo userInfo) {
+    private void updateSharedPreferences(UserInfo userInfo) {
         Gson gson = new Gson();
         String json;
         json = gson.toJson(userInfo);

@@ -22,7 +22,7 @@ import com.example.caroproject.Adapter.CustomStoreGridviewAdapter;
 import com.example.caroproject.Data.AppData;
 import com.example.caroproject.Data.Background;
 import com.example.caroproject.Data.Coins;
-import com.example.caroproject.Data.PlayerInfo;
+import com.example.caroproject.Data.UserInfo;
 import com.example.caroproject.Data.StoreItem;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -30,16 +30,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link StoreFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class StoreFragment extends Fragment {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private String mParam1;
-    private String mParam2;
     private TextView txtUserCoins;
     private GridView viewItems;
     private ArrayList<StoreItem> storeItems;
@@ -57,23 +48,7 @@ public class StoreFragment extends Fragment {
     public StoreFragment() {
         // Required empty public constructor
     }
-    public static StoreFragment newInstance(String param1, String param2) {
-        StoreFragment fragment = new StoreFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,9 +69,9 @@ public class StoreFragment extends Fragment {
                 if (key != null && key.equals("USER_INFORMATION")) {
                     Gson gson = new Gson();
                     String json = pref.getString("USER_INFORMATION", null);
-                    Type type = new TypeToken<PlayerInfo>() {
+                    Type type = new TypeToken<UserInfo>() {
                     }.getType();
-                    PlayerInfo userInfo = gson.fromJson(json, type);
+                    UserInfo userInfo = gson.fromJson(json, type);
                     txtUserCoins.setText(String.valueOf(userInfo.getCoins().getCopperCoins()));
                 }
             }
@@ -154,10 +129,10 @@ public class StoreFragment extends Fragment {
         return view;
     }
 
-    private PlayerInfo getUserInfoFromSharedPreferences() {
+    private UserInfo getUserInfoFromSharedPreferences() {
         Gson gson = new Gson();
         String json = pref.getString("USER_INFORMATION", null);
-        Type type = new TypeToken<PlayerInfo>() {
+        Type type = new TypeToken<UserInfo>() {
         }.getType();
         return gson.fromJson(json, type);
     }

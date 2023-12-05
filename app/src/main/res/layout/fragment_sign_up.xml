@@ -12,8 +12,10 @@
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
+
+
     <EditText
-        android:id="@+id/edtUsernameSecond"
+        android:id="@+id/edtEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -21,7 +23,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="4dp"
         android:textSize="32sp"
-        android:hint="@string/username"
+        android:hint="@string/email"
         android:textAllCaps="false"
         android:background="@drawable/custom_edittext_3"/>
 

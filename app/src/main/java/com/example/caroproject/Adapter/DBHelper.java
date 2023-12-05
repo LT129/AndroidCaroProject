@@ -1,28 +1,14 @@
 package com.example.caroproject.Adapter;
 
-import static androidx.fragment.app.FragmentManager.TAG;
-
-import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
-import com.example.caroproject.Data.PlayerInfo;
-import com.example.caroproject.MainActivity;
-import com.example.caroproject.R;
-import com.example.caroproject.SignInFragment;
-import com.google.android.gms.common.internal.ConnectionTelemetryConfiguration;
+import com.example.caroproject.Data.UserInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -69,9 +55,9 @@ public class DBHelper {
     public interface OnRegisterListener{
         void onResult(boolean checker);
     }
-    public void registerUser(PlayerInfo player,final OnRegisterListener listener){
+    public void registerUser(UserInfo player, final OnRegisterListener listener){
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        auth.createUserWithEmailAndPassword(player.getUserName(), player.getPassword())
+        auth.createUserWithEmailAndPassword(player.getUsername(), player.getPassword())
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -94,7 +80,7 @@ public class DBHelper {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     DataSnapshot userSnapshot = dataSnapshot.getChildren().iterator().next();
-                    PlayerInfo player = userSnapshot.getValue(PlayerInfo.class);
+                    UserInfo player = userSnapshot.getValue(UserInfo.class);
                     callback.onResult(player);
                 } else {
                     callback.onResult(null); // User not found
@@ -108,7 +94,7 @@ public class DBHelper {
         });
     }
     public interface getFriendCallback {
-        void onResult(PlayerInfo items);
+        void onResult(UserInfo items);
     }
 
     public void checkUser(String userName, final CheckUserCallback callback) {

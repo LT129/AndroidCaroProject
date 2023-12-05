@@ -7,12 +7,14 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.caroproject.Adapter.FirebaseHelper;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -52,32 +54,13 @@ public class ChangeUserInfoDialogFragment extends DialogFragment {
             case UserInfoFragment.USERNAME: {
                 firstBox.setHint(R.string.username);
                 firstBoxText.setText(args.getString(UserInfoFragment.USERNAME));
-                firstBoxText.setEnabled(false);
-                secondBox.setHint(R.string.nickname);
-                secondBoxText.setText(args.getString(UserInfoFragment.NICKNAME));
-                thirdBoxText.setVisibility(View.GONE);
-                builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        String newNickname = secondBoxText.getText().toString();
-                        Bundle result = new Bundle();
-                        result.putString(UserInfoFragment.NICKNAME, newNickname);
-                        getParentFragmentManager().setFragmentResult(REQUEST_KEY_DIALOG, result);
-                    }
-                });
-                return builder.create();
-            }
-
-            case UserInfoFragment.EMAIL: {
-                firstBox.setHint(R.string.email);
-                firstBoxText.setText(args.getString(UserInfoFragment.EMAIL));
                 secondBox.setVisibility(View.GONE);
                 thirdBoxText.setVisibility(View.GONE);
                 builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String newEmail = firstBoxText.getText().toString();
+                    public void onClick(DialogInterface dialog, int id) {
+                        String newUsername = firstBoxText.getText().toString();
                         Bundle result = new Bundle();
-                        result.putString(UserInfoFragment.EMAIL, newEmail);
+                        result.putString(UserInfoFragment.USERNAME, newUsername);
                         getParentFragmentManager().setFragmentResult(REQUEST_KEY_DIALOG, result);
                     }
                 });
@@ -87,6 +70,7 @@ public class ChangeUserInfoDialogFragment extends DialogFragment {
             case UserInfoFragment.PHONE: {
                 firstBox.setHint(R.string.phone);
                 firstBoxText.setText(args.getString(UserInfoFragment.PHONE));
+                firstBoxText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
                 secondBox.setVisibility(View.GONE);
                 thirdBoxText.setVisibility(View.GONE);
                 builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
@@ -119,24 +103,28 @@ public class ChangeUserInfoDialogFragment extends DialogFragment {
                                 String pass1 = secondBoxText.getText().toString();
                                 String pass2 = thirdBoxText.getText().toString();
                                 String oldPass = firstBoxText.getText().toString();
-
-                                if(!oldPass.equals(args.getString(UserInfoFragment.PASSWORD))) {
-                                    firstBox.setErrorEnabled(true);
-                                    firstBox.setError("Wrong password");
-                                } else {
-                                    firstBox.setErrorEnabled(false);
-                                    if (pass1.equals(pass2)) {
-                                        thirdBox.setErrorEnabled(false);
-                                        String newPass = secondBoxText.getText().toString();
-                                        Bundle result = new Bundle();
-                                        result.putString(UserInfoFragment.PASSWORD, newPass);
-                                        getParentFragmentManager().setFragmentResult(REQUEST_KEY_DIALOG, result);
-                                        dialog.dismiss();
-                                    } else {
-                                        thirdBox.setErrorEnabled(true);
-                                        thirdBox.setError("Password is not equal");
+                                FirebaseHelper.getInstance().reAuthenticate(oldPass, new FirebaseHelper.OnResultListener() {
+                                    @Override
+                                    public void onResult(boolean result) {
+                                        if(!result) {
+                                            firstBox.setErrorEnabled(true);
+                                            firstBox.setError("Wrong password");
+                                        }else {
+                                            firstBox.setErrorEnabled(false);
+                                            if (pass1.equals(pass2)) {
+                                                thirdBox.setErrorEnabled(false);
+                                                String newPass = secondBoxText.getText().toString();
+                                                Bundle bundle = new Bundle();
+                                                bundle.putString(UserInfoFragment.PASSWORD, newPass);
+                                                getParentFragmentManager().setFragmentResult(REQUEST_KEY_DIALOG, bundle);
+                                                dialog.dismiss();
+                                            } else {
+                                                thirdBox.setErrorEnabled(true);
+                                                thirdBox.setError("Password is not equal");
+                                            }
+                                        }
                                     }
-                                }
+                                });
                             }
                         });
                     }

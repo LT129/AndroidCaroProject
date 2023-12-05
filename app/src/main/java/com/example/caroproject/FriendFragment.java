@@ -1,26 +1,20 @@
 package com.example.caroproject;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.caroproject.Adapter.DBHelper;
 import com.example.caroproject.Adapter.FriendListAdapter;
-import com.example.caroproject.Data.PlayerInfo;
-import com.google.firebase.internal.api.FirebaseNoSignedInUserException;
+import com.example.caroproject.Data.UserInfo;
 
 public class FriendFragment extends Fragment {
 
@@ -32,7 +26,7 @@ public class FriendFragment extends Fragment {
     private String mParam2;
     Context context;
 
-    private PlayerInfo[] items;
+    private UserInfo[] items;
     private ListView listViewFriend;
     private EditText edtSearchBar;
     private Button btnOK;
@@ -87,7 +81,7 @@ public class FriendFragment extends Fragment {
                 String userName = edtSearchBar.getText().toString();
                 dbHelper.getFriend(userName, new DBHelper.getFriendCallback() {
                     @Override
-                    public void onResult(PlayerInfo player) {
+                    public void onResult(UserInfo player) {
                         if (player != null && player.getFriends() != null) {
                             items = player.getFriends();
                             // Update the ListView adapter with the new friend list

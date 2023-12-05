@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         AppData appData = AppData.getInstance();
         getWindow().setBackgroundDrawableResource(appData.getBackgrounds().get(backgroundPosition).getLayoutBackground());
         SoundMaking.getInstance().createMusic(this, appData.getMusicList().get(musicPosition));
-        SoundMaking.getInstance().playMusic();
+//        SoundMaking.getInstance().playMusic();
         //TODO check is logged in?
     }
 
