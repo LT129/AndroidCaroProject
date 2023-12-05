@@ -68,6 +68,8 @@ public class InGameAIFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+    private Button btnTop, btnBottom, btnBack, btnHome;
+    private CountDownTimer countDownTimer;
     private int sizeBoard;
     private int times;
     private Bundle bundle;
@@ -208,8 +210,7 @@ public class InGameAIFragment extends Fragment {
         });
         builder.show();
     }
-    private Button btnTop, btnBottom, btnBack;
-    private CountDownTimer countDownTimer;
+
 
     private void startCountdownTimer(long millisInFuture, TextView txtWatch, View v) {
         // millisInFuture là thời gian đếm ngược theo mili giây
@@ -430,6 +431,15 @@ public class InGameAIFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 onClickNew(v);
+            }
+        });
+        btnHome=view.findViewById(R.id.btnHomeInGameAI);
+        btnHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                countDownTimer.cancel();
+                NavController navController=Navigation.findNavController(v);
+                navController.navigate(R.id.action_inGameAIFragment_to_gameModeFragment);
             }
         });
         return view;

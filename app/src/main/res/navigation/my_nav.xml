@@ -21,8 +21,8 @@
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up" >
         <action
-            android:id="@+id/action_signUpFragment_to_SignInFragment"
-            app:destination="@id/signInFragment"
+            android:id="@+id/action_secondFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
     </fragment>
@@ -39,12 +39,7 @@
         android:name="com.example.caroproject.SignInFragment"
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in" >
-        <action
-            android:id="@+id/action_signInFragment_to_forgotPasswordFragment"
-            app:destination="@id/forgotPasswordFragment"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
-        <action
+                <action
             android:id="@+id/action_signInFragment_to_mainMenuFragment"
             app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
@@ -112,6 +107,13 @@
             app:destination="@id/pvpFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_inGameFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popUpTo="@id/mainMenuFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -151,7 +153,9 @@
             android:id="@+id/action_inGameAIFragment_to_mainMenuFragment"
             app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
+            app:exitAnim="@android:anim/fade_out"
+            app:popUpTo="@id/mainMenuFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_inGameAIFragment_self"
             app:destination="@id/inGameAIFragment"
@@ -164,6 +168,9 @@
             app:destination="@id/pveFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_inGameAIFragment_self2"
+            app:destination="@id/inGameAIFragment" />
     </fragment>
     <fragment
         android:id="@+id/pveFragment"
@@ -204,6 +211,14 @@
         android:id="@+id/inGameOnlineFragment"
         android:name="com.example.caroproject.InGameOnlineFragment"
         android:label="fragment_in_game_online"
-        tools:layout="@layout/fragment_in_game_online" />
+        tools:layout="@layout/fragment_in_game_online" >
+        <action
+            android:id="@+id/action_inGameOnlineFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popUpTo="@id/mainMenuFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 </navigation>

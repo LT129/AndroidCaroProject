@@ -75,6 +75,7 @@ public class InGameOnlineFragment extends Fragment{
     }
 
     private int positionUpdate;
+    private String idRoom;
     private int sizeBoard;
     private int times;
     private float offsetX=0, offsetY=0;
@@ -84,7 +85,7 @@ public class InGameOnlineFragment extends Fragment{
     private LinearLayout linearLayout;
     private int currentPlayer, countPlayer=0;
     private boolean gameOver;
-    private Button btnTop, btnBottom, btnBack, btnZoom;
+    private Button btnTop, btnSurrender, btnBack, btnZoom, btnHome;
     private int[] savePlayerPosition;
     private CountDownTimer countDownTimer;
     private ScaleGestureDetector scaleGestureDetector;
@@ -92,7 +93,7 @@ public class InGameOnlineFragment extends Fragment{
     private static final float MIN_SCALE = 1.0f;
     private static final float MAX_SCALE = 3.0f;
     private FirebaseDatabase database;
-    private DatabaseReference myRef;
+    private DatabaseReference gameRoomRef;
 
     private int[][] board;  // Bảng lưu trạng thái của ô cờ
     @Override
@@ -107,6 +108,7 @@ public class InGameOnlineFragment extends Fragment{
             // Lấy dữ liệu từ Bundle
             sizeBoard = args.getInt("sizeBoard");
             times=args.getInt("time");
+            idRoom=args.getString("idRoom");
         }
         // Tạo một Bundle để chứa dữ liệu
         bundle = new Bundle();
@@ -276,43 +278,26 @@ public class InGameOnlineFragment extends Fragment{
     }
     public void onClickBack(View v){
         countDownTimer.cancel();
-        NavController navController=Navigation.findNavController(v);
-        //navController.navigate(R.id.action_inGameOnlineFragment_to_pvpFragment);
+        getActivity().getOnBackPressedDispatcher().onBackPressed();
     }
 
     public void writeData(int position, View view, AdapterGridview adapter){
         // Write a message to the database
         database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("position");
-        myRef.setValue(position, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                //readData(view, adapter);
-            }
-        });
+        gameRoomRef = database.getReference( "room/"+idRoom);
+        gameRoomRef.child("position").setValue(position);
+        //gameRoomRef.child("currentPlayer").setValue(currentPlayer);
     }
     public void readData(View view, AdapterGridview adapter){
         // Read from the database
         database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("position");
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                positionUpdate= dataSnapshot.getValue(int.class);
-                onCellClicked(positionUpdate, view, adapter);
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+
     }
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_in_game, container, false);
+        View view = inflater.inflate(R.layout.fragment_in_game_online, container, false);
         scaleGestureDetector = new ScaleGestureDetector(requireContext(), new ScaleListener());
 
         gridView = view.findViewById(R.id.gridView);
@@ -432,21 +417,29 @@ public class InGameOnlineFragment extends Fragment{
         });
 
 
-        btnTop=view.findViewById(R.id.btnTopInGame);
+        btnTop=view.findViewById(R.id.btnTopInGameOnline);
         btnTop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onClickBack(v);
             }
         });
-        btnBottom =view.findViewById(R.id.btnBottomInGame);
-        btnBottom.setOnClickListener(new View.OnClickListener() {
+        btnSurrender =view.findViewById(R.id.btnSurrenderInGame);
+        btnSurrender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onClickNew(v);
             }
         });
-
+        btnHome=view.findViewById(R.id.btnHomeInGameOnline);
+        btnHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                countDownTimer.cancel();
+                NavController navController=Navigation.findNavController(v);
+                navController.navigate(R.id.action_inGameOnlineFragment_to_mainMenuFragment);
+            }
+        });
         return view;
     }
 
