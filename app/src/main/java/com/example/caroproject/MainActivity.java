@@ -1,5 +1,7 @@
 package com.example.caroproject;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -15,6 +17,9 @@ import android.os.Bundle;
 import com.example.caroproject.Data.Background;
 import com.example.caroproject.Data.Coins;
 import com.example.caroproject.Data.StoreItems;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -28,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
 //    @Override
 //    public void onBackPressed() {
@@ -59,8 +66,4 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 //        pref.edit().clear().apply();
     }
-
-
-
-
 }

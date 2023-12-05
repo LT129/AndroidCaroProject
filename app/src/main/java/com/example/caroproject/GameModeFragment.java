@@ -71,7 +71,7 @@ public class GameModeFragment extends Fragment {
             public void onClick(View v) {
 //                SoundMaking.buttonClickedSound();
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_gameModeFragment_to_pvpFragment);
+                navController.navigate(R.id.action_mainMenuFragment_to_pvpFragment);
             }
         });
 
@@ -80,7 +80,7 @@ public class GameModeFragment extends Fragment {
             public void onClick(View v) {
 //                SoundMaking.buttonClickedSound();
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_gameModeFragment_to_pveFragment);
+                navController.navigate(R.id.action_mainMenuFragment_to_pveFragment);
             }
         });
 
@@ -90,7 +90,7 @@ public class GameModeFragment extends Fragment {
 //                SoundMaking.buttonClickedSound();
 
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_gameModeFragment_to_settingFragment);
+                navController.navigate(R.id.action_mainMenuFragment_to_settingFragment);
             }
         });
 
@@ -107,7 +107,7 @@ public class GameModeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_gameModeFragment_to_userInfoFragment);
+                navController.navigate(R.id.action_mainMenuFragment_to_userInfoFragment);
             }
         });
 
@@ -115,7 +115,7 @@ public class GameModeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_gameModeFragment_to_storeFragment);
+                navController.navigate(R.id.action_mainMenuFragment_to_storeFragment);
             }
         });
 

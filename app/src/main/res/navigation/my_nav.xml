@@ -3,16 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
-    app:startDestination="@id/pvpFragment">
-
+app:startDestination="@id/pvpFragment">
+    
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.caroproject.SignUpFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up" >
         <action
-            android:id="@+id/action_secondFragment_to_gameModeFragment"
-            app:destination="@id/gameModeFragment"
+            android:id="@+id/action_secondFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
     </fragment>
@@ -29,9 +29,9 @@
         android:name="com.example.caroproject.SignInFragment"
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in" >
-        <action
+                <action
             android:id="@+id/action_signInFragment_to_mainMenuFragment"
-            app:destination="@id/gameModeFragment"
+            app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out"
             app:popUpTo="@id/signInFragment"
@@ -44,32 +44,32 @@
     </fragment>
 
     <fragment
-        android:id="@+id/gameModeFragment"
+        android:id="@+id/mainMenuFragment"
         android:name="com.example.caroproject.MainMenuFragment"
         android:label="fragment_main_menu"
         tools:layout="@layout/fragment_main_menu" >
         <action
-            android:id="@+id/action_gameModeFragment_to_settingFragment"
+            android:id="@+id/action_mainMenuFragment_to_settingFragment"
             app:destination="@id/settingFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_gameModeFragment_to_pvpFragment"
+            android:id="@+id/action_mainMenuFragment_to_pvpFragment"
             app:destination="@id/pvpFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_gameModeFragment_to_storeFragment"
+            android:id="@+id/action_mainMenuFragment_to_storeFragment"
             app:destination="@id/storeFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_gameModeFragment_to_pveFragment"
+            android:id="@+id/action_mainMenuFragment_to_pveFragment"
             app:destination="@id/pveFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_gameModeFragment_to_userInfoFragment"
+            android:id="@+id/action_mainMenuFragment_to_userInfoFragment"
             app:destination="@id/userInfoFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
@@ -93,11 +93,11 @@
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_inGameFragment_to_gameModeFragment"
-            app:destination="@id/gameModeFragment"
+            android:id="@+id/action_inGameFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out"
-            app:popUpTo="@id/gameModeFragment"
+            app:popUpTo="@id/mainMenuFragment"
             app:popUpToInclusive="true" />
     </fragment>
 
@@ -118,8 +118,8 @@
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_pvpFragment_to_gameModeFragment"
-            app:destination="@id/gameModeFragment"
+            android:id="@+id/action_pvpFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
@@ -135,11 +135,11 @@
         android:label="fragment_in_game_a_i"
         tools:layout="@layout/fragment_in_game_a_i" >
         <action
-            android:id="@+id/action_inGameAIFragment_to_gameModeFragment"
-            app:destination="@id/gameModeFragment"
+            android:id="@+id/action_inGameAIFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out"
-            app:popUpTo="@id/gameModeFragment"
+            app:popUpTo="@id/mainMenuFragment"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_inGameAIFragment_self"
@@ -168,8 +168,8 @@
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_pveFragment_to_gameModeFragment"
-            app:destination="@id/gameModeFragment"
+            android:id="@+id/action_pveFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
     </fragment>
@@ -193,11 +193,11 @@
         android:label="fragment_in_game_online"
         tools:layout="@layout/fragment_in_game_online" >
         <action
-            android:id="@+id/action_inGameOnlineFragment_to_gameModeFragment"
-            app:destination="@id/gameModeFragment"
+            android:id="@+id/action_inGameOnlineFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out"
-            app:popUpTo="@id/gameModeFragment"
+            app:popUpTo="@id/mainMenuFragment"
             app:popUpToInclusive="true" />
     </fragment>
 
