@@ -1,5 +1,8 @@
 package com.example.caroproject;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.Navigation;
 

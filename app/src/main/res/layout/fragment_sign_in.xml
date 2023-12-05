@@ -51,6 +51,7 @@
         android:imeOptions="actionDone"
         android:maxLines="1"
         android:textSize="32sp"
+
         android:hint="@string/password"
         android:inputType="textPassword"
         android:background="@drawable/custom_edittext_3"/>

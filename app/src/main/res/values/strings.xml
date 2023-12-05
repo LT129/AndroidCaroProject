@@ -34,6 +34,7 @@
 
     <string name="username">Username</string>
     <string name="nickname">Nickname</string>
+    <string name="Email">Email</string>
     <string name="password">Password</string>
     <string name="retype">Retype Password</string>
     <string name="reset">Reset</string>

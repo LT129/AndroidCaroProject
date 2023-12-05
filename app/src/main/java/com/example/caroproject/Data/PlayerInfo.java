@@ -99,7 +99,15 @@ public class PlayerInfo {
         this.matchHistory = null;
         this.coins = new Coins(1000);
     }
+    public PlayerInfo(String username,boolean status,Integer avatar){
+        this.userName = username;
+        this.Status = status;
+        this.avatar = avatar;
+    }
 
+    public PlayerInfo() {
+        //default constructor
+    }
 
     public String getUsername() {
         return username;
@@ -134,5 +142,8 @@ public class PlayerInfo {
 
     public MatchHistory[] getMatchHistory() {
         return matchHistory;
+    }
+    public PlayerInfo[] getFriends() {
+        return friends;
     }
 }

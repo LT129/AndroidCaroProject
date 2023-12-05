@@ -25,7 +25,6 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.caroproject.Adapter.DBHelper;
 import com.example.caroproject.Adapter.FirestoreDatabaseHelper;
 import com.example.caroproject.Data.Background;
 import com.example.caroproject.Data.PlayerInfo;
@@ -35,6 +34,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class UserInfoFragment extends Fragment {
 
@@ -225,6 +225,7 @@ public class UserInfoFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 pref.edit().clear().apply();
+                                FirebaseAuth.getInstance().signOut();
                                 NavController navController = Navigation.findNavController(v);
                                 navController.navigate(R.id.action_userInfoFragment_to_signInFragment);
                             }

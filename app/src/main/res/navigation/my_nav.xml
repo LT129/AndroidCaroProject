@@ -4,14 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
     app:startDestination="@id/signInFragment">
-
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.example.caroproject.ForgotPasswordFragment"
+        android:label="fragment_forgot_password"
+        tools:layout="@layout/fragment_forgot_password" >
+        <action
+            android:id="@+id/action_forgotPasswordFragment_to_SignInFragment"
+            app:destination="@id/signInFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+    </fragment>
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.caroproject.SignUpFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up" >
         <action
-            android:id="@+id/action_signUpFragment_to_signInFragment"
+            android:id="@+id/action_signUpFragment_to_SignInFragment"
             app:destination="@id/signInFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
@@ -30,8 +40,13 @@
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in" >
         <action
+            android:id="@+id/action_signInFragment_to_forgotPasswordFragment"
+            app:destination="@id/forgotPasswordFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+        <action
             android:id="@+id/action_signInFragment_to_mainMenuFragment"
-            app:destination="@id/gameModeFragment"
+            app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out"
             app:popUpTo="@id/signInFragment"
@@ -44,32 +59,32 @@
     </fragment>
 
     <fragment
-        android:id="@+id/gameModeFragment"
+        android:id="@+id/mainMenuFragment"
         android:name="com.example.caroproject.MainMenuFragment"
         android:label="fragment_main_menu"
         tools:layout="@layout/fragment_main_menu" >
         <action
-            android:id="@+id/action_gameModeFragment_to_settingFragment"
+            android:id="@+id/action_mainMenuFragment_to_settingFragment"
             app:destination="@id/settingFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_gameModeFragment_to_pvpFragment"
+            android:id="@+id/action_mainMenuFragment_to_pvpFragment"
             app:destination="@id/pvpFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_gameModeFragment_to_storeFragment"
+            android:id="@+id/action_mainMenuFragment_to_storeFragment"
             app:destination="@id/storeFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_gameModeFragment_to_pveFragment"
+            android:id="@+id/action_mainMenuFragment_to_pveFragment"
             app:destination="@id/pveFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_gameModeFragment_to_userInfoFragment"
+            android:id="@+id/action_mainMenuFragment_to_userInfoFragment"
             app:destination="@id/userInfoFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
@@ -111,8 +126,8 @@
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_pvpFragment_to_gameModeFragment"
-            app:destination="@id/gameModeFragment"
+            android:id="@+id/action_pvpFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
@@ -128,8 +143,8 @@
         android:label="fragment_in_game_a_i"
         tools:layout="@layout/fragment_in_game_a_i" >
         <action
-            android:id="@+id/action_inGameAIFragment_to_gameModeFragment"
-            app:destination="@id/gameModeFragment"
+            android:id="@+id/action_inGameAIFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
@@ -156,8 +171,8 @@
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_pveFragment_to_gameModeFragment"
-            app:destination="@id/gameModeFragment"
+            android:id="@+id/action_pveFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
     </fragment>

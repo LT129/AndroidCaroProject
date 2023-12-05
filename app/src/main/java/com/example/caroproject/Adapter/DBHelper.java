@@ -1,15 +1,28 @@
 package com.example.caroproject.Adapter;
 
+import static androidx.fragment.app.FragmentManager.TAG;
+
+import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.caroproject.Data.PlayerInfo;
+import com.example.caroproject.MainActivity;
+import com.example.caroproject.R;
+import com.example.caroproject.SignInFragment;
 import com.google.android.gms.common.internal.ConnectionTelemetryConfiguration;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,8 +31,12 @@ import com.google.firebase.database.ValueEventListener;
 
 public class DBHelper {
     private FirebaseDatabase rootRef;
+    private Context mcontext;
     public DBHelper(){
         this.rootRef = FirebaseDatabase.getInstance();
+    }
+    public DBHelper(Context context){
+        this.mcontext = context;
     }
     public void createNewPlayer(final OnPlayerIdGeneratedListener listener) {
         final DatabaseReference countPlayerRef = rootRef.getReference("PlayerInfo").child("CountPlayer");
@@ -49,32 +66,56 @@ public class DBHelper {
         void onPlayerIdGenerated(int playerId);
     }
 
-    public boolean AddPlayer(final PlayerInfo newPlayer) {
-        createNewPlayer(new OnPlayerIdGeneratedListener() {
-            @Override
-            public void onPlayerIdGenerated(int playerId) {
-                if (playerId != -1) {
-                    String ID = String.valueOf(playerId);
-                    DatabaseReference myRef = rootRef.getReference("PlayerInfo").child(ID);
-                    myRef.setValue(newPlayer);
-                    myRef.child("ID").setValue(playerId);
+    public interface OnRegisterListener{
+        void onResult(boolean checker);
+    }
+    public void registerUser(PlayerInfo player,final OnRegisterListener listener){
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth.createUserWithEmailAndPassword(player.getUserName(), player.getPassword())
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            listener.onResult(true);
 
-                    // Do other actions if needed
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            listener.onResult(false);
+                        }
+                    }
+                });
+    }
+    public void getFriend(String userName, final  getFriendCallback callback){
+        DatabaseReference myRef = rootRef.getReference("PlayerInfo");
+
+        myRef.orderByChild("username").equalTo(userName).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    DataSnapshot userSnapshot = dataSnapshot.getChildren().iterator().next();
+                    PlayerInfo player = userSnapshot.getValue(PlayerInfo.class);
+                    callback.onResult(player);
                 } else {
-                    // Handle the case where generating player ID failed
+                    callback.onResult(null); // User not found
                 }
             }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onResult(null); // Error occurred
+            }
         });
-
-        return true;
     }
-
+    public interface getFriendCallback {
+        void onResult(PlayerInfo items);
+    }
 
     public void checkUser(String userName, final CheckUserCallback callback) {
         DatabaseReference myRef = rootRef.getReference("PlayerInfo");
 
         // Check for the existence of the UserName
-        myRef.orderByChild("UserName").equalTo(userName).addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.orderByChild("username").equalTo(userName).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean userExists = dataSnapshot.exists();
@@ -92,72 +133,5 @@ public class DBHelper {
     public interface CheckUserCallback {
         void onResult(boolean userExists);
     }
-
-
-    public void checkCredentials(PlayerInfo player, final OnCredentialsCheckListener listener) {
-        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("PlayerInfo");
-
-        // Check for the existence of the UserName
-        myRef.orderByChild("username").equalTo(player.getUsername()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // User with the provided username exists
-                    DataSnapshot userSnapshot = dataSnapshot.getChildren().iterator().next();
-
-                    // Check if the password matches
-                    String storedPassword = userSnapshot.child("password").getValue(String.class);
-                    if (storedPassword != null && storedPassword.equals(player.getPassword())) {
-                        // Password matches
-                        listener.onCredentialsCheckResult(userSnapshot.getValue(PlayerInfo.class));
-                    } else {
-                        // Password does not match
-                        listener.onCredentialsCheckResult(null);
-                    }
-                } else {
-                    // User does not exist
-                    listener.onCredentialsCheckResult(null);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Handle the error
-                listener.onCredentialsCheckResult(null); // Assume failure in case of error
-            }
-        });
-    }
-
-    // Define an interface for the callback
-    public interface OnCredentialsCheckListener {
-        //Return playerInfo if db has
-//        void onCredentialsCheckResult(boolean isMatch);
-        void onCredentialsCheckResult(PlayerInfo userInfo);
-    }
-
-    public void updateUserInfo(PlayerInfo updateUser) {
-        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("PlayerInfo").child(String.valueOf(updateUser.getID()));
-        myRef.setValue(updateUser);
-    }
-
-    public PlayerInfo getUserInfo(int userId) {
-        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("PlayerInfo").child(String.valueOf(userId));
-        final PlayerInfo[] userInfo = new PlayerInfo[1];
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                userInfo[0] = snapshot.getValue(PlayerInfo.class);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // DO NOTHING
-            }
-        });
-
-        return userInfo[0];
-    }
-
-
 }
 
