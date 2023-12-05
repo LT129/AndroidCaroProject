@@ -26,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.caroproject.Adapter.DBHelper;
+import com.example.caroproject.Adapter.FirestoreDatabaseHelper;
 import com.example.caroproject.Data.Background;
 import com.example.caroproject.Data.PlayerInfo;
 import com.google.gson.Gson;
@@ -199,6 +200,7 @@ public class UserInfoFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int which) {
                             updateUserInfoToSharedPreferences(userInfo);
                             updateUserInfoToDatabase(userInfo);
+                            FirestoreDatabaseHelper.getInstance().addDataToDatabase("UserInfo", userInfo);
                         }
                     })
                     .setNegativeButton("No", null)
