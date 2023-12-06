@@ -41,9 +41,6 @@ public class PvpFragment extends Fragment {
     private RadioButton rdoOffline, rdoOnline, rdoSize9, rdoSize15, rdoSize21, time15, time45,
             timeUnlimited, rdoJoinRoom, rdoCreateRoom, rdoRandomRoom;
 
-    private ImageButton chooseShape;
-    private ImageButton chooseColor;
-
     private Button btnPlay;
     public PvpFragment() {
         // Required empty public constructor
@@ -107,21 +104,6 @@ public class PvpFragment extends Fragment {
                         break;
                     }
                 }
-            }
-        });
-        chooseShape = view.findViewById(R.id.chooseShape);
-        chooseShape.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO show a dialog to choose shape
-            }
-        });
-
-        chooseColor = view.findViewById(R.id.chooseColor);
-        chooseColor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO show a dialog to choose color
             }
         });
 

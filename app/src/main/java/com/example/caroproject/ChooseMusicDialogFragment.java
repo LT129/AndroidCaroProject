@@ -15,8 +15,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.caroproject.Adapter.CustomChooseBackgroundAdapter;
+import com.example.caroproject.Adapter.CustomChooseMusicAdapter;
 import com.example.caroproject.Data.AppData;
 import com.example.caroproject.Data.Background;
+import com.example.caroproject.Data.Music;
+import com.example.caroproject.Data.SoundMaking;
 import com.example.caroproject.Data.StoreItem;
 import com.example.caroproject.Data.UserInfo;
 import com.google.gson.Gson;
@@ -25,7 +28,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-public class ChooseBackgroundDialogFragment extends DialogFragment {
+public class ChooseMusicDialogFragment extends DialogFragment {
     private ArrayList<StoreItem> items;
     private ArrayList<Boolean> userStatus;
     private GridView gridView;
@@ -41,7 +44,7 @@ public class ChooseBackgroundDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.custom_choose_background_dialog, null);
         gridView = view.findViewById(R.id.backgroundGridView);
 
-        CustomChooseBackgroundAdapter adapter = new CustomChooseBackgroundAdapter(getActivity(), R.layout.custom_item_choose_background_gridview, items);
+        CustomChooseMusicAdapter adapter = new CustomChooseMusicAdapter(getActivity(), R.layout.custom_item_choose_background_gridview, items);
         gridView.setAdapter(adapter);
         gridView.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
         gridView.setItemChecked(0, true);
@@ -56,10 +59,11 @@ public class ChooseBackgroundDialogFragment extends DialogFragment {
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                getActivity().getWindow().setBackgroundDrawableResource(
-                        ((Background)items.get(gridView.getCheckedItemPosition()).getItem()).getLayoutBackground()
-                );
-                pref.edit().putInt(MainActivity.BACKGROUND, toDataBackgroundPosition(gridView.getCheckedItemPosition())).apply();
+                SoundMaking.getInstance().releaseMusic();
+                SoundMaking.getInstance().createMusic(requireContext(),
+                        ((Music)items.get(gridView.getCheckedItemPosition()).getItem()).getSourceId());
+                SoundMaking.getInstance().playMusic();
+                pref.edit().putInt(MainActivity.MUSIC, toDataMusicPosition(gridView.getCheckedItemPosition())).apply();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -81,16 +85,16 @@ public class ChooseBackgroundDialogFragment extends DialogFragment {
 
 
         items = new ArrayList<>();
-        userStatus = userInfo.getBackgroundStatus();
+        userStatus = userInfo.getMusicStatus();
 
-        for (int i = 0; i < AppData.getInstance().getBackgroundList().size(); i++) {
+        for (int i = 0; i < AppData.getInstance().getMusicList().size(); i++) {
             if (userStatus.get(i)) {
-                items.add(AppData.getInstance().getBackgroundList().get(i));
+                items.add(AppData.getInstance().getMusicList().get(i));
             }
         }
     }
 
-    private int toDataBackgroundPosition(int pos) {
+    private int toDataMusicPosition(int pos) {
         int i = 0;
         while(pos >= 0) {
             if(userStatus.get(i)) {
@@ -101,5 +105,4 @@ public class ChooseBackgroundDialogFragment extends DialogFragment {
 
         return i - 1;
     }
-
 }

@@ -10,7 +10,6 @@ import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.caroproject.Adapter.DBHelper;
 import com.example.caroproject.Adapter.FriendListAdapter;
 import com.example.caroproject.Data.UserInfo;
 
@@ -26,7 +25,6 @@ public class HistoryFragment extends Fragment {
 
     private UserInfo[] items;
     private ListView listViewHistory;
-    private DBHelper dbHelper;
 
     public HistoryFragment() {
         //Empty constructor

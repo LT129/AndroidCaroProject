@@ -11,6 +11,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.example.caroproject.Data.AppData;
+import com.example.caroproject.Data.Background;
+import com.example.caroproject.Data.Music;
 import com.example.caroproject.Data.SoundMaking;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,29 +50,28 @@ public class MainActivity extends AppCompatActivity {
         //TODO create sharedPreferences for setting
 
         AppData appData = AppData.getInstance();
-        getWindow().setBackgroundDrawableResource(appData.getBackgrounds().get(backgroundPosition).getLayoutBackground());
-        SoundMaking.getInstance().createMusic(this, appData.getMusicList().get(musicPosition));
-//        SoundMaking.getInstance().playMusic();
-        //TODO check is logged in?
+        getWindow().setBackgroundDrawableResource(((Background)appData.getBackgroundList().get(backgroundPosition).getItem()).getLayoutBackground());
+        SoundMaking.getInstance().createMusic(this,((Music) appData.getMusicList().get(musicPosition).getItem()).getSourceId());
+        SoundMaking.getInstance().playMusic();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        SoundMaking.getInstance().pauseMusic();
+        SoundMaking.getInstance().pauseMusic();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-//        SoundMaking.getInstance().playMusic();
+        SoundMaking.getInstance().playMusic();
     }
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        SoundMaking.getInstance().releaseMusic();
+        SoundMaking.getInstance().releaseMusic();
     }
 
 }

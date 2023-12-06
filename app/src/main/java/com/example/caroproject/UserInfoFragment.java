@@ -23,6 +23,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.caroproject.Adapter.FirebaseHelper;
+import com.example.caroproject.Data.AppData;
+import com.example.caroproject.Data.Background;
+import com.example.caroproject.Data.Music;
+import com.example.caroproject.Data.SoundMaking;
 import com.example.caroproject.Data.UserInfo;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -103,7 +107,7 @@ public class UserInfoFragment extends Fragment {
 
                 if(result.containsKey(PASSWORD)) {
                     String password = result.getString(PASSWORD);
-                    userInfo.setPassword(password);
+                    pref.edit().putString(PASSWORD, password).apply();
                 }
             }
         });
@@ -152,7 +156,6 @@ public class UserInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 args.putString("UserInfoType", PASSWORD);
-                args.putString(PASSWORD, userInfo.getPassword());
                 dialog.setArguments(args);
                 dialog.show(getChildFragmentManager(), "dialog");
             }
@@ -204,6 +207,7 @@ public class UserInfoFragment extends Fragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 pref.edit().clear().apply();
                                 FirebaseAuth.getInstance().signOut();
+                                reSetAppSetting();
                                 NavController navController = Navigation.findNavController(v);
                                 navController.navigate(R.id.action_userInfoFragment_to_signInFragment);
                             }
@@ -233,7 +237,10 @@ public class UserInfoFragment extends Fragment {
 
     private void updateInfoToDatabase(UserInfo userInfo) {
         FirebaseHelper.getInstance().addDataToDatabase("UserInfo", userInfo.getID(), userInfo);
-        FirebaseHelper.getInstance().changePassword(userInfo.getPassword());
+        if(pref.contains(PASSWORD)) {
+            FirebaseHelper.getInstance().changePassword(pref.getString(PASSWORD, null));
+            pref.edit().remove(PASSWORD).apply();
+        }
 
     }
 
@@ -246,6 +253,14 @@ public class UserInfoFragment extends Fragment {
 
 
     private void imageChooser() {
+    }
+
+    private void reSetAppSetting() {
+        AppData appData = AppData.getInstance();
+        requireActivity().getWindow().setBackgroundDrawableResource(((Background)appData.getBackgroundList().get(0).getItem()).getLayoutBackground());
+        SoundMaking.getInstance().releaseMusic();
+        SoundMaking.getInstance().createMusic(requireContext(),((Music) appData.getMusicList().get(0).getItem()).getSourceId());
+        SoundMaking.getInstance().playMusic();
     }
 
 }

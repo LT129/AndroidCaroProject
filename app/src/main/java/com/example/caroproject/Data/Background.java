@@ -24,10 +24,4 @@ public class Background extends StoreItem{
         this.tempImage = tempImage;
         this.layoutBackground = layoutBackground;
     }
-
-    public Background(Boolean status, int tempImage, int layoutBackground) {
-        super(status);
-        this.tempImage = tempImage;
-        this.layoutBackground = layoutBackground;
-    }
 }

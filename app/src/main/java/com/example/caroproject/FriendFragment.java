@@ -12,7 +12,6 @@ import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.caroproject.Adapter.DBHelper;
 import com.example.caroproject.Adapter.FriendListAdapter;
 import com.example.caroproject.Data.UserInfo;
 
@@ -30,7 +29,6 @@ public class FriendFragment extends Fragment {
     private ListView listViewFriend;
     private EditText edtSearchBar;
     private Button btnOK;
-    private DBHelper dbHelper;
 
     public FriendFragment() {
         //Empty constructor
@@ -79,17 +77,17 @@ public class FriendFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String userName = edtSearchBar.getText().toString();
-                dbHelper.getFriend(userName, new DBHelper.getFriendCallback() {
-                    @Override
-                    public void onResult(UserInfo player) {
-                        if (player != null && player.getFriends() != null) {
-                            items = player.getFriends();
-                            // Update the ListView adapter with the new friend list
-                            FriendListAdapter adapter = new FriendListAdapter(context, R.layout.custom_friendlist_view, items);
-                            listViewFriend.setAdapter(adapter);
-                        }
-                    }
-                });
+//                dbHelper.getFriend(userName, new DBHelper.getFriendCallback() {
+//                    @Override
+//                    public void onResult(UserInfo player) {
+//                        if (player != null && player.getFriends() != null) {
+//                            items = player.getFriends();
+//                            // Update the ListView adapter with the new friend list
+//                            FriendListAdapter adapter = new FriendListAdapter(context, R.layout.custom_friendlist_view, items);
+//                            listViewFriend.setAdapter(adapter);
+//                        }
+//                    }
+//                });
             }
         });
 

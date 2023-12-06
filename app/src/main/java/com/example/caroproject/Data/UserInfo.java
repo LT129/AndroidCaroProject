@@ -1,65 +1,43 @@
 package com.example.caroproject.Data;
 
+import java.util.ArrayList;
+
 public class UserInfo {
 
 
     private String ID;
     private String username;
     private String email;
-    private String password;
     private UserInfo[] friends;
     private Integer avatar;
     private MatchHistory[] matchHistory;
     private boolean Status;
     private String phoneNumber;
     private Coins coins;
+    private ArrayList<Boolean> backgroundStatus;
+    private ArrayList<Boolean> musicStatus;
 
-    public UserInfo(String ID, String userName, String password, UserInfo[] friends, Integer avatar, MatchHistory[] matchHistory) {
-        this.ID = ID;
-        this.username = userName;
-        this.password = password;
-        this.friends = null;
-        this.avatar = avatar;
-        this.matchHistory = null;
-        this.coins = new Coins(1000);
-    }
-    public UserInfo(String ID, String username, String email, String password){
+    public UserInfo(String ID, String username, String email){
         this.ID = ID;
         this.username = username;
         this.email = email;
-        this.password = password;
         this.friends = null;
         this.avatar = null;
         this.matchHistory = null;
         this.coins = new Coins(1000);
-    }
-
-    public UserInfo(String ID, String username, String password, UserInfo[] friends, Integer avatar, MatchHistory[] matchHistory, boolean status, String email, String phoneNumber, Coins coins) {
-        this.ID = ID;
-        this.username = username;
-        this.password = password;
-        this.friends = friends;
-        this.avatar = avatar;
-        this.matchHistory = matchHistory;
-        Status = status;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.coins = coins;
+        backgroundStatus = new ArrayList<>();
+        backgroundStatus.add(true);
+        for(int i = 1; i < AppData.getInstance().getBackgroundList().size(); i++) {
+            backgroundStatus.add(false);
+        }
+        musicStatus = new ArrayList<>();
+        musicStatus.add(true);
+        for(int i = 1; i < AppData.getInstance().getMusicList().size(); i++) {
+            musicStatus.add(false);
+        }
     }
 
     public UserInfo() {
-        this.ID = null;
-        this.username = null;
-        this.password = null;
-        this.friends = null;
-        this.avatar = null;
-        this.matchHistory = null;
-        this.coins = new Coins(1000);
-    }
-    public UserInfo(String username, boolean status, Integer avatar){
-        this.username = username;
-        this.Status = status;
-        this.avatar = avatar;
     }
 
     public String getID() {
@@ -84,14 +62,6 @@ public class UserInfo {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public UserInfo[] getFriends() {
@@ -140,5 +110,21 @@ public class UserInfo {
 
     public void setCoins(Coins coins) {
         this.coins = coins;
+    }
+
+    public ArrayList<Boolean> getBackgroundStatus() {
+        return backgroundStatus;
+    }
+
+    public void setBackgroundStatus(ArrayList<Boolean> backgroundStatus) {
+        this.backgroundStatus = backgroundStatus;
+    }
+
+    public ArrayList<Boolean> getMusicStatus() {
+        return musicStatus;
+    }
+
+    public void setMusicStatus(ArrayList<Boolean> musicStatus) {
+        this.musicStatus = musicStatus;
     }
 }

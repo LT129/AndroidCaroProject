@@ -31,11 +31,15 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class StoreFragment extends Fragment {
+
+    public static final String STORE_TYPE = "store_type";
+    public static final int MODE_MUSIC = 1;
+    public static final int MODE_BACKGROUND = 2;
+
     private TextView txtUserCoins;
     private GridView viewItems;
-    private ArrayList<StoreItem> storeItems;
+    private ArrayList<StoreItem> items;
     private ImageButton btnCallBack;
-    private ImageView showItem;
 
     private RadioGroup groupButton;
     private RadioButton btnBackground;
@@ -54,15 +58,8 @@ public class StoreFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_store, container, false);
-        pref = requireActivity().getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE);
+        initiateData(view);
 
-//        // Get user coins from Preferences
-//        txtUserCoins = view.findViewById(R.id.txtUserCoins);
-//        storePref = requireContext().getSharedPreferences("CARO", Context.MODE_PRIVATE);
-//        gson = new Gson();
-//        String json = storePref.getString("USER_COINS", "");
-//        userCoins = gson.fromJson(json, Coins.class);
-//        txtUserCoins.setText(String.valueOf(userCoins.getCopperCoins()));
         SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String key) {
@@ -77,37 +74,40 @@ public class StoreFragment extends Fragment {
             }
         };
         pref.registerOnSharedPreferenceChangeListener(listener);
-        txtUserCoins = view.findViewById(R.id.txtUserCoins);
-        storeItems = AppData.getInstance().getStoreItems();
+
+
         userCoins = getUserInfoFromSharedPreferences().getCoins();
         txtUserCoins.setText(String.valueOf(userCoins.getCopperCoins()));
 
         // Show template of the item
-        showItem = view.findViewById(R.id.showItem);
-
-        // Show store items
-        viewItems = view.findViewById(R.id.viewItems);
-        CustomStoreGridviewAdapter customStoreGridviewAdapter =
-                new CustomStoreGridviewAdapter(view.getContext(), R.layout.store_item_gridview, storeItems);
-        viewItems.setAdapter(customStoreGridviewAdapter);
-        viewItems.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
-        viewItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        btnBackground.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                viewItems.setItemChecked(position, true);
-                StoreItem item = storeItems.get(position).getItem();
-
-                if (item.getClass() == Background.class) {
-                    showItem.setImageResource(((Background) item).getLayoutBackground());
-                } else {
-                    //TODO change to view music
-                }
+            public void onClick(View v) {
+                items = AppData.getInstance().getBackgroundList();
+                pref.edit().putInt(STORE_TYPE, MODE_BACKGROUND).apply();
+                CustomStoreGridviewAdapter customStoreGridviewAdapter =
+                        new CustomStoreGridviewAdapter(view.getContext(), R.layout.store_item_gridview,
+                                items);
+                viewItems.setAdapter(customStoreGridviewAdapter);
+                viewItems.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
             }
         });
 
-        groupButton = view.findViewById(R.id.groupButton);
-        btnBackground = view.findViewById(R.id.btnBackground);
-        btnMusic = view.findViewById(R.id.btnMusic);
+        btnMusic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                items = AppData.getInstance().getMusicList();
+                pref.edit().putInt(STORE_TYPE, MODE_MUSIC).apply();
+                CustomStoreGridviewAdapter customStoreGridviewAdapter =
+                        new CustomStoreGridviewAdapter(view.getContext(), R.layout.store_item_gridview,
+                                items);
+                viewItems.setAdapter(customStoreGridviewAdapter);
+                viewItems.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
+            }
+        });
+
+
+
 
         groupButton.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -118,7 +118,6 @@ public class StoreFragment extends Fragment {
             }
         });
 
-        btnCallBack = view.findViewById(R.id.btnCallBack);
         btnCallBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,6 +134,25 @@ public class StoreFragment extends Fragment {
         Type type = new TypeToken<UserInfo>() {
         }.getType();
         return gson.fromJson(json, type);
+    }
+
+    private void initiateData(View view) {
+        txtUserCoins = view.findViewById(R.id.txtUserCoins);
+        viewItems = view.findViewById(R.id.viewItems);
+        groupButton = view.findViewById(R.id.groupButton);
+        btnBackground = view.findViewById(R.id.btnBackground);
+        btnMusic = view.findViewById(R.id.btnMusic);
+        btnCallBack = view.findViewById(R.id.btnCallBack);
+        pref = requireActivity().getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE);
+
+
+        items = AppData.getInstance().getBackgroundList();
+        pref.edit().putInt(STORE_TYPE, MODE_BACKGROUND).apply();
+        CustomStoreGridviewAdapter customStoreGridviewAdapter =
+                new CustomStoreGridviewAdapter(view.getContext(), R.layout.store_item_gridview,
+                        items);
+        viewItems.setAdapter(customStoreGridviewAdapter);
+        viewItems.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
     }
 
 }

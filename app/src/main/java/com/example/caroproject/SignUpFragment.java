@@ -91,7 +91,7 @@ public class SignUpFragment extends Fragment {
                                         if (task.isSuccessful()) {
                                             //Add information of new user to firestore
                                             FirebaseUser user = task.getResult().getUser();
-                                            UserInfo newUser = new UserInfo(user.getUid(), user.getDisplayName(), email, password);
+                                            UserInfo newUser = new UserInfo(user.getUid(), user.getDisplayName(), email);
                                             FirebaseHelper.getInstance().addDataToDatabase("UserInfo", user.getUid(), newUser);
 
                                             // Sign in success, update UI with the signed-in user's information

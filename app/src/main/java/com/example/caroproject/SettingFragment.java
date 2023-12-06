@@ -15,34 +15,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SettingFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class SettingFragment extends Fragment {
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
 
     private ImageButton btnCallBack;
     private ImageButton btnChooseBackground;
+    private ImageButton btnChooseMusic;
 
     public SettingFragment() {
         // Required empty public constructor
     }
 
-    public static SettingFragment newInstance(String param1, String param2) {
-        SettingFragment fragment = new SettingFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,12 +37,21 @@ public class SettingFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setting, container, false);
         btnChooseBackground = view.findViewById(R.id.btnChooseBackground);
+        btnChooseMusic = view.findViewById(R.id.btnChooseMusic);
         btnCallBack = view.findViewById(R.id.btnCallBack);
 
         btnCallBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getActivity().getOnBackPressedDispatcher().onBackPressed();
+            }
+        });
+
+        btnChooseMusic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ChooseMusicDialogFragment dialog = new ChooseMusicDialogFragment();
+                dialog.show(requireActivity().getSupportFragmentManager(), "dialog");
             }
         });
 
