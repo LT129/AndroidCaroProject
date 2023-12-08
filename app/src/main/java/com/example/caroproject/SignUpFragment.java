@@ -79,9 +79,10 @@ public class SignUpFragment extends Fragment {
                 String password = edtPassword.getText().toString().trim();
                 String retypePassword = edtRetype.getText().toString().trim();
                 progressBar.setVisibility(View.VISIBLE);
-                if(email.equals("")||password.equals("")||retypePassword.equals(""))
+                if(email.equals("")||password.equals("")||retypePassword.equals("")) {
+                    progressBar.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "All fields are mandatory", Toast.LENGTH_SHORT).show();
-                else{
+                } else{
                     if(password.equals(retypePassword)){
                         auth.createUserWithEmailAndPassword(email,password)
                                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -91,7 +92,7 @@ public class SignUpFragment extends Fragment {
                                         if (task.isSuccessful()) {
                                             //Add information of new user to firestore
                                             FirebaseUser user = task.getResult().getUser();
-                                            UserInfo newUser = new UserInfo(user.getUid(), user.getDisplayName(), email);
+                                            UserInfo newUser = new UserInfo(user);
                                             FirebaseHelper.getInstance().addDataToDatabase("UserInfo", user.getUid(), newUser);
 
                                             // Sign in success, update UI with the signed-in user's information

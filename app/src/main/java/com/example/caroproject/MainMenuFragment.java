@@ -42,11 +42,8 @@ public class MainMenuFragment extends Fragment {
         btnHistory = view.findViewById(R.id.btnHistory);
         groupButton = view.findViewById(R.id.groupButton);
         FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
         btnMenu.setChecked(true);
-        fragmentTransaction.replace(R.id.main_view_holder, new GameModeFragment());
-        fragmentTransaction.commit();
+        fragmentManager.beginTransaction().replace(R.id.main_view_holder, new GameModeFragment()).commit();
         groupButton.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @SuppressLint("NonConstantResourceId")
             @Override

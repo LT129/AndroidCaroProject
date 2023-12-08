@@ -1,5 +1,9 @@
 package com.example.caroproject.Data;
 
+import android.net.Uri;
+
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 
 public class UserInfo {
@@ -9,7 +13,7 @@ public class UserInfo {
     private String username;
     private String email;
     private UserInfo[] friends;
-    private Integer avatar;
+    private String avatar;
     private MatchHistory[] matchHistory;
     private boolean Status;
     private String phoneNumber;
@@ -21,6 +25,26 @@ public class UserInfo {
         this.ID = ID;
         this.username = username;
         this.email = email;
+        this.friends = null;
+        this.avatar = null;
+        this.matchHistory = null;
+        this.coins = new Coins(1000);
+        backgroundStatus = new ArrayList<>();
+        backgroundStatus.add(true);
+        for(int i = 1; i < AppData.getInstance().getBackgroundList().size(); i++) {
+            backgroundStatus.add(false);
+        }
+        musicStatus = new ArrayList<>();
+        musicStatus.add(true);
+        for(int i = 1; i < AppData.getInstance().getMusicList().size(); i++) {
+            musicStatus.add(false);
+        }
+    }
+
+    public UserInfo(FirebaseUser user){
+        this.ID = user.getUid();
+        this.username = user.getDisplayName();
+        this.email = user.getEmail();
         this.friends = null;
         this.avatar = null;
         this.matchHistory = null;
@@ -72,11 +96,11 @@ public class UserInfo {
         this.friends = friends;
     }
 
-    public Integer getAvatar() {
+    public String getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(Integer avatar) {
+    public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 

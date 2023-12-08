@@ -1,10 +1,13 @@
 package com.example.caroproject.Adapter;
 
+import android.content.ContentResolver;
+import android.net.Uri;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -14,13 +17,18 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseHelper {
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
+    private FirebaseStorage storage;
 
 
     /**
@@ -126,6 +134,13 @@ public class FirebaseHelper {
                 });
     }
 
+    public void uploadUserAvatar(String userId, Uri imageUri, String imageType) {
+        String folder = "Avatar";
+        StorageReference storageRef = storage.getReference(folder).child(userId + "." + imageType);
+        storageRef.putFile(imageUri);
+    }
+
+
     public interface OnCompleteRetrieveDataListener {
         <T>void onComplete(List<T> list);
     }
@@ -136,15 +151,11 @@ public class FirebaseHelper {
     }
 
 
-
-
-
-
-
     private static FirebaseHelper instance;
     private FirebaseHelper() {
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
+        storage = FirebaseStorage.getInstance();
     }
     public static FirebaseHelper getInstance() {
         if(instance != null) {
