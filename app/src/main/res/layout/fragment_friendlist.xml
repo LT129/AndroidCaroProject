@@ -24,10 +24,16 @@
             android:text="OK">
         </Button>
     </LinearLayout>
-
-    <ListView
-        android:id="@+id/listViewFriend"
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+    </ProgressBar>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewFriend"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </ListView>
+    </androidx.recyclerview.widget.RecyclerView>
 </LinearLayout>

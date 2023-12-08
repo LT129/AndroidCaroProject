@@ -1,20 +1,23 @@
 package com.example.caroproject.Data;
 
+import java.util.List;
+
+
 public class UserInfo {
-
-
+    
+    public static int DEFAULT_AVATAR = 0;
     private String ID;
     private String username;
     private String email;
     private String password;
-    private UserInfo[] friends;
-    private Integer avatar;
+    private List<String> friends;
+    private String avatar;
     private MatchHistory[] matchHistory;
     private boolean Status;
     private String phoneNumber;
     private Coins coins;
 
-    public UserInfo(String ID, String userName, String password, UserInfo[] friends, Integer avatar, MatchHistory[] matchHistory) {
+    public UserInfo(String ID, String userName, String password, List<String> friends, String avatar, MatchHistory[] matchHistory) {
         this.ID = ID;
         this.username = userName;
         this.password = password;
@@ -34,7 +37,7 @@ public class UserInfo {
         this.coins = new Coins(1000);
     }
 
-    public UserInfo(String ID, String username, String password, UserInfo[] friends, Integer avatar, MatchHistory[] matchHistory, boolean status, String email, String phoneNumber, Coins coins) {
+    public UserInfo(String ID, String username, String password, List<String> friends, String avatar, MatchHistory[] matchHistory, boolean status, String email, String phoneNumber, Coins coins) {
         this.ID = ID;
         this.username = username;
         this.password = password;
@@ -56,7 +59,7 @@ public class UserInfo {
         this.matchHistory = null;
         this.coins = new Coins(1000);
     }
-    public UserInfo(String username, boolean status, Integer avatar){
+    public UserInfo(String username, boolean status, String avatar){
         this.username = username;
         this.Status = status;
         this.avatar = avatar;
@@ -94,20 +97,24 @@ public class UserInfo {
         this.password = password;
     }
 
-    public UserInfo[] getFriends() {
+
+    public List<String> getFriends() {
         return friends;
     }
 
-    public void setFriends(UserInfo[] friends) {
-        this.friends = friends;
-    }
-
-    public Integer getAvatar() {
+    public String getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(Integer avatar) {
-        this.avatar = avatar;
+    public void setAvatar(String avatar) {
+        if (avatar != null && avatar.matches("\\d+")) {
+            // It's a numeric string, convert to int if necessary
+            this.avatar = avatar;
+        } else {
+            // Handle non-numeric or null values
+            // You might set a default avatar or handle it according to your app logic
+            this.avatar = avatar; // Define a constant or default value
+        }
     }
 
     public MatchHistory[] getMatchHistory() {
@@ -118,7 +125,7 @@ public class UserInfo {
         this.matchHistory = matchHistory;
     }
 
-    public boolean isStatus() {
+    public boolean isOnline() {
         return Status;
     }
 
