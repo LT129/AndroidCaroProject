@@ -116,7 +116,7 @@ public class UserInfo {
         this.email = email;
     }
 
-    public void setFriends(UserInfo[] friends) {
+    public void setFriends(List<String> friends) {
         this.friends = friends;
     }
 
