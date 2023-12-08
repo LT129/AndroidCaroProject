@@ -5,14 +5,17 @@ import android.net.Uri;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.List;
+
 
 public class UserInfo {
-
-
+    
+    public static int DEFAULT_AVATAR = 0;
     private String ID;
     private String username;
     private String email;
-    private UserInfo[] friends;
+    private String password;
+    private List<String> friends;
     private String avatar;
     private MatchHistory[] matchHistory;
     private boolean Status;
@@ -61,7 +64,32 @@ public class UserInfo {
         }
     }
 
+    public UserInfo(String ID, String username, String password, List<String> friends, String avatar, MatchHistory[] matchHistory, boolean status, String email, String phoneNumber, Coins coins) {
+        this.ID = ID;
+        this.username = username;
+        this.password = password;
+        this.friends = friends;
+        this.avatar = avatar;
+        this.matchHistory = matchHistory;
+        Status = status;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.coins = coins;
+    }
+
     public UserInfo() {
+        this.ID = null;
+        this.username = null;
+        this.password = null;
+        this.friends = null;
+        this.avatar = null;
+        this.matchHistory = null;
+        this.coins = new Coins(1000);
+    }
+    public UserInfo(String username, boolean status, String avatar){
+        this.username = username;
+        this.Status = status;
+        this.avatar = avatar;
     }
 
     public String getID() {
@@ -88,12 +116,13 @@ public class UserInfo {
         this.email = email;
     }
 
-    public UserInfo[] getFriends() {
-        return friends;
-    }
-
     public void setFriends(UserInfo[] friends) {
         this.friends = friends;
+    }
+
+
+    public List<String> getFriends() {
+        return friends;
     }
 
     public String getAvatar() {
@@ -112,7 +141,7 @@ public class UserInfo {
         this.matchHistory = matchHistory;
     }
 
-    public boolean isStatus() {
+    public boolean isOnline() {
         return Status;
     }
 
