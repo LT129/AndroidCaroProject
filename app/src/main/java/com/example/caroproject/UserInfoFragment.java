@@ -206,7 +206,7 @@ public class UserInfoFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 pref.edit().clear().apply();
-                                FirebaseAuth.getInstance().signOut();
+                                FirebaseHelper.getInstance().logOut();
                                 reSetAppSetting();
                                 NavController navController = Navigation.findNavController(v);
                                 navController.navigate(R.id.action_userInfoFragment_to_signInFragment);

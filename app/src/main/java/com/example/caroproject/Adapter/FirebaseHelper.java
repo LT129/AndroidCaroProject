@@ -92,9 +92,10 @@ public class FirebaseHelper {
         });
     }
 
-    public interface OnCompleteRetrieveDataListener {
-        <T>void onComplete(List<T> list);
+    public void logOut() {
+        auth.signOut();
     }
+
 
 
     public void changePassword(String password) {
@@ -124,6 +125,11 @@ public class FirebaseHelper {
                     }
                 });
     }
+
+    public interface OnCompleteRetrieveDataListener {
+        <T>void onComplete(List<T> list);
+    }
+
 
     public interface OnResultListener{
         void onResult(boolean result);

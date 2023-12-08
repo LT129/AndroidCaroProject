@@ -106,7 +106,7 @@
                     android:src="@drawable/music_on" />
 
                 <SeekBar
-                    android:id="@+id/seekBar"
+                    android:id="@+id/seekBarMusic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center" />
@@ -127,7 +127,7 @@
                     android:src="@drawable/volumn_up" />
 
                 <SeekBar
-                    android:id="@+id/seekBar2"
+                    android:id="@+id/seekBarSound"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"/>
