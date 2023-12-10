@@ -31,7 +31,7 @@ public class UserInfo {
         this.friends = null;
         this.avatar = null;
         this.matchHistory = null;
-        this.coins = new Coins(1000);
+        this.coins = new Coins(50);
         backgroundStatus = new ArrayList<>();
         backgroundStatus.add(true);
         for(int i = 1; i < AppData.getInstance().getBackgroundList().size(); i++) {
@@ -53,7 +53,7 @@ public class UserInfo {
         this.friends = null;
         this.avatar = null;
         this.matchHistory = null;
-        this.coins = new Coins(1000);
+        this.coins = new Coins(100);
         backgroundStatus = new ArrayList<>();
         backgroundStatus.add(true);
         for(int i = 1; i < AppData.getInstance().getBackgroundList().size(); i++) {
@@ -74,7 +74,7 @@ public class UserInfo {
         this.friends = friends;
         this.avatar = avatar;
         this.matchHistory = matchHistory;
-        Status = status;
+        this.Status = status;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.coins = coins;
@@ -88,7 +88,7 @@ public class UserInfo {
         this.friends = null;
         this.avatar = null;
         this.matchHistory = null;
-        this.coins = new Coins(1000);
+        this.coins = new Coins(100);
         this.losses = 0;
         this.wins = 0;
     }
@@ -96,6 +96,8 @@ public class UserInfo {
         this.username = username;
         this.Status = status;
         this.avatar = avatar;
+        this.coins = new Coins(100);
+        this.matchHistory = null;
         this.losses = 0;
         this.wins = 0;
     }

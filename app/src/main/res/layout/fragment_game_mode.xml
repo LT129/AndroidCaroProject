@@ -44,8 +44,7 @@
             android:textStyle="bold"
             android:text="@string/pvp"
             android:textAllCaps="false"
-            android:background="@drawable/custom_button_1"
-            android:soundEffectsEnabled="false"/>
+            android:background="@drawable/custom_button_1"/>
         <Button
             android:id="@+id/btnPve"
             android:layout_width="match_parent"
@@ -58,8 +57,7 @@
             android:textStyle="bold"
             android:text="@string/pve"
             android:textAllCaps="false"
-            android:background="@drawable/custom_button_1"
-            android:soundEffectsEnabled="false"/>
+            android:background="@drawable/custom_button_1"/>
         <Button
             android:id="@+id/btnSetting"
             android:layout_width="match_parent"
@@ -72,8 +70,7 @@
             android:layout_marginRight="100dp"
             android:text="@string/setting"
             android:textAllCaps="false"
-            android:background="@drawable/custom_button_1"
-            android:soundEffectsEnabled="false"/>
+            android:background="@drawable/custom_button_1"/>
         <Button
             android:id="@+id/btnExit"
             android:layout_width="match_parent"
@@ -86,7 +83,6 @@
             android:layout_marginRight="100dp"
             android:text="@string/exit"
             android:textAllCaps="false"
-            android:background="@drawable/custom_button_1"
-            android:soundEffectsEnabled="false"/>
+            android:background="@drawable/custom_button_1"/>
     </FrameLayout>
 </FrameLayout>

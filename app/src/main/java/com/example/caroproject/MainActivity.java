@@ -8,6 +8,7 @@ import androidx.navigation.Navigation;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.os.Bundle;
 
 import com.example.caroproject.Data.AppData;
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     public final static String LOGGED_IN_ACCOUNT = "username";
     public final static String BACKGROUND = "background";
     public final static String MUSIC = "music";
+    public final static String MUSIC_VOLUME = "musicVolume";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,16 +40,23 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
         int backgroundPosition;
         int musicPosition;
+        int musicVolume;
 //        pref.edit().clear().apply();
 
         if(pref != null) {
             backgroundPosition = pref.getInt(BACKGROUND, 0);
             musicPosition = pref.getInt(MUSIC, 0);
+            musicVolume = pref.getInt(MUSIC_VOLUME, 100);
+
         } else {
             backgroundPosition = 0;
             musicPosition = 0;
+            musicVolume = 100;
         }
-        //TODO create sharedPreferences for setting
+
+
+        AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, musicVolume, 0);
 
         AppData appData = AppData.getInstance();
         getWindow().setBackgroundDrawableResource(((Background)appData.getBackgroundList().get(backgroundPosition).getItem()).getLayoutBackground());
