@@ -66,6 +66,7 @@
                     android:id="@+id/onlinePlayMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:textSize="20sp"
                     android:textColor="@color/word_color_gray"
                     android:text="@string/online"/>
@@ -74,10 +75,30 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
-                    android:checked="true"
                     android:textColor="@color/word_color_gray"
                     android:text="@string/offline"/>
             </RadioGroup>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:layout_marginBottom="10dp" >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="24sp"
+                    android:textColor="@color/word_color_gray"
+                    android:text="@string/choose_shape"/>
+                <ImageButton
+                    android:id="@+id/chooseShape"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:contentDescription="TODO" />
+
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -101,6 +122,11 @@
                     android:contentDescription="TODO" />
 
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/lnSizeTime">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -186,14 +212,13 @@
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
                     android:textColor="@color/word_color_gray"
-                    android:text="Unlimited"/>
+                    android:text="90s"/>
             </RadioGroup>
-
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone"
                 android:id="@+id/lnRoom">
             <TextView
                 android:layout_width="match_parent"
@@ -243,6 +268,7 @@
                         android:padding="10dp"
                         android:layout_marginLeft="85dp"
                         android:hint="RoomID"
+                        android:focusable="true"
                         android:visibility="gone"
                         android:background="@drawable/custom_edittext"/>
 
@@ -259,6 +285,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dp"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/btnPlay"

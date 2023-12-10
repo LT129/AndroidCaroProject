@@ -147,6 +147,11 @@
             app:destination="@id/inGameOnlineFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_pvpFragment_to_signInFragment"
+            app:destination="@id/signInFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
     </fragment>
 
     <fragment
@@ -175,7 +180,11 @@
             app:exitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_inGameAIFragment_self2"
-            app:destination="@id/inGameAIFragment" />
+            app:destination="@id/inGameAIFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popUpTo="@id/inGameAIFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/pveFragment"
@@ -222,6 +231,20 @@
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out"
             app:popUpTo="@id/mainMenuFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_inGameOnlineFragment_self"
+            app:destination="@id/inGameOnlineFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popUpTo="@id/inGameOnlineFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_inGameOnlineFragment_to_pvpFragment"
+            app:destination="@id/pvpFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popUpTo="@id/pvpFragment"
             app:popUpToInclusive="true" />
     </fragment>
 

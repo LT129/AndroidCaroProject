@@ -39,7 +39,7 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1.25"
+                    android:layout_weight="1"
                     android:text="00:00"
                     android:id="@+id/txtTopInGame"
                     android:background="@drawable/custom_edittext"
@@ -47,21 +47,56 @@
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="30dp"
                     android:gravity="center"/>
-                <ImageView
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_weight="1">
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="5"
                     android:id="@+id/imgTopInGame"
                     android:background="@drawable/custom_picture"
                     android:src="@drawable/goku"
-                    android:layout_margin="10dp"
-                    />
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="5dp"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:id="@+id/txtUsername"
+                        android:textSize="10sp"
+                        android:paddingLeft="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:background="@drawable/custom_edittext_2"
+                        android:paddingRight="10dp"
+                        android:textAlignment="center"/>
+            </LinearLayout>
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/custom_edittext_2"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textAlignment="center"
+                android:textSize="15sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:orientation="vertical"
                 android:id="@+id/linearGrid"
                 android:layout_weight="5">
                 <GridView
@@ -69,6 +104,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:stretchMode="columnWidth"/>
+                <ProgressBar
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/progress_bar_ingame"
+                    android:layout_margin="5dp"
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+                    />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -83,6 +126,8 @@
                     android:background="@drawable/custom_picture"
                     android:src="@drawable/goku3"
                     android:layout_margin="10dp"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
                     />
                 <LinearLayout
                     android:layout_width="0dp"
@@ -116,7 +161,15 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:layout_weight="1">
-
+                    <Button
+                        android:id="@+id/btnMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="25dp"
+                        android:layout_marginBottom="20dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/message" />
                     <Button
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
@@ -125,14 +178,8 @@
                         android:layout_marginLeft="15dp"
                         android:layout_marginRight="25dp"
                         android:layout_weight="1"/>
-                    <Button
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:background="@drawable/handshake"
-                        android:id="@+id/btnDrawInGame"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginRight="25dp"
-                        android:layout_weight="1"/>
+
+
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

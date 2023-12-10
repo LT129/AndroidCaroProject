@@ -37,17 +37,19 @@
                         android:id="@+id/btnHomeInGame"
                         android:layout_weight="1"/>
                 </LinearLayout>
+
                 <TextView
+                    android:id="@+id/txtTopInGame"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1.25"
-                    android:text="00:00"
-                    android:id="@+id/txtTopInGame"
-                    android:background="@drawable/custom_edittext"
-                    android:textSize="24sp"
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="30dp"
-                    android:gravity="center"/>
+                    android:layout_weight="1"
+                    android:background="@drawable/custom_edittext"
+                    android:gravity="center"
+                    android:text="00:00"
+                    android:textSize="24sp" />
+
                 <ImageView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
