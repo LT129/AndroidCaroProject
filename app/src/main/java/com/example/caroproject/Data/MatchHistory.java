@@ -1,32 +1,36 @@
 package com.example.caroproject.Data;
 
 import java.sql.Time;
+import java.util.Date;
 
 public class MatchHistory {
-    private UserInfo opponent;
-    private Time time;
+    private String userId;
+    private Date date;
     private boolean result;
 
-    public MatchHistory(UserInfo opponent, Time time, boolean result) {
-        this.opponent = opponent;
-        this.time = time;
+    public MatchHistory() {
+    }
+
+    public MatchHistory(String userId, Date date, boolean result) {
+        this.userId = userId;
+        this.date = date;
         this.result = result;
     }
 
-    public UserInfo getOpponent() {
-        return opponent;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setOpponent(UserInfo opponent) {
-        this.opponent = opponent;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public Time getTime() {
-        return time;
+    public Date getDate() {
+        return date;
     }
 
-    public void setTime(Time time) {
-        this.time = time;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public boolean isResult() {

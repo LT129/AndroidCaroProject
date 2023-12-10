@@ -149,7 +149,26 @@ public class GameModeFragment extends Fragment {
         btnStore = view.findViewById(R.id.btnStore);
         userAvatar = view.findViewById(R.id.userAvatar);
 
-//        Glide.with(view).load(FirebaseHelper.getInstance().getPhotoUrl()).error(R.drawable.user_account).into(userAvatar);
+        pref.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String key) {
+                if(key == "USER_INFORMATION") {
+                    Glide.with(view).load(getUserInfoFromSharedPreferences().getAvatar()).error(R.drawable.user_account).into(userAvatar);
+                }
+            }
+        });
+
+        if(getUserInfoFromSharedPreferences() != null) {
+            Glide.with(view).load(getUserInfoFromSharedPreferences().getAvatar()).error(R.drawable.user_account).into(userAvatar);
+        }
+    }
+
+    private UserInfo getUserInfoFromSharedPreferences() {
+        Gson gson = new Gson();
+        String json = pref.getString("USER_INFORMATION", null);
+        Type type = new TypeToken<UserInfo>() {
+        }.getType();
+        return gson.fromJson(json, type);
     }
 
 }

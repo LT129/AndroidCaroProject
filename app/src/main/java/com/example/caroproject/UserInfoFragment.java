@@ -3,6 +3,7 @@ package com.example.caroproject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -33,12 +35,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.caroproject.Adapter.FirebaseHelper;
 import com.example.caroproject.Data.AppData;
 import com.example.caroproject.Data.Background;
 import com.example.caroproject.Data.Music;
 import com.example.caroproject.Data.SoundMaking;
 import com.example.caroproject.Data.UserInfo;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -78,6 +83,7 @@ public class UserInfoFragment extends Fragment {
     private SharedPreferences pref;
     private UserInfo userInfo;
     private ActivityResultLauncher<Intent> launchSomeActivity;
+    private Uri selectedImageUri;
 
 
     public UserInfoFragment() {
@@ -193,7 +199,6 @@ public class UserInfoFragment extends Fragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             updateInfoToDatabase();
-                            updateUserInfoToSharedPreferences();
                         }
                     })
                     .setNegativeButton("No", null)
@@ -239,7 +244,7 @@ public class UserInfoFragment extends Fragment {
                         // do your operation from here....
                         if (data != null
                                 && data.getData() != null) {
-                            Uri selectedImageUri = data.getData();
+                            selectedImageUri = data.getData();
                             userInfo.setAvatar(selectedImageUri.toString());
                             Glide.with(view).load(selectedImageUri).error(R.drawable.user_account).into(userAvatar);
                         }
@@ -263,20 +268,45 @@ public class UserInfoFragment extends Fragment {
     }
 
     private void updateInfoToDatabase() {
-        FirebaseHelper.getInstance().addDataToDatabase("UserInfo", userInfo.getID(), userInfo);
+        if(pref.contains("AVATAR")) {
+            FirebaseHelper.getInstance().uploadUserAvatar(userInfo.getID(), selectedImageUri, getFileExtension(selectedImageUri), new FirebaseHelper.OnResultUploadAvatarListener() {
+                @Override
+                public void onResult(Uri uri) {
+                    userInfo.setAvatar(uri.toString());
+                    updateUserInfoToSharedPreferences();
+                    FirebaseHelper.getInstance().addDataToDatabase("UserInfo", userInfo.getID(), userInfo);
+                    pref.edit().remove("AVATAR").apply();
+                }
+            });
+        } else {
+            updateUserInfoToSharedPreferences();
+            FirebaseHelper.getInstance().addDataToDatabase("UserInfo", userInfo.getID(), userInfo);
+        }
+
+
         if(pref.contains(PASSWORD)) {
             FirebaseHelper.getInstance().changePassword(pref.getString(PASSWORD, null));
             pref.edit().remove(PASSWORD).apply();
         }
-
     }
+
+    private String getFileExtension(Uri uri) {
+        ContentResolver cr = requireContext().getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cr.getType(uri));
+    }
+
+
 
     private void init(View view) {
         txtDisplayName.setText(userInfo.getUsername());
         txtUsername.setText(userInfo.getUsername());
         txtEmail.setText(userInfo.getEmail());
         txtPhone.setText(userInfo.getPhoneNumber());
-//        Glide.with(view).load(Uri.parse(userInfo.getAvatar())).into(userAvatar);
+        Glide.with(view).load(userInfo.getAvatar())
+                .placeholder(R.drawable.user_account)
+                .error(R.drawable.user_account)
+                .into(userAvatar);
     }
 
 
@@ -285,10 +315,9 @@ public class UserInfoFragment extends Fragment {
         Intent i = new Intent();
         i.setType("image/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
-
-
-
         launchSomeActivity.launch(i);
+
+        pref.edit().putString("AVATAR", "avatar").apply();
     }
 
 

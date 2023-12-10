@@ -23,6 +23,7 @@ import java.util.ArrayList;
 public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.FriendListViewHolder> {
     Context context;
     ArrayList<UserInfo> userInfoArrayList;
+    View view;
 
     public FriendListAdapter(Context context, ArrayList<UserInfo> userInfoArrayList) {
         this.context = context;
@@ -32,9 +33,9 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
     @NonNull
     @Override
     public FriendListAdapter.FriendListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.custom_friendlist_view,parent,false);
+        view = LayoutInflater.from(context).inflate(R.layout.custom_friendlist_view,parent,false);
 
-        return new FriendListViewHolder(v);
+        return new FriendListViewHolder(view);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
         if(user.isOnline()){
             holder.status.setText("Online");
         }else holder.status.setText("Offline");
-        //holder.avatar.setImageResource(user.getAvatar());
+        Glide.with(view).load(user.getAvatar()).error(R.drawable.user_account).into(holder.avatar);
     }
 
     @Override
@@ -56,12 +57,12 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
     public static class FriendListViewHolder extends RecyclerView.ViewHolder{
 
         TextView name,status;
-        //ImageView avatar;
+        ImageView avatar;
         public FriendListViewHolder(@NonNull View custom_friendlist_view) {
             super(custom_friendlist_view);
             name = custom_friendlist_view.findViewById(R.id.txtViewName);
             status = custom_friendlist_view.findViewById(R.id.txtViewStatus);
-            //avatar = custom_friendlist_view.findViewById(R.id.imgViewAvatar);
+            avatar = custom_friendlist_view.findViewById(R.id.imgViewAvatar);
         }
     }
 }

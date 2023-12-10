@@ -134,10 +134,22 @@ public class FirebaseHelper {
                 });
     }
 
-    public void uploadUserAvatar(String userId, Uri imageUri, String imageType) {
+    public void uploadUserAvatar(String userId, Uri imageUri, String imageType, OnResultUploadAvatarListener listener) {
         String folder = "Avatar";
         StorageReference storageRef = storage.getReference(folder).child(userId + "." + imageType);
-        storageRef.putFile(imageUri);
+        storageRef.putFile(imageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        taskSnapshot.getMetadata().getReference().getDownloadUrl()
+                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        listener.onResult(uri);
+                                    }
+                                });
+                    }
+                });
     }
 
 
@@ -148,6 +160,10 @@ public class FirebaseHelper {
 
     public interface OnResultListener{
         void onResult(boolean result);
+    }
+
+    public interface OnResultUploadAvatarListener {
+        void onResult(Uri Uri);
     }
 
 

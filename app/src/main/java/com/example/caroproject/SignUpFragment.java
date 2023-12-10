@@ -116,6 +116,7 @@ public class SignUpFragment extends Fragment {
                                     }
                                 });
                     }else{
+                        progressBar.setVisibility(View.GONE);
                         Toast.makeText(requireContext(), "Password do not match !", Toast.LENGTH_SHORT).show();
                     }
                 }

@@ -14,10 +14,9 @@ public class UserInfo {
     private String ID;
     private String username;
     private String email;
-    private String password;
     private List<String> friends;
     private String avatar;
-    private MatchHistory[] matchHistory;
+    private ArrayList<MatchHistory> matchHistory;
     private boolean Status;
     private String phoneNumber;
     private Coins coins;
@@ -64,10 +63,9 @@ public class UserInfo {
         }
     }
 
-    public UserInfo(String ID, String username, String password, List<String> friends, String avatar, MatchHistory[] matchHistory, boolean status, String email, String phoneNumber, Coins coins) {
+    public UserInfo(String ID, String username, List<String> friends, String avatar, ArrayList<MatchHistory> matchHistory, boolean status, String email, String phoneNumber, Coins coins) {
         this.ID = ID;
         this.username = username;
-        this.password = password;
         this.friends = friends;
         this.avatar = avatar;
         this.matchHistory = matchHistory;
@@ -80,7 +78,6 @@ public class UserInfo {
     public UserInfo() {
         this.ID = null;
         this.username = null;
-        this.password = null;
         this.friends = null;
         this.avatar = null;
         this.matchHistory = null;
@@ -133,11 +130,11 @@ public class UserInfo {
         this.avatar = avatar;
     }
 
-    public MatchHistory[] getMatchHistory() {
+    public ArrayList<MatchHistory> getMatchHistory() {
         return matchHistory;
     }
 
-    public void setMatchHistory(MatchHistory[] matchHistory) {
+    public void setMatchHistory(ArrayList<MatchHistory> matchHistory) {
         this.matchHistory = matchHistory;
     }
 

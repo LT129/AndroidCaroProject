@@ -1,72 +1,70 @@
 package com.example.caroproject;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.caroproject.Adapter.FirebaseHelper;
 import com.example.caroproject.Adapter.FriendListAdapter;
+import com.example.caroproject.Adapter.MatchHistoryAdapter;
+import com.example.caroproject.Data.MatchHistory;
 import com.example.caroproject.Data.UserInfo;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class HistoryFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-    Context context;
-
-    private UserInfo[] items;
     private ListView listViewHistory;
+    private UserInfo userInfo;
+    private SharedPreferences pref;
 
     public HistoryFragment() {
         //Empty constructor
-    }
-    public static HistoryFragment newInstance(String param1, String param2) {
-        HistoryFragment fragment = new HistoryFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
     }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            context = getActivity(); // use this reference to invoke main callbacks
-        }
-        catch (IllegalStateException e) {
-            throw new IllegalStateException("MainActivity must implement callbacks");
-        }
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        LinearLayout fragment_match_history = (LinearLayout) inflater.inflate(R.layout.fragment_match_history, null);
-        listViewHistory = (ListView) fragment_match_history.findViewById(R.id.listViewHistory);
+        View view = inflater.inflate(R.layout.fragment_match_history, null);
+        initiateData();
+        listViewHistory = view.findViewById(R.id.listViewHistory);
+        if(userInfo.getMatchHistory() == null) {
+            userInfo.setMatchHistory(new ArrayList<>());
+            ArrayList<MatchHistory> histories = new ArrayList<>();
+        }
+        ArrayAdapter<MatchHistory> adapter = new MatchHistoryAdapter(requireContext(), R.layout.custom_match_history_view, userInfo.getMatchHistory());
+        listViewHistory.setAdapter(adapter);
+        return view;
+    }
 
-//        items = new PlayerInfo[] {
-//                new PlayerInfo(null,"Username1", "Password1", null, R.drawable.custom_picture2, null),
-//                new PlayerInfo(null,"Username2", "Password2", null, R.drawable.custom_picture2, null),
-//                // Add more PlayerInfo objects as needed
-//        };
-//        FriendListAdapter adapter = new FriendListAdapter(context,
-////                R.layout.custom_match_history_view, items);
-//        listViewHistory.setAdapter(adapter);
-        return fragment_match_history;
+    private void initiateData() {
+        pref = requireContext().getSharedPreferences("CARO", Context.MODE_PRIVATE);
+        userInfo = getUserInfoFromSharedPreferences();
+    }
+
+    private UserInfo getUserInfoFromSharedPreferences() {
+        Gson gson = new Gson();
+        String json = pref.getString("USER_INFORMATION", null);
+        Type type = new TypeToken<UserInfo>() {
+        }.getType();
+        return gson.fromJson(json, type);
     }
 }

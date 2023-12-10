@@ -6,12 +6,16 @@
     android:fadingEdge="none">
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imgViewAvatar"
-        android:layout_width="120dp"
-        android:layout_height="120dp">
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="10dp"
+        android:layout_gravity="center">
     </de.hdodenhof.circleimageview.CircleImageView>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="120dp"
+        android:layout_marginStart="10dp"
+        android:layout_gravity="center"
         android:orientation="vertical">
         <TextView
             android:id="@+id/txtViewName"
@@ -19,7 +23,7 @@
             android:layout_height="0dp"
             android:text="@string/username"
             android:textColor="@color/white"
-            android:textSize="25dp"
+            android:textSize="24sp"
             android:textStyle="italic"
             android:layout_weight="1">
         </TextView>
@@ -29,14 +33,19 @@
             android:text="Status"
             android:textColor="@color/white"
             android:textStyle="italic"
-            android:textSize="25dp"
+            android:textSize="24sp"
             android:layout_height="0dp"
             android:layout_weight="1">
         </TextView>
         <Button
             android:id="@+id/btnRemove"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:background="@android:color/transparent"
+            android:textColor="@color/white"
+            android:gravity="start"
+            android:textSize="24sp"
             android:text="Remove"
+            android:textAllCaps="false"
             android:layout_height="0dp"
             android:layout_weight="1">
         </Button>

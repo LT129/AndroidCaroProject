@@ -2,44 +2,44 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_friend"
+    android:background="@drawable/custom_background_match_history_defeat"
     android:fadingEdge="none">
-    <ImageView
+
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imgViewAvatar"
-        android:layout_width="120dp"
-        android:layout_height="120dp">
-    </ImageView>
+        android:layout_margin="10dp"
+        android:layout_width="110dp"
+        android:layout_height="110dp"/>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="130dp"
         android:orientation="vertical">
         <TextView
-            android:id="@+id/txtViewOpponent"
+            android:id="@+id/matchResult"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:text="@string/username"
-            android:textColor="@color/white"
-            android:textSize="25dp"
-            android:textStyle="italic"
+            android:text="Victory"
+            android:gravity="center"
+            android:textColor="#000000"
+            android:textSize="36sp"
+            android:layout_weight="2">
+        </TextView>
+        <TextView
+            android:id="@+id/opponentName"
+            android:layout_width="match_parent"
+            android:text="opponent name"
+            android:textColor="#000000"
+            android:textSize="24sp"
+            android:layout_height="0dp"
             android:layout_weight="1">
         </TextView>
         <TextView
-            android:id="@+id/txtViewStatus"
+            android:id="@+id/date"
             android:layout_width="match_parent"
-            android:text="Status"
-            android:textColor="@color/white"
-            android:textStyle="italic"
-            android:textSize="25dp"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-        </TextView>
-        <TextView
-            android:id="@+id/txtViewTime"
-            android:layout_width="match_parent"
-            android:text="Time"
-            android:textColor="@color/white"
-            android:textStyle="italic"
-            android:textSize="25dp"
+            android:text="date"
+            android:textColor="#000000"
+            android:textSize="24sp"
             android:layout_height="0dp"
             android:layout_weight="1">
         </TextView>
