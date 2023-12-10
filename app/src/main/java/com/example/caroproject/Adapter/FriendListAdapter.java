@@ -21,12 +21,15 @@ import java.util.ArrayList;
 public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.FriendListViewHolder> {
     Context context;
     ArrayList<UserInfo> userInfoArrayList;
+    private OnItemClickListener onItemClickListener;
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
 
     public FriendListAdapter(Context context, ArrayList<UserInfo> userInfoArrayList) {
         this.context = context;
         this.userInfoArrayList = userInfoArrayList;
     }
-
     @NonNull
     @Override
     public FriendListAdapter.FriendListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -44,8 +47,19 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
             holder.status.setText("Online");
         }else holder.status.setText("Offline");
         //holder.avatar.setImageResource(user.getAvatar());
-    }
 
+        holder.name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemClick(user.getUsername());
+                }
+            }
+        });
+    }
+    public interface OnItemClickListener {
+        void onItemClick(String username);
+    }
     @Override
     public int getItemCount() {
         return userInfoArrayList.size();

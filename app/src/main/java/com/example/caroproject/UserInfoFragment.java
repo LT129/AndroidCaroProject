@@ -62,6 +62,7 @@ public class UserInfoFragment extends Fragment {
     private SharedPreferences pref;
 
 
+
     public UserInfoFragment() {
         // Required empty public constructor
     }
@@ -211,8 +212,6 @@ public class UserInfoFragment extends Fragment {
                         .show();
             }
         });
-
-
         init(userInfo);
         return view;
     }
@@ -220,8 +219,7 @@ public class UserInfoFragment extends Fragment {
     private UserInfo getUserInfoFromSharedPreferences() {
         Gson gson = new Gson();
         String json = pref.getString("USER_INFORMATION", null);
-        Type type = new TypeToken<UserInfo>() {
-        }.getType();
+        Type type = new TypeToken<UserInfo>() {}.getType();
         return gson.fromJson(json, type);
     }
     private void updateUserInfoToSharedPreferences(UserInfo userInfo) {
@@ -233,7 +231,6 @@ public class UserInfoFragment extends Fragment {
     private void updateInfoToDatabase(UserInfo userInfo) {
         FirebaseHelper.getInstance().addDataToDatabase("UserInfo", userInfo.getID(), userInfo);
         FirebaseHelper.getInstance().changePassword(userInfo.getPassword());
-
     }
 
     private void init(UserInfo userInfo) {

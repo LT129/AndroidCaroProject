@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fadingEdge="none">
+    <ImageView
+        android:id="@+id/imgViewAvatar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/user_account">
+    </ImageView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/txtViewName"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/username"
+            android:textColor="@color/black"
+            android:textSize="25dp"
+            android:textStyle="italic">
+        </TextView>
+        <TextView
+            android:id="@+id/txtViewStatus"
+            android:layout_width="match_parent"
+            android:text="Status"
+            android:textColor="@color/black"
+            android:textStyle="italic"
+            android:textSize="25dp"
+            android:layout_height="50dp">
+        </TextView>
+    </LinearLayout>
+</LinearLayout>

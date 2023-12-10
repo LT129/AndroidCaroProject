@@ -5,6 +5,17 @@
     android:id="@+id/my_nav"
     app:startDestination="@id/mainMenuFragment">
     <fragment
+        android:id="@+id/showInfoFragment"
+        android:name="com.example.caroproject.ShowInfoFragment"
+        android:label="fragment_show_info"
+        tools:layout="@layout/fragment_show_info">
+        <action
+            android:id="@+id/action_showInfoFragment_to_friendFragment"
+            app:destination="@id/mainMenuFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+    </fragment>
+    <fragment
         android:id="@+id/forgotPasswordFragment"
         android:name="com.example.caroproject.ForgotPasswordFragment"
         android:label="fragment_forgot_password"
@@ -63,6 +74,11 @@
         android:name="com.example.caroproject.MainMenuFragment"
         android:label="fragment_main_menu"
         tools:layout="@layout/fragment_main_menu" >
+        <action
+            android:id="@+id/action_mainMenuFragment_to_showInfoFragment"
+            app:destination="@id/showInfoFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_mainMenuFragment_to_settingFragment"
             app:destination="@id/settingFragment"

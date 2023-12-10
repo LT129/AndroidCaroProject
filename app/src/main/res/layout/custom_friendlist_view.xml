@@ -13,16 +13,31 @@
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:orientation="vertical">
-        <TextView
-            android:id="@+id/txtViewName"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:text="@string/username"
-            android:textColor="@color/white"
-            android:textSize="25dp"
-            android:textStyle="italic"
-            android:layout_weight="1">
-        </TextView>
+            android:layout_weight="1"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/txtViewName"
+                android:layout_width="0dp"
+                android:layout_weight="4"
+                android:layout_height="match_parent"
+                android:text="@string/username"
+                android:textColor="@color/white"
+                android:textSize="25dp"
+                android:textStyle="italic">
+            </TextView>
+
+            <Button
+                android:id="@+id/btnChat"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:background="@drawable/chat">
+            </Button>
+        </LinearLayout>
         <TextView
             android:id="@+id/txtViewStatus"
             android:layout_width="match_parent"

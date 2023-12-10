@@ -2,10 +2,7 @@ package com.example.caroproject;
 
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
@@ -25,19 +21,15 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.caroproject.Adapter.DBHelper;
+import com.example.caroproject.Adapter.FirebaseHelper;
 import com.example.caroproject.Adapter.FriendListAdapter;
 import com.example.caroproject.Data.UserInfo;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +53,7 @@ public class FriendFragment extends Fragment {
     FriendListAdapter adapter;
     FirebaseFirestore db;
     Dialog dialog;
+    FirebaseHelper firebaseHelper;
 
     public FriendFragment() {
         //Empty constructor
@@ -105,12 +98,38 @@ public class FriendFragment extends Fragment {
 
         db = FirebaseFirestore.getInstance();
         userInfoArrayList = new ArrayList<UserInfo>();
+        firebaseHelper = new FirebaseHelper();
 
         // Initialize the global adapter variable
         adapter = new FriendListAdapter(context, userInfoArrayList);
         recyclerViewFriend.setAdapter(adapter);
-
         EventChangeListener();
+        btnOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username = edtSearchBar.getText().toString();
+                firebaseHelper.getUserIdByUsername(username, new FirebaseHelper.OnGetUserIdListener() {
+                    @Override
+                    public void onSuccess(String userId) {
+                        if(userId==null){
+                            new AlertDialog.Builder(requireContext()).setMessage("No User Found!")
+                                    .setNegativeButton("OK", null)
+                                    .show();
+                        } else {
+                            Bundle args = new Bundle();
+                            args.putString("UserID",userId);
+                                NavController navController = Navigation.findNavController(v);
+                                navController.navigate(R.id.action_mainMenuFragment_to_showInfoFragment, args);
+                        }
+                    }
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e("Error",e.getMessage());
+                    }
+                });
+
+            }
+        });
 
         return fragment_friendlist;
     }
@@ -131,15 +150,37 @@ public class FriendFragment extends Fragment {
                             UserInfo currentUser = value.toObject(UserInfo.class);
 
                             if (currentUser != null && currentUser.getFriends() != null) {
-                                progressBar.setVisibility(View.GONE);
                                 loadFriendsData(currentUser.getFriends());
                             } else {
                                 // Display a message indicating no friends
                                 showNoFriendsMessage();
                             }
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
                 });
+
+        adapter.setOnItemClickListener(new FriendListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(String username) {
+                firebaseHelper.getUserIdByUsername(username, new FirebaseHelper.OnGetUserIdListener() {
+                    @Override
+                    public void onSuccess(String userId) {
+                            Bundle args = new Bundle();
+                            args.putString("UserID",userId);
+                            View view = getView();
+                            if(view!=null) {
+                                NavController navController = Navigation.findNavController(view);
+                                navController.navigate(R.id.action_mainMenuFragment_to_showInfoFragment, args);
+                            }
+                        }
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e("Error",e.getMessage());
+                    }
+                });
+            }
+        });
     }
 
     private void showNoFriendsMessage() {
