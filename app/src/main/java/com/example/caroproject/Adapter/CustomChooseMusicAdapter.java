@@ -8,17 +8,17 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
-import com.example.caroproject.Data.AppData;
 import com.example.caroproject.Data.Background;
+import com.example.caroproject.Data.Music;
 import com.example.caroproject.Data.StoreItem;
 import com.example.caroproject.R;
 
 import java.util.ArrayList;
 
-public class CustomChooseBackgroundAdapter extends ArrayAdapter<StoreItem> {
+public class CustomChooseMusicAdapter extends ArrayAdapter<StoreItem> {
     private Context context;
     private ArrayList<StoreItem> items;
-    public CustomChooseBackgroundAdapter(Context context, int layoutToBeInflated, ArrayList<StoreItem> items) {
+    public CustomChooseMusicAdapter(Context context, int layoutToBeInflated, ArrayList<StoreItem> items) {
         super(context, layoutToBeInflated, items);
         this.context = context;
         this.items = items;
@@ -30,8 +30,7 @@ public class CustomChooseBackgroundAdapter extends ArrayAdapter<StoreItem> {
         View view = inflater.inflate(R.layout.custom_item_choose_background_gridview, null);
 
         ImageView imageView = view.findViewById(R.id.tempImage);
-        imageView.setImageResource(((Background)items.get(position).getItem()).getTempImage());
+        imageView.setImageResource(((Music)items.get(position).getItem()).getImage());
         return (view);
     }
-
 }

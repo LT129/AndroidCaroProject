@@ -2,6 +2,7 @@ package com.example.caroproject.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,30 +11,57 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.caroproject.Data.UserInfo;
 import com.example.caroproject.R;
-public class FriendListAdapter extends ArrayAdapter<UserInfo> {
-    private Context context;
-    private UserInfo[] items;
-    public FriendListAdapter(Context context, int layout, UserInfo[] items){
-        super(context, R.layout.custom_friendlist_view,items);
+
+import java.util.ArrayList;
+
+public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.FriendListViewHolder> {
+    Context context;
+    ArrayList<UserInfo> userInfoArrayList;
+
+    public FriendListAdapter(Context context, ArrayList<UserInfo> userInfoArrayList) {
         this.context = context;
-        this.items = items;
+        this.userInfoArrayList = userInfoArrayList;
+    }
+
+    @NonNull
+    @Override
+    public FriendListAdapter.FriendListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(context).inflate(R.layout.custom_friendlist_view,parent,false);
+
+        return new FriendListViewHolder(v);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        View row = inflater.inflate(R.layout.custom_friendlist_view, null);
-        TextView name = (TextView) row.findViewById(R.id.txtViewName);
-        ImageView avatar = (ImageView) row.findViewById(R.id.imgViewAvatar);
-        TextView status = (TextView) row.findViewById(R.id.txtViewStatus);
-        Button btnRemove = (Button) row.findViewById(R.id.btnRemove);
-        name.setText(items[position].getUsername());
-        avatar.setImageResource(items[position].getAvatar());
-//        if (items[position].getStatus())
-//            status.setText("Online");
-//        else status.setText("Offline");
-        return (row);
+    public void onBindViewHolder(@NonNull FriendListAdapter.FriendListViewHolder holder, int position) {
+        UserInfo user = userInfoArrayList.get(position);
+
+        holder.name.setText(user.getUsername());
+        if(user.isOnline()){
+            holder.status.setText("Online");
+        }else holder.status.setText("Offline");
+        //holder.avatar.setImageResource(user.getAvatar());
+    }
+
+    @Override
+    public int getItemCount() {
+        return userInfoArrayList.size();
+    }
+
+    public static class FriendListViewHolder extends RecyclerView.ViewHolder{
+
+        TextView name,status;
+        //ImageView avatar;
+        public FriendListViewHolder(@NonNull View custom_friendlist_view) {
+            super(custom_friendlist_view);
+            name = custom_friendlist_view.findViewById(R.id.txtViewName);
+            status = custom_friendlist_view.findViewById(R.id.txtViewStatus);
+            //avatar = custom_friendlist_view.findViewById(R.id.imgViewAvatar);
+        }
     }
 }

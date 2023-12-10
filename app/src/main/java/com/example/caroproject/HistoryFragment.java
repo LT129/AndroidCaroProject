@@ -10,7 +10,6 @@ import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.caroproject.Adapter.DBHelper;
 import com.example.caroproject.Adapter.FriendListAdapter;
 import com.example.caroproject.Data.UserInfo;
 
@@ -26,7 +25,6 @@ public class HistoryFragment extends Fragment {
 
     private UserInfo[] items;
     private ListView listViewHistory;
-    private DBHelper dbHelper;
 
     public HistoryFragment() {
         //Empty constructor
@@ -66,9 +64,9 @@ public class HistoryFragment extends Fragment {
 //                new PlayerInfo(null,"Username2", "Password2", null, R.drawable.custom_picture2, null),
 //                // Add more PlayerInfo objects as needed
 //        };
-        FriendListAdapter adapter = new FriendListAdapter(context,
-                R.layout.custom_friendlist_view, items);
-        listViewHistory.setAdapter(adapter);
+//        FriendListAdapter adapter = new FriendListAdapter(context,
+////                R.layout.custom_match_history_view, items);
+//        listViewHistory.setAdapter(adapter);
         return fragment_match_history;
     }
 }

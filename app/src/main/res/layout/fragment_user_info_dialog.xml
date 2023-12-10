@@ -28,7 +28,8 @@
             style="@style/Widget.MaterialComponents.TextInputEditText.OutlinedBox"
             android:id="@+id/firstBoxText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:inputType="text"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -46,7 +47,8 @@
             style="@style/Widget.MaterialComponents.TextInputEditText.OutlinedBox"
             android:id="@+id/secondBoxText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="text"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -64,7 +66,8 @@
             style="@style/Widget.MaterialComponents.TextInputEditText.OutlinedBox"
             android:id="@+id/thirdBoxText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:inputType="text"/>
     </com.google.android.material.textfield.TextInputLayout>
 
 

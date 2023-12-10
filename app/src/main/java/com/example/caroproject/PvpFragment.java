@@ -205,21 +205,6 @@ public class PvpFragment extends Fragment {
                 }
             }
         });
-        chooseShape = view.findViewById(R.id.chooseShape);
-        chooseShape.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO show a dialog to choose shape
-            }
-        });
-
-        chooseColor = view.findViewById(R.id.chooseColor);
-        chooseColor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO show a dialog to choose color
-            }
-        });
 
         btnPlay = view.findViewById(R.id.btnPlay);
         rdoOffline = view.findViewById(R.id.offlinePlayMode);

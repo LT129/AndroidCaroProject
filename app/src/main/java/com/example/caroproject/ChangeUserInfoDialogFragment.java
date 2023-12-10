@@ -111,16 +111,23 @@ public class ChangeUserInfoDialogFragment extends DialogFragment {
                                             firstBox.setError("Wrong password");
                                         }else {
                                             firstBox.setErrorEnabled(false);
-                                            if (pass1.equals(pass2)) {
-                                                thirdBox.setErrorEnabled(false);
-                                                String newPass = secondBoxText.getText().toString();
-                                                Bundle bundle = new Bundle();
-                                                bundle.putString(UserInfoFragment.PASSWORD, newPass);
-                                                getParentFragmentManager().setFragmentResult(REQUEST_KEY_DIALOG, bundle);
-                                                dialog.dismiss();
+                                            if(pass1.equals("")) {
+                                                secondBox.setErrorEnabled(true);
+                                                secondBox.setError("Password is empty");
                                             } else {
-                                                thirdBox.setErrorEnabled(true);
-                                                thirdBox.setError("Password is not equal");
+                                                secondBox.setErrorEnabled(false);
+                                                if (pass1.equals(pass2)) {
+                                                    thirdBox.setErrorEnabled(false);
+                                                    String newPass = secondBoxText.getText().toString();
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putString(UserInfoFragment.PASSWORD, newPass);
+                                                    getParentFragmentManager().setFragmentResult(REQUEST_KEY_DIALOG, bundle);
+                                                    dialog.dismiss();
+                                                } else {
+                                                    thirdBox.setErrorEnabled(true);
+                                                    thirdBox.setError("Password is not equal");
+                                                }
+
                                             }
                                         }
                                     }

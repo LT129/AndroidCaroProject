@@ -17,10 +17,12 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.example.caroproject.Data.AppData;
 import com.example.caroproject.Data.Background;
+import com.example.caroproject.Data.Music;
 import com.example.caroproject.Data.UserInfo;
 import com.example.caroproject.Data.StoreItem;
 import com.example.caroproject.MainActivity;
 import com.example.caroproject.R;
+import com.example.caroproject.StoreFragment;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -29,15 +31,15 @@ import java.util.ArrayList;
 
 public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItem> {
     private Context context;
-    private ArrayList<StoreItem> items;
+    private ArrayList<Boolean> userStatus;
     private SharedPreferences pref;
     private UserInfo userInfo;
+    private ArrayList<StoreItem> items;
     public CustomStoreGridviewAdapter(Context context, int layoutToBeInflated, ArrayList<StoreItem> items) {
         super(context, layoutToBeInflated, items);
         this.context = context;
         this.items = items;
-        pref = context.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE);
-        userInfo = getUserInfoFromSharedPreferences();
+        initiateData();
     }
 
     @Override
@@ -50,11 +52,11 @@ public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItem> {
         buyItems.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showBuyDialog(context, items.get(position), v).show();
+                showBuyDialog(context, position, v).show();
             }
         });
 
-        if(items.get(position).wasSold()) {
+        if(userStatus.get(position)) {
             buyItems.setVisibility(View.INVISIBLE);
         }
 
@@ -64,7 +66,7 @@ public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItem> {
         if (item.getClass() == Background.class) {
             imageView.setImageResource(((Background) item).getTempImage());
         } else {
-            //TODO change to view music
+            imageView.setImageResource(((Music) item).getImage());
         }
 
         TextView numberOfCoins = view.findViewById(R.id.numberOfCoins);
@@ -72,13 +74,13 @@ public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItem> {
         return (view);
     }
 
-    private Dialog showBuyDialog(Context context, StoreItem item, View view) {
+    private Dialog showBuyDialog(Context context, int pos, View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(R.string.dialog_ask_to_buy_item)
                 .setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        int coins = userInfo.getCoins().getCopperCoins() - item.getItemCoins().getCopperCoins();
+                        int coins = userInfo.getCoins().getCopperCoins() - items.get(pos).getItemCoins().getCopperCoins();
 
                         if(coins < 0) {
                             new AlertDialog.Builder(context)
@@ -90,17 +92,25 @@ public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItem> {
                                         }
                                     }).show();
                         } else {
-                            // update usercoins
-                            userInfo.getCoins().setCopperCoins(coins);
-
                             // Set view can not buy anymore
                             view.setVisibility(View.INVISIBLE);
 
-                            // Update user Background
-                            AppData.getInstance().getBackgrounds().get(getPosition(item)).setStatus(true);
-
                             // Update store items
-                            item.setStatus(true);
+                            userStatus.set(pos, true);
+
+                            // update user info
+                            userInfo.getCoins().setCopperCoins(coins);
+                            switch (pref.getInt(StoreFragment.STORE_TYPE, 0)) {
+                                case StoreFragment.MODE_BACKGROUND: {
+                                    userInfo.setBackgroundStatus(userStatus);
+                                    break;
+                                }
+                                case StoreFragment.MODE_MUSIC: {
+                                    userInfo.setMusicStatus(userStatus);
+                                    break;
+                                }
+                            }
+
                             FirebaseHelper.getInstance().addDataToDatabase("UserInfo",userInfo.getID(), userInfo);
                             updateUserInfoToSharedPreferences(userInfo);
                         }
@@ -127,6 +137,23 @@ public class CustomStoreGridviewAdapter extends ArrayAdapter<StoreItem> {
         Gson gson = new Gson();
         String json = gson.toJson(userInfo);
         pref.edit().putString("USER_INFORMATION", json).apply();
+    }
+
+    private void initiateData() {
+        pref = context.getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE);
+        userInfo = getUserInfoFromSharedPreferences();
+
+        switch (pref.getInt(StoreFragment.STORE_TYPE, 0)) {
+            case StoreFragment.MODE_BACKGROUND: {
+                userStatus = userInfo.getBackgroundStatus();
+                break;
+            }
+            case StoreFragment.MODE_MUSIC: {
+                userStatus = userInfo.getMusicStatus();
+                break;
+            }
+        }
+
     }
 
 }

@@ -6,51 +6,37 @@ import java.util.ArrayList;
 
 public class AppData {
 
-    private ArrayList<Background> backgrounds;
-    private ArrayList<StoreItem> storeItems;
-    private ArrayList<Integer> musicList;
+    private ArrayList<StoreItem> backgroundList;
+    private ArrayList<StoreItem> musicList;
 
-    public ArrayList<Background> getBackgrounds() {
-        return backgrounds;
+    public ArrayList<StoreItem> getBackgroundList() {
+        return backgroundList;
     }
 
-    public void setBackgrounds(ArrayList<Background> backgrounds) {
-        this.backgrounds = backgrounds;
+    public void setBackgroundList(ArrayList<StoreItem> backgroundList) {
+        this.backgroundList = backgroundList;
     }
 
-    public ArrayList<StoreItem> getStoreItems() {
-        return storeItems;
-    }
-
-    public void setStoreItems(ArrayList<StoreItem> storeItems) {
-        this.storeItems = storeItems;
-    }
-
-    public ArrayList<Integer> getMusicList() {
+    public ArrayList<StoreItem> getMusicList() {
         return musicList;
     }
 
-    public void setMusicList(ArrayList<Integer> musicList) {
+    public void setMusicList(ArrayList<StoreItem> musicList) {
         this.musicList = musicList;
     }
 
     private static AppData instance;
     private AppData() {
-        backgrounds = new ArrayList<>();
-        backgrounds.add(new Background(true, R.drawable.temp_background_1, R.drawable.background_1));
-        backgrounds.add(new Background(false, R.drawable.temp_background_2, R.drawable.background_2));
-        backgrounds.add(new Background(false, R.drawable.temp_background_3, R.drawable.background_3));
-        backgrounds.add(new Background(false, R.drawable.temp_background_4, R.drawable.background_4));
 
-        storeItems = new ArrayList<>();
-        storeItems.add(new StoreItem(new Coins(0), true, new Background(R.drawable.temp_background_1, R.drawable.background_1)));
-        storeItems.add(new StoreItem(new Coins(0), false, new Background(R.drawable.temp_background_2, R.drawable.background_2)));
-        storeItems.add(new StoreItem(new Coins(300), false, new Background(R.drawable.temp_background_3, R.drawable.background_3)));
-        storeItems.add(new StoreItem(new Coins(400), false, new Background(R.drawable.temp_background_4, R.drawable.background_4)));
+        backgroundList = new ArrayList<>();
+        backgroundList.add(new StoreItem(new Coins(0), new Background(R.drawable.temp_background_1, R.drawable.background_1)));
+        backgroundList.add(new StoreItem(new Coins(0), new Background(R.drawable.temp_background_2, R.drawable.background_2)));
+        backgroundList.add(new StoreItem(new Coins(300), new Background(R.drawable.temp_background_3, R.drawable.background_3)));
+        backgroundList.add(new StoreItem(new Coins(400), new Background(R.drawable.temp_background_4, R.drawable.background_4)));
 
         musicList = new ArrayList<>();
-        musicList.add(R.raw.music_monoman_v1);
-        musicList.add(R.raw.music_monoman_v2);
+        musicList.add(new StoreItem(new Coins(100), new Music(R.raw.music_monoman_v1, "monoman_v1", R.drawable.music_pic_monoman_v1)));
+        musicList.add(new StoreItem(new Coins(100), new Music(R.raw.music_monoman_v2, "monoman_v2", R.drawable.music_pic_monoman_v2)));
     }
     public static AppData getInstance() {
         if (instance == null) {

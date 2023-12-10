@@ -3,8 +3,10 @@ package com.example.caroproject;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -20,7 +22,14 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.example.caroproject.Adapter.FirebaseHelper;
 import com.example.caroproject.Data.SoundMaking;
+import com.example.caroproject.Data.UserInfo;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 
 public class GameModeFragment extends Fragment {
 
@@ -49,13 +58,7 @@ public class GameModeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_game_mode, container, false);
 
-        initiateData();
-
-        btnPvp = view.findViewById(R.id.btnPvp);
-        btnPve = view.findViewById(R.id.btnPve);
-        btnSetting = view.findViewById(R.id.btnSetting);
-        btnExit = view.findViewById(R.id.btnExit);
-        btnStore = view.findViewById(R.id.btnStore);
+        initiateData(view);
 
         btnPvp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,7 +139,17 @@ public class GameModeFragment extends Fragment {
         return view;
     }
 
-    private void initiateData() {
+    private void initiateData(View view) {
         pref = requireActivity().getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE);
+
+        btnPvp = view.findViewById(R.id.btnPvp);
+        btnPve = view.findViewById(R.id.btnPve);
+        btnSetting = view.findViewById(R.id.btnSetting);
+        btnExit = view.findViewById(R.id.btnExit);
+        btnStore = view.findViewById(R.id.btnStore);
+        userAvatar = view.findViewById(R.id.userAvatar);
+
+//        Glide.with(view).load(FirebaseHelper.getInstance().getPhotoUrl()).error(R.drawable.user_account).into(userAvatar);
     }
+
 }

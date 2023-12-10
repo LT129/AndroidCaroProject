@@ -1,11 +1,18 @@
 package com.example.caroproject;
 
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
@@ -14,19 +21,28 @@ import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.caroproject.Adapter.FirebaseHelper;
+import com.example.caroproject.Data.AppData;
+import com.example.caroproject.Data.Background;
+import com.example.caroproject.Data.Music;
+import com.example.caroproject.Data.SoundMaking;
 import com.example.caroproject.Data.UserInfo;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,7 +53,7 @@ public class UserInfoFragment extends Fragment {
     public static final String PHONE = "Phone";
     public static final String PASSWORD = "Password";
 
-    private ImageButton userAvatar;
+    private ImageView userAvatar;
     private TextView txtDisplayName;
 
     private RelativeLayout usernameDetail;
@@ -60,6 +76,8 @@ public class UserInfoFragment extends Fragment {
     private DialogFragment dialog;
 
     private SharedPreferences pref;
+    private UserInfo userInfo;
+    private ActivityResultLauncher<Intent> launchSomeActivity;
 
 
     public UserInfoFragment() {
@@ -70,7 +88,6 @@ public class UserInfoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -80,7 +97,7 @@ public class UserInfoFragment extends Fragment {
 
         // Get SharedPreferences
         pref = requireContext().getSharedPreferences("CARO", Context.MODE_PRIVATE);
-        UserInfo userInfo = getUserInfoFromSharedPreferences();
+        userInfo = getUserInfoFromSharedPreferences();
 
 
         dialog = new ChangeUserInfoDialogFragment();
@@ -103,7 +120,7 @@ public class UserInfoFragment extends Fragment {
 
                 if(result.containsKey(PASSWORD)) {
                     String password = result.getString(PASSWORD);
-                    userInfo.setPassword(password);
+                    pref.edit().putString(PASSWORD, password).apply();
                 }
             }
         });
@@ -114,8 +131,7 @@ public class UserInfoFragment extends Fragment {
         userAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO change layout to change avatar
-                imageChooser();
+                imageChooser(view);
             }
         });
         txtDisplayName = view.findViewById(R.id.txtDisplayName);
@@ -152,7 +168,6 @@ public class UserInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 args.putString("UserInfoType", PASSWORD);
-                args.putString(PASSWORD, userInfo.getPassword());
                 dialog.setArguments(args);
                 dialog.show(getChildFragmentManager(), "dialog");
             }
@@ -177,8 +192,8 @@ public class UserInfoFragment extends Fragment {
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            updateUserInfoToSharedPreferences(userInfo);
-                            updateInfoToDatabase(userInfo);
+                            updateInfoToDatabase();
+                            updateUserInfoToSharedPreferences();
                         }
                     })
                     .setNegativeButton("No", null)
@@ -203,7 +218,8 @@ public class UserInfoFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 pref.edit().clear().apply();
-                                FirebaseAuth.getInstance().signOut();
+                                FirebaseHelper.getInstance().logOut();
+                                reSetAppSetting();
                                 NavController navController = Navigation.findNavController(v);
                                 navController.navigate(R.id.action_userInfoFragment_to_signInFragment);
                             }
@@ -213,8 +229,23 @@ public class UserInfoFragment extends Fragment {
             }
         });
 
-
-        init(userInfo);
+        launchSomeActivity = registerForActivityResult(
+                new ActivityResultContracts
+                        .StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode()
+                            == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        // do your operation from here....
+                        if (data != null
+                                && data.getData() != null) {
+                            Uri selectedImageUri = data.getData();
+                            userInfo.setAvatar(selectedImageUri.toString());
+                            Glide.with(view).load(selectedImageUri).error(R.drawable.user_account).into(userAvatar);
+                        }
+                    }
+                });
+        init(view);
         return view;
     }
 
@@ -225,27 +256,50 @@ public class UserInfoFragment extends Fragment {
         }.getType();
         return gson.fromJson(json, type);
     }
-    private void updateUserInfoToSharedPreferences(UserInfo userInfo) {
+    private void updateUserInfoToSharedPreferences() {
         Gson gson = new Gson();
         String json = gson.toJson(userInfo);
         pref.edit().putString("USER_INFORMATION", json).apply();
     }
 
-    private void updateInfoToDatabase(UserInfo userInfo) {
+    private void updateInfoToDatabase() {
         FirebaseHelper.getInstance().addDataToDatabase("UserInfo", userInfo.getID(), userInfo);
-        FirebaseHelper.getInstance().changePassword(userInfo.getPassword());
+        if(pref.contains(PASSWORD)) {
+            FirebaseHelper.getInstance().changePassword(pref.getString(PASSWORD, null));
+            pref.edit().remove(PASSWORD).apply();
+        }
 
     }
 
-    private void init(UserInfo userInfo) {
+    private void init(View view) {
         txtDisplayName.setText(userInfo.getUsername());
         txtUsername.setText(userInfo.getUsername());
         txtEmail.setText(userInfo.getEmail());
         txtPhone.setText(userInfo.getPhoneNumber());
+//        Glide.with(view).load(Uri.parse(userInfo.getAvatar())).into(userAvatar);
     }
 
 
-    private void imageChooser() {
+    private void imageChooser(View view)
+    {
+        Intent i = new Intent();
+        i.setType("image/*");
+        i.setAction(Intent.ACTION_GET_CONTENT);
+
+
+
+        launchSomeActivity.launch(i);
     }
+
+
+
+    private void reSetAppSetting() {
+        AppData appData = AppData.getInstance();
+        requireActivity().getWindow().setBackgroundDrawableResource(((Background)appData.getBackgroundList().get(0).getItem()).getLayoutBackground());
+        SoundMaking.getInstance().releaseMusic();
+        SoundMaking.getInstance().createMusic(requireContext(),((Music) appData.getMusicList().get(0).getItem()).getSourceId());
+        SoundMaking.getInstance().playMusic();
+    }
+
 
 }
