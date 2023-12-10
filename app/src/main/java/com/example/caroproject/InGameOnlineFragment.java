@@ -305,14 +305,36 @@ public class InGameOnlineFragment extends Fragment {
 
                     if (!winner.isEmpty()) {
                         Room room = new Room(false, true, 0, 0, "", "", times, player2, sizeBoard, -1, player2, player1, idRoom, "", false, 0);
-                        gameRef.child(idRoom).setValue(room);
+                        gameRef.setValue(room);
                     }
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("sizeBoard", sizeBoard);
-                    bundle.putInt("time", times);
-                    bundle.putString("idRoom", idRoom);
-                    NavController navController = Navigation.findNavController(view);
-                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putInt("sizeBoard", sizeBoard);
+//                    bundle.putInt("time", times);
+//                    bundle.putString("idRoom", idRoom);
+//                    NavController navController = Navigation.findNavController(view);
+//                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
+                    initializeBoard(view);
+                    if (userId.equals(player1)) {
+                        userIdOpponent = player2;
+                    } else {
+                        userIdOpponent = player1;
+                    }
+                    currentPlayerOld = player1;
+                    messageOld = message;
+                    if (userId.equals(player1)) {
+                        checkClick = true;
+                    } else {
+                        checkClick = false;
+                    }
+                    if (!userId.equals(currentPlayer)) {
+                        startCountdownTimer(times, txtWatch1, view);
+                        imgBottom.setBackgroundResource(R.drawable.custom_picture);
+                        imgTop.setBackgroundResource(R.drawable.custom_picture2);
+                    } else {
+                        startCountdownTimer(times, txtWatch2, view);
+                        imgTop.setBackgroundResource(R.drawable.custom_picture);
+                        imgBottom.setBackgroundResource(R.drawable.custom_picture2);
+                    }
                     progressBar.setVisibility(View.GONE);
                 }
 
@@ -489,11 +511,13 @@ public class InGameOnlineFragment extends Fragment {
             public void onClick(View v) {
                 if (winner.isEmpty()) {
                     if (userId.equals(player1)) {
-                        gameRef.child("gameOver").setValue(true);
                         gameRef.child("winner").setValue(player2);
-                    } else {
                         gameRef.child("gameOver").setValue(true);
+
+                    } else {
                         gameRef.child("winner").setValue(player1);
+                        gameRef.child("gameOver").setValue(true);
+
                     }
                 }
             }
@@ -623,12 +647,34 @@ public class InGameOnlineFragment extends Fragment {
                     checkAgree=true;
                     checkDoneRematch=false;
                     gameRef.child("checkRematch").setValue(false);
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("sizeBoard", sizeBoard);
-                    bundle.putInt("time", times);
-                    bundle.putString("idRoom", idRoom);
-                    NavController navController = Navigation.findNavController(view);
-                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putInt("sizeBoard", sizeBoard);
+//                    bundle.putInt("time", times);
+//                    bundle.putString("idRoom", idRoom);
+//                    NavController navController = Navigation.findNavController(view);
+//                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
+                    initializeBoard(view);
+                    if (userId.equals(player1)) {
+                        userIdOpponent = player2;
+                    } else {
+                        userIdOpponent = player1;
+                    }
+                    currentPlayerOld = player1;
+                    messageOld = message;
+                    if (userId.equals(player1)) {
+                        checkClick = true;
+                    } else {
+                        checkClick = false;
+                    }
+                    if (!userId.equals(currentPlayer)) {
+                        startCountdownTimer(times, txtWatch1, view);
+                        imgBottom.setBackgroundResource(R.drawable.custom_picture);
+                        imgTop.setBackgroundResource(R.drawable.custom_picture2);
+                    } else {
+                        startCountdownTimer(times, txtWatch2, view);
+                        imgTop.setBackgroundResource(R.drawable.custom_picture);
+                        imgBottom.setBackgroundResource(R.drawable.custom_picture2);
+                    }
                     progressBar.setVisibility(View.GONE);
                 }
             }
@@ -788,7 +834,7 @@ public class InGameOnlineFragment extends Fragment {
                     }
                     if (checkConnect) {
                         String opponentId = (userId.equals(player1)?player2:player1);
-                        updateData(opponentId);
+                        //updateData(opponentId);
                         showWinDialog(winner, view);
                         checkWin = false;
                     }
@@ -883,12 +929,22 @@ public class InGameOnlineFragment extends Fragment {
     }
 
     private void initializeBoard(View v) {
+        turnOffDialog();
+          checkWatch = true; checkDoneRematch=false;
+          checkClick = false; checkAgree=false;
+          checkConnect = true;
+          checkWin = true;
+          checkRematch = true; checkResult=true;
+          checkRandom=false;
+
         board = new int[sizeBoard][sizeBoard];  // Bảng sizeBoardxsizeBoard
         //savePlayerPosition=new int[sizeBoard*sizeBoard/2];
         // Khởi tạo tất cả ô cờ là trống
         for (int i = 0; i < sizeBoard; i++) {
             for (int j = 0; j < sizeBoard; j++) {
                 board[i][j] = 0;
+                int p = i * sizeBoard + j;
+                adapter.markCellAsPlayer0(p);
             }
         }
         //set dong ho
@@ -1129,8 +1185,8 @@ public class InGameOnlineFragment extends Fragment {
                     } else {
                         currentPlayer = player1;
                     }
-                    gameRef.child("gameOver").setValue(gameOver);
                     gameRef.child("winner").setValue(currentPlayer);
+                    gameRef.child("gameOver").setValue(gameOver);
                 }
             }
         }.start();
@@ -1183,7 +1239,7 @@ public class InGameOnlineFragment extends Fragment {
         super.onDestroyView();
 
         handler.removeCallbacksAndMessages(null);
-
+        
         if(rematchPlayer1!=1||rematchPlayer2!=1) {
             if (userId.equals(player1)) {
                 gameRef.child("rematchPlayer1").setValue(2);
@@ -1199,14 +1255,15 @@ public class InGameOnlineFragment extends Fragment {
             }
         }
 
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
+
         turnOffDialog();
 
     }
 
     public void turnOffDialog() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
         if (winnerDialog != null && winnerDialog.isShowing()) {
             winnerDialog.dismiss();
         }
