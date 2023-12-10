@@ -189,7 +189,7 @@ public class InGameOnlineFragment extends Fragment {
         xOriginal = locationOriginal[0];
         yOriginal = locationOriginal[1];
         handler = new Handler(Looper.getMainLooper());
-        int delayTime = 950;
+        int delayTime = 1;
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -401,9 +401,10 @@ public class InGameOnlineFragment extends Fragment {
                     positionOld = position;
                     countTurn++;
                     DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
+                    gameRef.child("currentPlayer").setValue(currentPlayer);
                     gameRef.child("position").setValue(position);
                     gameRef.child("countTurn").setValue(countTurn);
-                    gameRef.child("currentPlayer").setValue(currentPlayer);
+
                 }
                 //savePlayerPosition[countPlayer++] = position;
             }
@@ -987,6 +988,25 @@ public class InGameOnlineFragment extends Fragment {
             userId = user.getUid();
         }
         DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
+        gameRef.child("currentPlayer").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String currentPlayerValue = snapshot.getValue(String.class);
+
+                if (currentPlayerValue != null) {
+                    currentPlayer = currentPlayerValue;
+                } else {
+                    // Gán giá trị mặc định hoặc xử lý khi giá trị là null
+                    currentPlayer = "DefaultCurrentPlayer";
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+
         gameRef.child("position").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -1093,24 +1113,6 @@ public class InGameOnlineFragment extends Fragment {
             }
         });
 
-        gameRef.child("currentPlayer").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String currentPlayerValue = snapshot.getValue(String.class);
-
-                if (currentPlayerValue != null) {
-                    currentPlayer = currentPlayerValue;
-                } else {
-                    // Gán giá trị mặc định hoặc xử lý khi giá trị là null
-                    currentPlayer = "DefaultCurrentPlayer";
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
 
         gameRef.child("gameOver").addValueEventListener(new ValueEventListener() {
             @Override
