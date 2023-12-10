@@ -4,7 +4,9 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -35,8 +37,12 @@ import android.widget.Toast;
 
 import com.example.caroproject.Adapter.AdapterGridview;
 import com.example.caroproject.Adapter.CaroCenter;
+import com.example.caroproject.Adapter.FirebaseHelper;
 import com.example.caroproject.Adapter.NetworkUtils;
+import com.example.caroproject.Data.Coins;
+import com.example.caroproject.Data.MatchHistory;
 import com.example.caroproject.Data.Room;
+import com.example.caroproject.Data.UserInfo;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,7 +55,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -343,7 +352,8 @@ public class InGameOnlineFragment extends Fragment {
                     }
                     if (checkConnect) {
                         //them matchHistory
-                        updateData();
+                        String opponentId = (userId.equals(player1)?player2:player1);
+                        updateData(opponentId);
                         showWinDialog(winner, view);
                         checkWin = false;
                     }
@@ -562,7 +572,7 @@ public class InGameOnlineFragment extends Fragment {
     }
 
 
-    private void updateData() {
+    private void updateData(String opponentId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference playerRef = db.collection("UserInfo").document(userId);
 
@@ -571,80 +581,36 @@ public class InGameOnlineFragment extends Fragment {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
-                            Map<String, Object> data = documentSnapshot.getData();
-                            if (data != null && data.containsKey("wins") && data.containsKey("losses")) {
+                            // Save match history
+                            UserInfo userInfo = documentSnapshot.toObject(UserInfo.class);
 
-                                long currentWins = documentSnapshot.getLong("wins");
-                                long currentLosses = documentSnapshot.getLong("losses");
+                            if(userInfo.getMatchHistory() == null) {
+                                userInfo.setMatchHistory(new ArrayList<>());
+                            }
 
-                                // Cập nhật số trận thắng và thua mới
-                                if (winner.equals(userId)) {
-                                    currentWins++;
-                                } else {
-                                    currentLosses++;
-                                }
-                                data.put("wins", currentWins);
-                                data.put("losses", currentLosses);
+                            if(userInfo.getMatchHistory().size() == 10) {
+                                userInfo.getMatchHistory().remove(9);
+                            }
 
-                                playerRef.update(data).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                    }
-                                });
+                            userInfo.getMatchHistory().add(0, new MatchHistory(opponentId, new java.util.Date(), winner.equals(userId)));
+
+                            // Save win loose count and Save coins
+                            if (winner.equals(userId)) {
+                                userInfo.setWins(userInfo.getWins() + 1);
+                                userInfo.getCoins().setCopperCoins(userInfo.getCoins().getCopperCoins() + 20);
                             } else {
-                                // first
-                                if (winner.equals(userId)) {
-                                    data.put("wins", 1);
-                                    data.put("losses", 0);
-                                } else {
-                                    data.put("wins", 0);
-                                    data.put("losses", 1);
-                                }
-                                playerRef.set(data)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                            }
-                                        });
+                                userInfo.setLosses(userInfo.getLosses() + 1);
+                                userInfo.getCoins().setCopperCoins(userInfo.getCoins().getCopperCoins() + 5);
                             }
-                            if (data != null && data.containsKey("coins")) {
-                                Map<String, Object> coinsData = (Map<String, Object>) data.get("coins");
-                                if (coinsData != null && coinsData.containsKey("copperCoins")) {
-                                    long currentcopperCoins = (long) coinsData.get("copperCoins");
 
-                                    if (winner.equals(userId)) {
-                                        currentcopperCoins += 20;
-                                    } else {
-                                        currentcopperCoins += 2;
-                                    }
-                                    coinsData.put("copperCoins", currentcopperCoins);
-                                    data.put("coins", coinsData);
+                            //Save userInfo change to sharePreferences
+                            updateUserInfoToSharedPreferences(userInfo);
 
-                                    playerRef.update(data)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    // Dữ liệu đã được cập nhật thành công
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    // Xử lý lỗi khi cập nhật dữ liệu
-                                                }
-                                            });
-                                }
-                            }
+                            //Save userInfo to db
+                            FirebaseHelper.getInstance().addDataToDatabase("UserInfo", userId, userInfo);
                         }
+
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -1278,6 +1244,13 @@ public class InGameOnlineFragment extends Fragment {
         if (resultRematchDialog != null && resultRematchDialog.isShowing()) {
             resultRematchDialog.dismiss();
         }
+    }
+
+    private void updateUserInfoToSharedPreferences(UserInfo userInfo) {
+        SharedPreferences pref = requireContext().getSharedPreferences("CARO", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = gson.toJson(userInfo);
+        pref.edit().putString("USER_INFORMATION", json).apply();
     }
 }
 

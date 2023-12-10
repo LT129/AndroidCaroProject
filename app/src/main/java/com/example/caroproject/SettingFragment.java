@@ -1,6 +1,7 @@
 package com.example.caroproject;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
 
@@ -46,24 +47,24 @@ public class SettingFragment extends Fragment {
         btnCallBack = view.findViewById(R.id.btnCallBack);
         seekBarMusic = view.findViewById(R.id.seekBarMusic);
         seekBarSound = view.findViewById(R.id.seekBarSound);
+        SharedPreferences pref = requireActivity().getSharedPreferences("CARO", Context.MODE_PRIVATE);
 
-//        AudioManager audioManager = (AudioManager) requireActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-//
-//        seekBarMusic.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-//
-//        seekBarMusic.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int newVolume, boolean b) {
-//                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0);
-//            }
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {}
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {}
-//        });
-//
+        AudioManager audioManager = (AudioManager) requireActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        seekBarMusic.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+        seekBarMusic.setProgress(pref.getInt(MainActivity.MUSIC_VOLUME, 100));
+        seekBarMusic.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int newVolume, boolean b) {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0);
+                pref.edit().putInt(MainActivity.MUSIC_VOLUME, newVolume).apply();
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
 //        seekBarSound.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM));
-//        seekBarSound.setProgress();
 //        seekBarSound.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 //            @Override
 //            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
