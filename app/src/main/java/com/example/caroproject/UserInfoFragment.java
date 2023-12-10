@@ -244,6 +244,7 @@ public class UserInfoFragment extends Fragment {
                         // do your operation from here....
                         if (data != null
                                 && data.getData() != null) {
+                            pref.edit().putString("AVATAR", "avatar").apply();
                             selectedImageUri = data.getData();
                             userInfo.setAvatar(selectedImageUri.toString());
                             Glide.with(view).load(selectedImageUri).error(R.drawable.user_account).into(userAvatar);
@@ -317,7 +318,6 @@ public class UserInfoFragment extends Fragment {
         i.setAction(Intent.ACTION_GET_CONTENT);
         launchSomeActivity.launch(i);
 
-        pref.edit().putString("AVATAR", "avatar").apply();
     }
 
 
