@@ -122,6 +122,8 @@ public class InGameOnlineFragment extends Fragment {
     private float scaleFactor = 1.0f;
     private static final float MIN_SCALE = 1.0f;
     private static final float MAX_SCALE = 3.0f;
+    private AdapterGridview adapter;
+    private View view;
 
     private int[][] board;  // Bảng lưu trạng thái của ô cờ
 
@@ -151,7 +153,7 @@ public class InGameOnlineFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_in_game_online, container, false);
+        view = inflater.inflate(R.layout.fragment_in_game_online, container, false);
 
         scaleGestureDetector = new ScaleGestureDetector(requireContext(), new ScaleListener());
 
@@ -166,7 +168,7 @@ public class InGameOnlineFragment extends Fragment {
         btnSurrender = view.findViewById(R.id.btnSurrenderInGame);
         progressBar=view.findViewById(R.id.progress_bar_ingame);
 
-        AdapterGridview adapter = new AdapterGridview(view.getContext(), sizeBoard);
+        adapter = new AdapterGridview(view.getContext(), sizeBoard);
 
         // Khởi tạo bảng cờ và bắt đầu trò chơi
         gridView.setAdapter(adapter);
@@ -204,7 +206,7 @@ public class InGameOnlineFragment extends Fragment {
                         noInternetDialog.dismiss();
                     }
                 }
-                readData();
+//                readData();
                 if (countRepeat == 0 && player2.equals("")&&!checkRandom) {
                     showRoomIdDialog(view);
                     countRepeat++;
@@ -268,26 +270,6 @@ public class InGameOnlineFragment extends Fragment {
                     }
                     countRepeat2++;
                 }
-                if (positionUpdate > -1 && positionOld != positionUpdate && currentPlayer != currentPlayerOld && checkWatch) {
-                    int row = positionUpdate / sizeBoard; // Lấy hàng dựa trên vị trí ô
-                    int col = positionUpdate % sizeBoard; // Lấy cột dựa trên vị trí ô
-                    if (currentPlayer.equals(player1)) {
-                        board[col][row] = 2;
-                        adapter.markCellAsPlayer2(positionUpdate);
-                    } else {
-                        board[col][row] = 1;
-                        adapter.markCellAsPlayer1(positionUpdate);
-                    }
-
-                    if (countDownTimer != null) {
-                        countDownTimer.cancel();
-                    }
-                    startCountdownTimer(times, txtWatch2, view);
-                    imgTop.setBackgroundResource(R.drawable.custom_picture);
-                    imgBottom.setBackgroundResource(R.drawable.custom_picture2);
-                    checkWatch = false;
-                    checkClick = true;
-                }
 
                 //send message
                 if (!message.isEmpty() && message != messageOld) {
@@ -299,7 +281,7 @@ public class InGameOnlineFragment extends Fragment {
                 }
 
                 //set nickname
-                if (username.equals("null")) {
+                if (username == null) {
                     username = "No name";
                 }
                 txtUsername.setText(username);
@@ -331,20 +313,6 @@ public class InGameOnlineFragment extends Fragment {
                         Room room = new Room(false, true, 0, 0, "", "", times, player2, sizeBoard, -1, player2, player1, idRoom, "", false, 0);
                         roomRef.child(idRoom).setValue(room);
                     }
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("sizeBoard", sizeBoard);
-                    bundle.putInt("time", times);
-                    bundle.putString("idRoom", idRoom);
-                    NavController navController = Navigation.findNavController(view);
-                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
-                    progressBar.setVisibility(View.GONE);
-                }
-                if(checkDoneRematch){
-                    progressBar.setVisibility(View.VISIBLE);
-                    checkAgree=true;
-                    checkDoneRematch=false;
-                    DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
-                    gameRef.child("checkRematch").setValue(false);
                     Bundle bundle = new Bundle();
                     bundle.putInt("sizeBoard", sizeBoard);
                     bundle.putInt("time", times);
@@ -401,9 +369,9 @@ public class InGameOnlineFragment extends Fragment {
                     positionOld = position;
                     countTurn++;
                     DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
+                    gameRef.child("currentPlayer").setValue(currentPlayer);
                     gameRef.child("position").setValue(position);
                     gameRef.child("countTurn").setValue(countTurn);
-                    gameRef.child("currentPlayer").setValue(currentPlayer);
                 }
                 //savePlayerPosition[countPlayer++] = position;
             }
@@ -987,13 +955,17 @@ public class InGameOnlineFragment extends Fragment {
             userId = user.getUid();
         }
         DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
-        gameRef.child("position").addValueEventListener(new ValueEventListener() {
+
+        gameRef.child("currentPlayer").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Integer positionValue = snapshot.getValue(Integer.class);
+                String currentPlayerValue = snapshot.getValue(String.class);
 
-                if (positionValue != null) {
-                    positionUpdate = positionValue.intValue();
+                if (currentPlayerValue != null) {
+                    currentPlayer = currentPlayerValue;
+                } else {
+                    // Gán giá trị mặc định hoặc xử lý khi giá trị là null
+                    currentPlayer = "DefaultCurrentPlayer";
                 }
             }
 
@@ -1002,6 +974,43 @@ public class InGameOnlineFragment extends Fragment {
                 // Xử lý khi có lỗi
             }
         });
+
+        gameRef.child("position").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Integer positionValue = snapshot.getValue(Integer.class);
+
+                if (positionValue != null) {
+                    positionUpdate = positionValue.intValue();
+                    if (positionUpdate > -1 && positionOld != positionUpdate && currentPlayer != currentPlayerOld && checkWatch) {
+                        int row = positionUpdate / sizeBoard; // Lấy hàng dựa trên vị trí ô
+                        int col = positionUpdate % sizeBoard; // Lấy cột dựa trên vị trí ô
+                        if (currentPlayer.equals(player1)) {
+                            board[col][row] = 2;
+                            adapter.markCellAsPlayer2(positionUpdate);
+                        } else {
+                            board[col][row] = 1;
+                            adapter.markCellAsPlayer1(positionUpdate);
+                        }
+
+                        if (countDownTimer != null) {
+                            countDownTimer.cancel();
+                        }
+                        startCountdownTimer(times, txtWatch2, view);
+                        imgTop.setBackgroundResource(R.drawable.custom_picture);
+                        imgBottom.setBackgroundResource(R.drawable.custom_picture2);
+                        checkWatch = false;
+                        checkClick = true;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+
 
         gameRef.child("checkRematch").addValueEventListener(new ValueEventListener() {
             @Override
@@ -1013,6 +1022,22 @@ public class InGameOnlineFragment extends Fragment {
                 } else {
                     // Gán giá trị mặc định hoặc xử lý khi giá trị là null
                     checkDoneRematch = false; // Hoặc giá trị mặc định khác nếu cần
+                }
+
+
+                if(checkDoneRematch){
+                    progressBar.setVisibility(View.VISIBLE);
+                    checkAgree=true;
+                    checkDoneRematch=false;
+                    DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
+                    gameRef.child("checkRematch").setValue(false);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("sizeBoard", sizeBoard);
+                    bundle.putInt("time", times);
+                    bundle.putString("idRoom", idRoom);
+                    NavController navController = Navigation.findNavController(view);
+                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
+                    progressBar.setVisibility(View.GONE);
                 }
             }
 
@@ -1093,24 +1118,6 @@ public class InGameOnlineFragment extends Fragment {
             }
         });
 
-        gameRef.child("currentPlayer").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String currentPlayerValue = snapshot.getValue(String.class);
-
-                if (currentPlayerValue != null) {
-                    currentPlayer = currentPlayerValue;
-                } else {
-                    // Gán giá trị mặc định hoặc xử lý khi giá trị là null
-                    currentPlayer = "DefaultCurrentPlayer";
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
 
         gameRef.child("gameOver").addValueEventListener(new ValueEventListener() {
             @Override

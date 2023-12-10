@@ -138,28 +138,24 @@ public class PvpFragment extends Fragment {
         handler = new Handler(Looper.getMainLooper());
         int delayTime = 100;
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference roomRef = database.getReference("room");
-                roomRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        listIdRoom.clear();
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            Room room = dataSnapshot.getValue(Room.class);
-                            listIdRoom.add(room);
-                        }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                    }
-                });
-                handler.postDelayed(this, delayTime);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference roomRef = database.getReference("room");
+        roomRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                listIdRoom.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Room room = dataSnapshot.getValue(Room.class);
+                    listIdRoom.add(room);
+                }
             }
-        }, delayTime);
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
         playMode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
