@@ -9,8 +9,7 @@ import java.util.List;
 
 
 public class UserInfo {
-    
-    public static int DEFAULT_AVATAR = 0;
+
     private String ID;
     private String username;
     private String email;
@@ -22,6 +21,8 @@ public class UserInfo {
     private Coins coins;
     private ArrayList<Boolean> backgroundStatus;
     private ArrayList<Boolean> musicStatus;
+    private int wins;
+    private int losses;
 
     public UserInfo(String ID, String username, String email){
         this.ID = ID;
@@ -41,6 +42,8 @@ public class UserInfo {
         for(int i = 1; i < AppData.getInstance().getMusicList().size(); i++) {
             musicStatus.add(false);
         }
+        this.losses = 0;
+        this.wins = 0;
     }
 
     public UserInfo(FirebaseUser user){
@@ -61,6 +64,8 @@ public class UserInfo {
         for(int i = 1; i < AppData.getInstance().getMusicList().size(); i++) {
             musicStatus.add(false);
         }
+        this.losses = 0;
+        this.wins = 0;
     }
 
     public UserInfo(String ID, String username, List<String> friends, String avatar, ArrayList<MatchHistory> matchHistory, boolean status, String email, String phoneNumber, Coins coins) {
@@ -73,6 +78,8 @@ public class UserInfo {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.coins = coins;
+        this.losses = 0;
+        this.wins = 0;
     }
 
     public UserInfo() {
@@ -82,11 +89,31 @@ public class UserInfo {
         this.avatar = null;
         this.matchHistory = null;
         this.coins = new Coins(1000);
+        this.losses = 0;
+        this.wins = 0;
     }
     public UserInfo(String username, boolean status, String avatar){
         this.username = username;
         this.Status = status;
         this.avatar = avatar;
+        this.losses = 0;
+        this.wins = 0;
+    }
+
+    public int getWins() {
+        return wins;
+    }
+
+    public void setWins(int wins) {
+        this.wins = wins;
+    }
+
+    public int getLosses() {
+        return losses;
+    }
+
+    public void setLosses(int losses) {
+        this.losses = losses;
     }
 
     public String getID() {

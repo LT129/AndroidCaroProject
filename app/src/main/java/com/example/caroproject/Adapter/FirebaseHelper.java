@@ -226,7 +226,7 @@ public class FirebaseHelper {
 
 
     private static FirebaseHelper instance;
-    public FirebaseHelper() {
+    private FirebaseHelper() {
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
