@@ -159,6 +159,8 @@ public class GameModeFragment extends Fragment {
         });
 
         if(getUserInfoFromSharedPreferences() != null) {
+            // Truyền hình ảnh vào một image view
+            //      layout          url                                                    default                    circle image view
             Glide.with(view).load(getUserInfoFromSharedPreferences().getAvatar()).error(R.drawable.user_account).into(userAvatar);
         }
     }

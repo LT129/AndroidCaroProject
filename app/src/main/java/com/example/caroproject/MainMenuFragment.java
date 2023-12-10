@@ -41,14 +41,29 @@ public class MainMenuFragment extends Fragment {
     public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_menu, container, false);
         pref =  requireActivity().getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE);
+        Bundle args = getArguments();
 
         btnMenu = view.findViewById(R.id.btnMenu);
         btnFriendList = view.findViewById(R.id.btnFriendList);
         btnHistory = view.findViewById(R.id.btnHistory);
         groupButton = view.findViewById(R.id.groupButton);
         FragmentManager fragmentManager = getChildFragmentManager();
-        btnMenu.setChecked(true);
-        fragmentManager.beginTransaction().replace(R.id.main_view_holder, new GameModeFragment()).commit();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        if(args != null) {
+            String src = args.getString("Src");
+            if (src == "Friend") {
+                btnFriendList.setChecked(true);
+                fragmentTransaction.replace(R.id.main_view_holder, new FriendFragment());
+            }else if (src == "Match_History") {
+                btnHistory.setChecked(true);
+                fragmentTransaction.replace(R.id.main_view_holder, new HistoryFragment());
+            }
+        } else{
+            btnMenu.setChecked(true);
+            fragmentTransaction.replace(R.id.main_view_holder, new GameModeFragment());
+        }
+        fragmentTransaction.commit();
         groupButton.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @SuppressLint("NonConstantResourceId")
             @Override

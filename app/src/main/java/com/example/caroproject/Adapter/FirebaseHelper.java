@@ -6,6 +6,7 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 
+import com.example.caroproject.Data.UserInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -14,8 +15,12 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -104,6 +109,59 @@ public class FirebaseHelper {
         auth.signOut();
     }
 
+    public void getUserIdByUsername(String username, OnGetUserIdListener listener) {
+        CollectionReference usersCollection = firestore.collection("UserInfo");
+
+        Query query = usersCollection.whereEqualTo("username", username);
+
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    // Document found, pass the document ID to the listener
+                    String documentId = document.getId();
+                    listener.onSuccess(documentId);
+                    return; // Stop processing after finding the first match
+                }
+                // If no matching document is found
+                listener.onSuccess(null);
+            } else {
+                // Pass the exception to the listener
+                listener.onFailure(task.getException());
+            }
+        });
+    }
+
+    public interface OnGetUserByIdListener {
+        void onSuccess(UserInfo userInfo);
+        void onFailure(Exception e);
+    }
+
+    public void getUserById(String userId, OnGetUserByIdListener listener) {
+        DocumentReference userDocument = firestore.collection("UserInfo").document(userId);
+
+        userDocument.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    // Convert the document snapshot to a UserInfo object
+                    UserInfo userInfo = document.toObject(UserInfo.class);
+                    listener.onSuccess(userInfo);
+                } else {
+                    // Document not found
+                    listener.onSuccess(null);
+                }
+            } else {
+                // Pass the exception to the listener
+                listener.onFailure(task.getException());
+            }
+        });
+    }
+
+
+    public interface OnGetUserIdListener {
+        void onSuccess(String userId);
+        void onFailure(Exception e);
+    }
 
 
     public void changePassword(String password) {
@@ -168,7 +226,7 @@ public class FirebaseHelper {
 
 
     private static FirebaseHelper instance;
-    private FirebaseHelper() {
+    public FirebaseHelper() {
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
