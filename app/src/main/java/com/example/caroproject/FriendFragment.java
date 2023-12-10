@@ -98,7 +98,7 @@ public class FriendFragment extends Fragment {
 
         db = FirebaseFirestore.getInstance();
         userInfoArrayList = new ArrayList<UserInfo>();
-        firebaseHelper = new FirebaseHelper();
+        firebaseHelper = FirebaseHelper.getInstance();
 
         // Initialize the global adapter variable
         adapter = new FriendListAdapter(context, userInfoArrayList);

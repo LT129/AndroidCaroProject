@@ -58,7 +58,7 @@ public class ShowInfoFragment extends Fragment implements FriendListAdapter.OnIt
         txtEmail = view.findViewById(R.id.txtEmail);
         btnBack = view.findViewById(R.id.btnBack);
         btnFriendRequest = view.findViewById(R.id.btnFriendRequest);
-        firebaseHelper = new FirebaseHelper();
+        firebaseHelper = FirebaseHelper.getInstance();
         TargetUserID = getArguments().getString(USER_ID);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
