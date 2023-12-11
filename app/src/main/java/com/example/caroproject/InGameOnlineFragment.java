@@ -105,6 +105,7 @@ public class InGameOnlineFragment extends Fragment {
     private long noWins=0, noLosses=0;
     private ImageView imgBottom;
     private ImageButton imgTop;
+    private DatabaseReference gameRef;
     private ProgressBar progressBar;
     private TextView txtWatch2, txtWatch1, txtMessage, txtUsername, txtNickname, txtNoWins, txtNoLosses;
     private boolean checkWatch = true, checkDoneRematch=false, checkClick = false, checkAgree=false, checkConnect = true, checkWin = true, checkRematch = true, checkResult=true, checkRandom=false;
@@ -163,6 +164,7 @@ public class InGameOnlineFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_in_game_online, container, false);
+        gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
 
         scaleGestureDetector = new ScaleGestureDetector(requireContext(), new ScaleListener());
 
@@ -185,22 +187,14 @@ public class InGameOnlineFragment extends Fragment {
         readData();
 
         initializeBoard(view);
-        //set dong ho
-        if (times != -1) {
-            // Cập nhật TextView với thời gian còn lại
-            long seconds = times / 1000 - 1;
-            long minutes = seconds / 60;
-            seconds = seconds % 60;
-            txtWatch2.setText(String.format("%02d:%02d", minutes, seconds));
-            txtWatch1.setText(String.format("%02d:%02d", minutes, seconds));
-        }
+
         int[] locationOriginal = new int[2];
         gridView.getLocationOnScreen(locationOriginal);
 
         xOriginal = locationOriginal[0];
         yOriginal = locationOriginal[1];
         handler = new Handler(Looper.getMainLooper());
-        int delayTime = 950;
+        int delayTime = 0;
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -215,18 +209,10 @@ public class InGameOnlineFragment extends Fragment {
                         noInternetDialog.dismiss();
                     }
                 }
-//                readData();
-                if (countRepeat == 0 && player2.equals("")&&!checkRandom) {
-                    showRoomIdDialog(view);
-                    countRepeat++;
-                }
-                if (countRepeat == 0 && player2.equals("")&&checkRandom) {
-                    showWaitPlayerJoinRoom(view);
-                    countRepeat++;
-                }
+
+                //vao day dung 1 lan
                 if (countRepeat2 == 0 && !player2.equals("")) {
                     if (roomIdDialog != null && roomIdDialog.isShowing()) {
-                        // Đóng hộp thoại
                         roomIdDialog.dismiss();
                     }
                     if (userId.equals(player1)) {
@@ -310,26 +296,48 @@ public class InGameOnlineFragment extends Fragment {
                         showRematchDialog(view);
                     }
                 }
+
                 //start rematch
                 if (rematchPlayer1 == 1 && rematchPlayer2 == 1) {
                     progressBar.setVisibility(View.VISIBLE);
                     checkAgree = true;
                     turnOffDialog();
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference roomRef = database.getReference("room");
 
                     if (!winner.isEmpty()) {
                         Room room = new Room(false, true, 0, 0, "", "", times, player2, sizeBoard, -1, player2, player1, idRoom, "", false, 0);
-                        roomRef.child(idRoom).setValue(room);
+                        gameRef.setValue(room);
                     }
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("sizeBoard", sizeBoard);
-                    bundle.putInt("time", times);
-                    bundle.putString("idRoom", idRoom);
-                    NavController navController = Navigation.findNavController(view);
-                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putInt("sizeBoard", sizeBoard);
+//                    bundle.putInt("time", times);
+//                    bundle.putString("idRoom", idRoom);
+//                    NavController navController = Navigation.findNavController(view);
+//                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
+                    initializeBoard(view);
+                    if (userId.equals(player1)) {
+                        userIdOpponent = player2;
+                    } else {
+                        userIdOpponent = player1;
+                    }
+                    currentPlayerOld = player1;
+                    messageOld = message;
+                    if (userId.equals(player1)) {
+                        checkClick = true;
+                    } else {
+                        checkClick = false;
+                    }
+                    if (!userId.equals(currentPlayer)) {
+                        startCountdownTimer(times, txtWatch1, view);
+                        imgBottom.setBackgroundResource(R.drawable.custom_picture);
+                        imgTop.setBackgroundResource(R.drawable.custom_picture2);
+                    } else {
+                        startCountdownTimer(times, txtWatch2, view);
+                        imgTop.setBackgroundResource(R.drawable.custom_picture);
+                        imgBottom.setBackgroundResource(R.drawable.custom_picture2);
+                    }
                     progressBar.setVisibility(View.GONE);
                 }
+
                 //reject rematch
                 if (userId.equals(player1) && checkResult) {
                     if (rematchPlayer2 == 2) {
@@ -345,19 +353,7 @@ public class InGameOnlineFragment extends Fragment {
                         showResultRematchDialog(view);
                     }
                 }
-                //end game
-                if (gameOver && checkWin) {
-                    if (countDownTimer != null) {
-                        countDownTimer.cancel();
-                    }
-                    if (checkConnect) {
-                        //them matchHistory
-                        String opponentId = (userId.equals(player1)?player2:player1);
-                        updateData(opponentId);
-                        showWinDialog(winner, view);
-                        checkWin = false;
-                    }
-                }
+
                 handler.postDelayed(this, delayTime);
             }
         }, delayTime);
@@ -378,10 +374,10 @@ public class InGameOnlineFragment extends Fragment {
                     checkClick = false;
                     positionOld = position;
                     countTurn++;
-                    DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
                     gameRef.child("currentPlayer").setValue(currentPlayer);
                     gameRef.child("position").setValue(position);
                     gameRef.child("countTurn").setValue(countTurn);
+                    gameRef.child("gameOver").setValue(gameOver);
                 }
                 //savePlayerPosition[countPlayer++] = position;
             }
@@ -465,7 +461,6 @@ public class InGameOnlineFragment extends Fragment {
                             editMessage.setText("");
                             Toast.makeText(requireContext(), "You can only send messages of fewer than 50 characters", Toast.LENGTH_SHORT).show();
                         }
-                        DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
                         gameRef.child("message").setValue(message);
                         gameRef.child("keyMessage").setValue(userId);
                         dialog.dismiss();
@@ -515,13 +510,14 @@ public class InGameOnlineFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (winner.isEmpty()) {
-                    DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
                     if (userId.equals(player1)) {
                         gameRef.child("winner").setValue(player2);
                         gameRef.child("gameOver").setValue(true);
+
                     } else {
                         gameRef.child("winner").setValue(player1);
                         gameRef.child("gameOver").setValue(true);
+
                     }
                 }
             }
@@ -571,6 +567,317 @@ public class InGameOnlineFragment extends Fragment {
         return view;
     }
 
+    public void readData() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            userId = user.getUid();
+        }
+        gameRef.child("currentPlayer").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String currentPlayerValue = snapshot.getValue(String.class);
+
+                if (currentPlayerValue != null) {
+                    currentPlayer = currentPlayerValue;
+                } else {
+                    currentPlayer = "";
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+
+
+        gameRef.child("position").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Integer positionValue = snapshot.getValue(Integer.class);
+
+                if (positionValue != null) {
+                    positionUpdate = positionValue.intValue();
+                    if (positionUpdate > -1 && positionOld != positionUpdate && currentPlayer != currentPlayerOld && checkWatch) {
+                        int row = positionUpdate / sizeBoard; // Lấy hàng dựa trên vị trí ô
+                        int col = positionUpdate % sizeBoard; // Lấy cột dựa trên vị trí ô
+                        if (currentPlayer.equals(player1)) {
+                            board[col][row] = 2;
+                            adapter.markCellAsPlayer2(positionUpdate);
+                        } else {
+                            board[col][row] = 1;
+                            adapter.markCellAsPlayer1(positionUpdate);
+                        }
+
+                        if (countDownTimer != null) {
+                            countDownTimer.cancel();
+                        }
+                        startCountdownTimer(times, txtWatch2, view);
+                        imgTop.setBackgroundResource(R.drawable.custom_picture);
+                        imgBottom.setBackgroundResource(R.drawable.custom_picture2);
+                        checkWatch = false;
+                        checkClick = true;
+                    }
+                }
+                else {
+                    positionUpdate=-1;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+
+
+        gameRef.child("checkRematch").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Boolean checkDoneRematchValue = snapshot.getValue(Boolean.class);
+
+                if (checkDoneRematchValue != null) {
+                    checkDoneRematch = checkDoneRematchValue;
+                } else {
+                    checkDoneRematch = false;
+                }
+
+                if(checkDoneRematch){
+                    progressBar.setVisibility(View.VISIBLE);
+                    checkAgree=true;
+                    checkDoneRematch=false;
+                    gameRef.child("checkRematch").setValue(false);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putInt("sizeBoard", sizeBoard);
+//                    bundle.putInt("time", times);
+//                    bundle.putString("idRoom", idRoom);
+//                    NavController navController = Navigation.findNavController(view);
+//                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
+                    initializeBoard(view);
+                    if (userId.equals(player1)) {
+                        userIdOpponent = player2;
+                    } else {
+                        userIdOpponent = player1;
+                    }
+                    currentPlayerOld = player1;
+                    messageOld = message;
+                    if (userId.equals(player1)) {
+                        checkClick = true;
+                    } else {
+                        checkClick = false;
+                    }
+                    if (!userId.equals(currentPlayer)) {
+                        startCountdownTimer(times, txtWatch1, view);
+                        imgBottom.setBackgroundResource(R.drawable.custom_picture);
+                        imgTop.setBackgroundResource(R.drawable.custom_picture2);
+                    } else {
+                        startCountdownTimer(times, txtWatch2, view);
+                        imgTop.setBackgroundResource(R.drawable.custom_picture);
+                        imgBottom.setBackgroundResource(R.drawable.custom_picture2);
+                    }
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+
+        gameRef.child("rematchPlayer1").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Integer rematchValue = snapshot.getValue(Integer.class);
+
+                if (rematchValue != null) {
+                    rematchPlayer1 = rematchValue;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+        gameRef.child("rematchPlayer2").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Integer rematchValue = snapshot.getValue(Integer.class);
+
+                if (rematchValue != null) {
+                    rematchPlayer2 = rematchValue;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+
+        gameRef.child("message").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String messageValue = snapshot.getValue(String.class);
+
+                if (messageValue != null) {
+                    message = messageValue;
+                } else {
+                    // Gán giá trị mặc định hoặc xử lý khi giá trị là null
+                    message = "";
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+
+        gameRef.child("keyMessage").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String keyMessageValue = snapshot.getValue(String.class);
+
+                if (keyMessageValue != null) {
+                    keyMessage = keyMessageValue;
+                } else {
+                    // Gán giá trị mặc định hoặc xử lý khi giá trị là null
+                    keyMessage = "";
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+
+        gameRef.child("checkRandom").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Boolean checkRandomValue = snapshot.getValue(Boolean.class);
+
+                if (checkRandomValue != null) {
+                    checkRandom = checkRandomValue;
+                }else {
+                    checkRandom=false;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+
+        gameRef.child("player2").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String player2Value = snapshot.getValue(String.class);
+
+                if (player2Value != null) {
+                    player2 = player2Value;
+                } else {
+                    player2 = "";
+                }
+
+                if (countRepeat == 0 && player2.equals("")&&!checkRandom) {
+                    showRoomIdDialog(view);
+                    countRepeat++;
+                }
+                if (countRepeat == 0 && player2.equals("")&&checkRandom) {
+                    showWaitPlayerJoinRoom(view);
+                    countRepeat++;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+
+        gameRef.child("player1").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String player1Value = snapshot.getValue(String.class);
+
+                if (player1Value != null) {
+                    player1 = player1Value;
+                } else {
+                    player1 = "";
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+
+        gameRef.child("gameOver").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Boolean gameOverValue = snapshot.getValue(Boolean.class);
+
+                if (gameOverValue != null) {
+                    gameOver = gameOverValue;
+                }else {
+                    gameOver=false;
+                }
+                //end game
+                if (gameOver && checkWin) {
+                    if (countDownTimer != null) {
+                        countDownTimer.cancel();
+                    }
+                    if (checkConnect) {
+                        String opponentId = (userId.equals(player1)?player2:player1);
+                        //updateData(opponentId);
+                        showWinDialog(winner, view);
+                        checkWin = false;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+
+        gameRef.child("winner").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String winnerValue = snapshot.getValue(String.class);
+
+                if (winnerValue != null) {
+                    winner = winnerValue;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+        gameRef.child("countTurn").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Integer countTurnValue = snapshot.getValue(Integer.class);
+
+                if (countTurnValue != null) {
+                    countTurn = countTurnValue;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý khi có lỗi
+            }
+        });
+    }
 
     private void updateData(String opponentId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -622,13 +929,32 @@ public class InGameOnlineFragment extends Fragment {
     }
 
     private void initializeBoard(View v) {
+        turnOffDialog();
+          checkWatch = true; checkDoneRematch=false;
+          checkClick = false; checkAgree=false;
+          checkConnect = true;
+          checkWin = true;
+          checkRematch = true; checkResult=true;
+          checkRandom=false;
+
         board = new int[sizeBoard][sizeBoard];  // Bảng sizeBoardxsizeBoard
         //savePlayerPosition=new int[sizeBoard*sizeBoard/2];
         // Khởi tạo tất cả ô cờ là trống
         for (int i = 0; i < sizeBoard; i++) {
             for (int j = 0; j < sizeBoard; j++) {
                 board[i][j] = 0;
+                int p = i * sizeBoard + j;
+                adapter.markCellAsPlayer0(p);
             }
+        }
+        //set dong ho
+        if (times != -1) {
+            // Cập nhật TextView với thời gian còn lại
+            long seconds = times / 1000 - 1;
+            long minutes = seconds / 60;
+            seconds = seconds % 60;
+            txtWatch2.setText(String.format("%02d:%02d", minutes, seconds));
+            txtWatch1.setText(String.format("%02d:%02d", minutes, seconds));
         }
     }
 
@@ -671,10 +997,9 @@ public class InGameOnlineFragment extends Fragment {
                 }
                 if (caroCenter.checkWin(checkPlayer, sizeBoard, board)) {
                     gameOver = true;
-                    DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
                     gameRef.child("winner").setValue(currentPlayer);
-                    gameRef.child("gameOver").setValue(gameOver);
                 }
+                //dung o luot choi cua nguoi win
                 if (!gameOver) {
                     startCountdownTimer(times, txtWatch1, v);
                     imgBottom.setBackgroundResource(R.drawable.custom_picture);
@@ -686,13 +1011,11 @@ public class InGameOnlineFragment extends Fragment {
                     currentPlayer = player1;
                 }
             } else {
-                // Ô đã được đánh, xử lý theo ý của bạn (ví dụ: thông báo ô đã được đánh)
                 Toast.makeText(requireContext(), "Cell already marked", Toast.LENGTH_SHORT).show();
             }
         }
     }
-
-    // Hàm hiển thị thông báo thắng
+    
     private void showWinDialog(String player, View v) {
         String title, message;
         if (player.equals(userId)) {
@@ -709,7 +1032,6 @@ public class InGameOnlineFragment extends Fragment {
         builder.setPositiveButton("Rematch", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
                 if (userId.equals(player1)) {
                     gameRef.child("rematchPlayer1").setValue(1);
                 } else {
@@ -768,7 +1090,6 @@ public class InGameOnlineFragment extends Fragment {
         builder.setPositiveButton("Agree", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
                 if (userId.equals(player1)) {
                     gameRef.child("rematchPlayer1").setValue(1);
                 } else {
@@ -838,7 +1159,6 @@ public class InGameOnlineFragment extends Fragment {
         roomIdDialog = builder.show();
     }
 
-
     private void startCountdownTimer(long millisInFuture, TextView txtWatch, View v) {
         // millisInFuture là thời gian đếm ngược theo mili giây
 
@@ -862,12 +1182,11 @@ public class InGameOnlineFragment extends Fragment {
                     }
                     if (currentPlayer.equals(player1)) {
                         currentPlayer = player2;
-                    } else currentPlayer = player1;
-                    {
-                        DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
-                        gameRef.child("winner").setValue(currentPlayer);
-                        gameRef.child("gameOver").setValue(gameOver);
+                    } else {
+                        currentPlayer = player1;
                     }
+                    gameRef.child("winner").setValue(currentPlayer);
+                    gameRef.child("gameOver").setValue(gameOver);
                 }
             }
         }.start();
@@ -915,288 +1234,12 @@ public class InGameOnlineFragment extends Fragment {
         navController.navigate(R.id.action_inGameOnlineFragment_to_pvpFragment, bundle);
     }
 
-    public void readData() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            userId = user.getUid();
-        }
-        DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
-
-        gameRef.child("currentPlayer").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String currentPlayerValue = snapshot.getValue(String.class);
-
-                if (currentPlayerValue != null) {
-                    currentPlayer = currentPlayerValue;
-                } else {
-                    // Gán giá trị mặc định hoặc xử lý khi giá trị là null
-                    currentPlayer = "DefaultCurrentPlayer";
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
-
-        gameRef.child("position").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Integer positionValue = snapshot.getValue(Integer.class);
-
-                if (positionValue != null) {
-                    positionUpdate = positionValue.intValue();
-                    if (positionUpdate > -1 && positionOld != positionUpdate && currentPlayer != currentPlayerOld && checkWatch) {
-                        int row = positionUpdate / sizeBoard; // Lấy hàng dựa trên vị trí ô
-                        int col = positionUpdate % sizeBoard; // Lấy cột dựa trên vị trí ô
-                        if (currentPlayer.equals(player1)) {
-                            board[col][row] = 2;
-                            adapter.markCellAsPlayer2(positionUpdate);
-                        } else {
-                            board[col][row] = 1;
-                            adapter.markCellAsPlayer1(positionUpdate);
-                        }
-
-                        if (countDownTimer != null) {
-                            countDownTimer.cancel();
-                        }
-                        startCountdownTimer(times, txtWatch2, view);
-                        imgTop.setBackgroundResource(R.drawable.custom_picture);
-                        imgBottom.setBackgroundResource(R.drawable.custom_picture2);
-                        checkWatch = false;
-                        checkClick = true;
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
-
-
-        gameRef.child("checkRematch").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean checkDoneRematchValue = snapshot.getValue(Boolean.class);
-
-                if (checkDoneRematchValue != null) {
-                    checkDoneRematch = checkDoneRematchValue;
-                } else {
-                    // Gán giá trị mặc định hoặc xử lý khi giá trị là null
-                    checkDoneRematch = false; // Hoặc giá trị mặc định khác nếu cần
-                }
-
-
-                if(checkDoneRematch){
-                    progressBar.setVisibility(View.VISIBLE);
-                    checkAgree=true;
-                    checkDoneRematch=false;
-                    DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
-                    gameRef.child("checkRematch").setValue(false);
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("sizeBoard", sizeBoard);
-                    bundle.putInt("time", times);
-                    bundle.putString("idRoom", idRoom);
-                    NavController navController = Navigation.findNavController(view);
-                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
-                    progressBar.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
-
-        gameRef.child("rematchPlayer1").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Integer rematchValue = snapshot.getValue(Integer.class);
-
-                if (rematchValue != null) {
-                    rematchPlayer1 = rematchValue;
-                    // Thực hiện các công việc khác sau khi có giá trị rematchPlayer1
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
-        gameRef.child("rematchPlayer2").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Integer rematchValue = snapshot.getValue(Integer.class);
-
-                if (rematchValue != null) {
-                    rematchPlayer2 = rematchValue;
-                    // Thực hiện các công việc khác sau khi có giá trị rematchPlayer2
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
-
-        gameRef.child("message").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String messageValue = snapshot.getValue(String.class);
-
-                if (messageValue != null) {
-                    message = messageValue;
-                } else {
-                    // Gán giá trị mặc định hoặc xử lý khi giá trị là null
-                    message = "DefaultMessage";
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
-
-        gameRef.child("keyMessage").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String keyMessageValue = snapshot.getValue(String.class);
-
-                if (keyMessageValue != null) {
-                    keyMessage = keyMessageValue;
-                } else {
-                    // Gán giá trị mặc định hoặc xử lý khi giá trị là null
-                    keyMessage = "DefaultKeyMessage";
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
-
-
-        gameRef.child("gameOver").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean gameOverValue = snapshot.getValue(Boolean.class);
-
-                if (gameOverValue != null) {
-                    gameOver = gameOverValue;
-                    // Thực hiện các công việc khác sau khi có giá trị gameOver
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
-        gameRef.child("checkRandom").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean checkRandomValue = snapshot.getValue(Boolean.class);
-
-                if (checkRandomValue != null) {
-                    checkRandom = checkRandomValue;
-                    // Thực hiện các công việc khác sau khi có giá trị checkRandom
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
-        gameRef.child("player1").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String player1Value = snapshot.getValue(String.class);
-
-                if (player1Value != null) {
-                    player1 = player1Value;
-                } else {
-                    // Gán giá trị mặc định hoặc xử lý khi giá trị là null
-                    player1 = "DefaultPlayer1";
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
-
-        gameRef.child("player2").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String player2Value = snapshot.getValue(String.class);
-
-                if (player2Value != null) {
-                    player2 = player2Value;
-                } else {
-                    // Gán giá trị mặc định hoặc xử lý khi giá trị là null
-                    player2 = "DefaultPlayer2";
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
-
-        gameRef.child("countTurn").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Integer countTurnValue = snapshot.getValue(Integer.class);
-
-                if (countTurnValue != null) {
-                    countTurn = countTurnValue;
-                    // Thực hiện các công việc khác sau khi có giá trị countTurn
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
-
-        gameRef.child("winner").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String winnerValue = snapshot.getValue(String.class);
-
-                if (winnerValue != null) {
-                    winner = winnerValue;
-                    // Thực hiện các công việc khác sau khi có giá trị winner
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý khi có lỗi
-            }
-        });
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
         handler.removeCallbacksAndMessages(null);
-
-        DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference("room/" + idRoom);
+        
         if(rematchPlayer1!=1||rematchPlayer2!=1) {
             if (userId.equals(player1)) {
                 gameRef.child("rematchPlayer1").setValue(2);
@@ -1212,14 +1255,15 @@ public class InGameOnlineFragment extends Fragment {
             }
         }
 
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
+
         turnOffDialog();
 
     }
 
     public void turnOffDialog() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
         if (winnerDialog != null && winnerDialog.isShowing()) {
             winnerDialog.dismiss();
         }
