@@ -10,9 +10,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,11 +43,9 @@ public class PvpFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private String userId, player1;
-    private Handler handler;
-    private boolean checkBack = true;
     private EditText edtRoomID;
     private int checkCreate = 0;
-    private String idRoom = "";
+    private String idRoom = " ";
     private ImageButton btnCallBack;
     private String roomId;
     private LinearLayout lnSizeTime;
@@ -60,14 +55,11 @@ public class PvpFragment extends Fragment {
     private RadioButton rdoOffline, rdoOnline, rdoSize9, rdoSize15, rdoSize21, time15, time45,
             timeUnlimited, rdoJoinRoom, rdoCreateRoom, rdoRandomRoom;
 
-    private ImageButton chooseShape;
-    private ImageButton chooseColor;
-    private boolean isValid = false;
     private Button btnPlay;
     private LinearLayout lnRoom;
     private int time, sizeBoard;
+    private boolean isPause=false;
     private List<Room> listIdRoom = new ArrayList<>();
-    ;
 
     public PvpFragment() {
         // Required empty public constructor
@@ -162,7 +154,6 @@ public class PvpFragment extends Fragment {
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkBack = false;
                 progressBar.setVisibility(View.VISIBLE);
 
                 Bundle bundle = new Bundle();
@@ -196,11 +187,18 @@ public class PvpFragment extends Fragment {
                             progressBar.setVisibility(View.GONE);
                             return;
                         }
+                        else {
+                            FirebaseAuth auth = FirebaseAuth.getInstance();
+                            FirebaseUser currentUser = auth.getCurrentUser();
+                            if (currentUser != null) {
+                                userId = currentUser.getUid();
+                            }
+                        }
                         if (rdoRandomRoom.isChecked()) {
                             if (!listIdRoom.isEmpty()) {
                                 for (Room room : listIdRoom) {
                                     checkCreate++;
-                                    if (room.getRematchPlayer1() == 0 && room.isCheckRandom() && room.getPlayer2().isEmpty() && time == room.getTime() && sizeBoard == room.getSizeBoard() && userId != room.getPlayer1()) {
+                                    if (room.getRematchPlayer1() == 0 && room.isCheckRandom() && room.getPlayer2().isEmpty() && time == room.getTime() && sizeBoard == room.getSizeBoard() && !userId.equals(room.getPlayer1())) {
                                         //join player2
                                         checkCreate--;
                                         checkLoginAndJoin(room.getRoomId(), v);
@@ -211,8 +209,8 @@ public class PvpFragment extends Fragment {
                             //create player1
                             if (listIdRoom.isEmpty() || checkCreate == listIdRoom.size()) {
                                 Random random = new Random();
-                                //int i = 0;
-                                //do {
+//                                int i = 0;
+//                                do {
                                 idRoom = "r" + random.nextInt(10) + random.nextInt(10)
                                         + random.nextInt(10) + random.nextInt(10) + random.nextInt(10) + random.nextInt(10);
 //                                    for (Room room : listIdRoom) {
@@ -221,7 +219,7 @@ public class PvpFragment extends Fragment {
 //                                            break;
 //                                        }
 //                                    }
-                                //} while (i != 0);
+//                                } while (i != 0);
 
                                 checkLoginAndCreate(true, v);
                             }
@@ -279,7 +277,6 @@ public class PvpFragment extends Fragment {
 
                                             checkLoginAndJoin(idRoom, v);
                                         } else {
-                                            checkBack = true;
                                             progressBar.setVisibility(View.GONE);
                                             Toast.makeText(requireContext(), "RoomId not exists", Toast.LENGTH_SHORT).show();
                                         }
@@ -290,7 +287,6 @@ public class PvpFragment extends Fragment {
                                     }
                                 });
                             } else {
-                                checkBack = true;
                                 progressBar.setVisibility(View.GONE);
                                 Toast.makeText(requireContext(), "RoomId empty", Toast.LENGTH_SHORT).show();
                             }
@@ -304,9 +300,7 @@ public class PvpFragment extends Fragment {
         btnCallBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkBack) {
-                    getActivity().getOnBackPressedDispatcher().onBackPressed();
-                }
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
 
@@ -352,19 +346,18 @@ public class PvpFragment extends Fragment {
                         bundle.putInt("sizeBoard", sizeBoard);
                         bundle.putInt("time", time);
                         bundle.putString("idRoom", idRoom);
-                        navController = Navigation.findNavController(v);
-                        navController.navigate(R.id.action_pvpFragment_to_inGameOnlineFragment, bundle);
-                        progressBar.setVisibility(View.GONE);
-                        checkBack = true;
+                        if (!isPause) {
+                            navController = Navigation.findNavController(v);
+                            navController.navigate(R.id.action_pvpFragment_to_inGameOnlineFragment, bundle);
+                            progressBar.setVisibility(View.GONE);
+                        }
                     } else {
-                        checkBack=true;
                         Toast.makeText(requireContext(), "Error writing to the database", Toast.LENGTH_SHORT).show();
                     }
                     progressBar.setVisibility(View.GONE);
                 }
             });
         } else {
-            checkBack = true;
             progressBar.setVisibility(View.GONE);
             showNotLoggedInDialog(v);
         }
@@ -396,18 +389,17 @@ public class PvpFragment extends Fragment {
                             bundle.putInt("sizeBoard", sizeBoard);
                             bundle.putInt("time", time);
                             bundle.putString("idRoom", id);
-                            navController = Navigation.findNavController(v);
-                            navController.navigate(R.id.action_pvpFragment_to_inGameOnlineFragment, bundle);
-                            checkBack = true;
-                        } else {
-                            checkBack = true;
+                            if (!isPause) {
+                                navController = Navigation.findNavController(v);
+                                navController.navigate(R.id.action_pvpFragment_to_inGameOnlineFragment, bundle);
+                            }
+                        }else {
                             Toast.makeText(requireContext(), "Error writing to the database", Toast.LENGTH_SHORT).show();
                         }
                         progressBar.setVisibility(View.GONE);
                     }
                 });
             } else {
-                checkBack = true;
                 progressBar.setVisibility(View.GONE);
                 showNotLoggedInDialog(v);
             }
@@ -449,5 +441,14 @@ public class PvpFragment extends Fragment {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-
+    @Override
+    public void  onPause(){
+        super.onPause();
+        isPause=true;
+    }
+    @Override
+    public void  onResume(){
+        super.onResume();
+        isPause=false;
+    }
 }
