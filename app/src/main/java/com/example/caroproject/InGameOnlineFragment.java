@@ -220,33 +220,7 @@ public class InGameOnlineFragment extends Fragment {
                     } else {
                         userIdOpponent = player1;
                     }
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    db.collection("UserInfo")
-                            .document(userIdOpponent)
-                            .get()
-                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    if (documentSnapshot.exists()) {
-                                        username = documentSnapshot.getString("username");
-                                        Map<String, Object> data = documentSnapshot.getData();
-                                        if (data != null && data.containsKey("wins") && data.containsKey("losses")) {
-                                            noWins = documentSnapshot.getLong("wins");
-                                            noLosses = documentSnapshot.getLong("losses");
-                                        } else {
-                                            noWins = 0;
-                                            noLosses = 0;
-                                        }
-                                    } else {
-                                    }
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    // Xử lý lỗi
-                                }
-                            });
+                    readDoc();
                     currentPlayerOld = player1;
                     messageOld = message;
                     if (userId.equals(player1)) {
@@ -255,10 +229,16 @@ public class InGameOnlineFragment extends Fragment {
                         checkClick = false;
                     }
                     if (!userId.equals(currentPlayer)) {
+                        if (countDownTimer != null) {
+                            countDownTimer.cancel();
+                        }
                         startCountdownTimer(times, txtWatch1, view);
                         imgBottom.setBackgroundResource(R.drawable.custom_picture);
                         imgTop.setBackgroundResource(R.drawable.custom_picture2);
                     } else {
+                        if (countDownTimer != null) {
+                            countDownTimer.cancel();
+                        }
                         startCountdownTimer(times, txtWatch2, view);
                         imgTop.setBackgroundResource(R.drawable.custom_picture);
                         imgBottom.setBackgroundResource(R.drawable.custom_picture2);
@@ -304,8 +284,35 @@ public class InGameOnlineFragment extends Fragment {
                     turnOffDialog();
 
                     if (!winner.isEmpty()) {
-                        Room room = new Room(false, true, 0, 0, "", "", times, player2, sizeBoard, -1, player2, player1, idRoom, "", false, 0);
-                        gameRef.setValue(room);
+                        Room room = new Room(checkRandom, true, 0, 0, "", "", times, player2, sizeBoard, -1, player2, player1, idRoom, "", false, 0);
+                        gameRef.setValue(room, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                initializeBoard(view);
+                                readDoc();
+                                if (userId.equals(currentPlayer)) {
+                                    checkClick = true;
+                                } else {
+                                    checkClick = false;
+                                }
+                                if (!userId.equals(currentPlayer)) {
+                                    if (countDownTimer != null) {
+                                        countDownTimer.cancel();
+                                    }
+                                    startCountdownTimer(times, txtWatch1, view);
+                                    imgBottom.setBackgroundResource(R.drawable.custom_picture);
+                                    imgTop.setBackgroundResource(R.drawable.custom_picture2);
+                                } else {
+                                    if (countDownTimer != null) {
+                                        countDownTimer.cancel();
+                                    }
+                                    startCountdownTimer(times, txtWatch2, view);
+                                    imgTop.setBackgroundResource(R.drawable.custom_picture);
+                                    imgBottom.setBackgroundResource(R.drawable.custom_picture2);
+                                }
+                                progressBar.setVisibility(View.GONE);
+                            }
+                        });
                     }
 //                    Bundle bundle = new Bundle();
 //                    bundle.putInt("sizeBoard", sizeBoard);
@@ -313,29 +320,7 @@ public class InGameOnlineFragment extends Fragment {
 //                    bundle.putString("idRoom", idRoom);
 //                    NavController navController = Navigation.findNavController(view);
 //                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
-                    initializeBoard(view);
-                    if (userId.equals(player1)) {
-                        userIdOpponent = player2;
-                    } else {
-                        userIdOpponent = player1;
-                    }
-                    currentPlayerOld = player1;
-                    messageOld = message;
-                    if (userId.equals(player1)) {
-                        checkClick = true;
-                    } else {
-                        checkClick = false;
-                    }
-                    if (!userId.equals(currentPlayer)) {
-                        startCountdownTimer(times, txtWatch1, view);
-                        imgBottom.setBackgroundResource(R.drawable.custom_picture);
-                        imgTop.setBackgroundResource(R.drawable.custom_picture2);
-                    } else {
-                        startCountdownTimer(times, txtWatch2, view);
-                        imgTop.setBackgroundResource(R.drawable.custom_picture);
-                        imgBottom.setBackgroundResource(R.drawable.custom_picture2);
-                    }
-                    progressBar.setVisibility(View.GONE);
+
                 }
 
                 //reject rematch
@@ -369,15 +354,17 @@ public class InGameOnlineFragment extends Fragment {
 
                 if (userId.equals(currentPlayer) && !player2.equals("") && checkClick && checkConnect) {
                     currentPlayerOld = currentPlayer;
-                    onCellClicked(position, view, adapter);
-                    checkWatch = true;
                     checkClick = false;
-                    positionOld = position;
-                    countTurn++;
-                    gameRef.child("currentPlayer").setValue(currentPlayer);
-                    gameRef.child("position").setValue(position);
-                    gameRef.child("countTurn").setValue(countTurn);
-                    gameRef.child("gameOver").setValue(gameOver);
+                    onCellClicked(position, view, adapter);
+                    if(!checkClick){
+                        checkWatch=true;
+                        positionOld = position;
+                        countTurn++;
+                        gameRef.child("currentPlayer").setValue(currentPlayer);
+                        gameRef.child("position").setValue(position);
+                        gameRef.child("countTurn").setValue(countTurn);
+                        gameRef.child("gameOver").setValue(gameOver);
+                    }
                 }
                 //savePlayerPosition[countPlayer++] = position;
             }
@@ -567,6 +554,36 @@ public class InGameOnlineFragment extends Fragment {
         return view;
     }
 
+    private void readDoc() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("UserInfo")
+                .document(userIdOpponent)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            username = documentSnapshot.getString("username");
+                            Map<String, Object> data = documentSnapshot.getData();
+                            if (data != null && data.containsKey("wins") && data.containsKey("losses")) {
+                                noWins = documentSnapshot.getLong("wins");
+                                noLosses = documentSnapshot.getLong("losses");
+                            } else {
+                                noWins = 0;
+                                noLosses = 0;
+                            }
+                        } else {
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Xử lý lỗi
+                    }
+                });
+    }
+
     public void readData() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -654,23 +671,23 @@ public class InGameOnlineFragment extends Fragment {
 //                    NavController navController = Navigation.findNavController(view);
 //                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
                     initializeBoard(view);
-                    if (userId.equals(player1)) {
-                        userIdOpponent = player2;
-                    } else {
-                        userIdOpponent = player1;
-                    }
-                    currentPlayerOld = player1;
-                    messageOld = message;
-                    if (userId.equals(player1)) {
+                    readDoc();
+                    if (userId.equals(currentPlayer)) {
                         checkClick = true;
                     } else {
                         checkClick = false;
                     }
                     if (!userId.equals(currentPlayer)) {
+                        if (countDownTimer != null) {
+                            countDownTimer.cancel();
+                        }
                         startCountdownTimer(times, txtWatch1, view);
                         imgBottom.setBackgroundResource(R.drawable.custom_picture);
                         imgTop.setBackgroundResource(R.drawable.custom_picture2);
                     } else {
+                        if (countDownTimer != null) {
+                            countDownTimer.cancel();
+                        }
                         startCountdownTimer(times, txtWatch2, view);
                         imgTop.setBackgroundResource(R.drawable.custom_picture);
                         imgBottom.setBackgroundResource(R.drawable.custom_picture2);
@@ -1001,6 +1018,9 @@ public class InGameOnlineFragment extends Fragment {
                 }
                 //dung o luot choi cua nguoi win
                 if (!gameOver) {
+                    if (countDownTimer != null) {
+                        countDownTimer.cancel();
+                    }
                     startCountdownTimer(times, txtWatch1, v);
                     imgBottom.setBackgroundResource(R.drawable.custom_picture);
                     imgTop.setBackgroundResource(R.drawable.custom_picture2);
@@ -1011,152 +1031,177 @@ public class InGameOnlineFragment extends Fragment {
                     currentPlayer = player1;
                 }
             } else {
+                checkClick=true;
                 Toast.makeText(requireContext(), "Cell already marked", Toast.LENGTH_SHORT).show();
             }
         }
     }
     
     private void showWinDialog(String player, View v) {
-        String title, message;
-        if (player.equals(userId)) {
-            message = "Keep playing even better.";
-            title = "You won!";
-        } else {
-            message = "No worries, try harder next time.";
-            title = "Your opponent won!";
-        }
-        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-        builder.setTitle(title);
-        builder.setMessage(message);
-        builder.setCancelable(false);
-        builder.setPositiveButton("Rematch", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (userId.equals(player1)) {
-                    gameRef.child("rematchPlayer1").setValue(1);
-                } else {
-                    gameRef.child("rematchPlayer2").setValue(1);
+        if (v.isShown()) {
+            String title, message;
+            if (player.equals(userId)) {
+                message = "Keep playing even better.";
+                title = "You won!";
+            } else {
+                message = "No worries, try harder next time.";
+                title = "Your opponent won!";
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+            builder.setTitle(title);
+            builder.setMessage(message);
+            builder.setCancelable(false);
+            builder.setPositiveButton("Rematch", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (userId.equals(player1)) {
+                        gameRef.child("rematchPlayer1").setValue(1);
+                    } else {
+                        gameRef.child("rematchPlayer2").setValue(1);
+                    }
+                    showWaitRematchDialog(v);
                 }
-                showWaitRematchDialog(v);
-            }
-        });
-        builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                onClickBack(v);
-            }
-        });
-        winnerDialog = builder.create();
-        winnerDialog.show();
+            });
+            builder.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            winnerDialog = builder.create();
+            winnerDialog.show();
+        }
     }
     private void showWaitRematchDialog(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Rematch");
-        builder.setMessage("Wait for the opponent to agree");
-        builder.setCancelable(false);
-        builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                onClickBack(v);
-            }
-        });
-        waitRematchDialog = builder.create();
-        waitRematchDialog.show();
+        if (v.isShown()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Rematch");
+            builder.setMessage("Wait for the opponent to agree");
+            builder.setCancelable(false);
+            builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    onClickBack(v);
+                }
+            });
+            waitRematchDialog = builder.create();
+            waitRematchDialog.show();
+        }
     }
     private void showResultRematchDialog(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Rematch");
-        builder.setMessage("The opponent has left the match");
-        builder.setCancelable(false);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-        builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                onClickBack(v);
-            }
-        });
-        resultRematchDialog = builder.create();
-        resultRematchDialog.show();
+        if (v.isShown()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Rematch");
+            builder.setMessage("The opponent does not want to continue the match");
+            builder.setCancelable(false);
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    onClickBack(v);
+                }
+            });
+            resultRematchDialog = builder.create();
+            resultRematchDialog.show();
+        }
     }
     private void showRematchDialog(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Rematch");
-        builder.setMessage("The opponent wants a rematch");
-        builder.setCancelable(false);
-        builder.setPositiveButton("Agree", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (userId.equals(player1)) {
-                    gameRef.child("rematchPlayer1").setValue(1);
-                } else {
-                    gameRef.child("rematchPlayer2").setValue(1);
+        if (v.isShown()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Rematch");
+            builder.setMessage("The opponent wants a rematch");
+            builder.setCancelable(false);
+            builder.setPositiveButton("Agree", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (userId.equals(player1)) {
+                        gameRef.child("rematchPlayer1").setValue(1);
+                    } else {
+                        gameRef.child("rematchPlayer2").setValue(1);
+                    }
                 }
-            }
-        });
-        builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                onClickBack(v);
-            }
-        });
-        rematchDialog = builder.create();
-        rematchDialog.show();
+            });
+            builder.setNegativeButton("Reject", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (userId.equals(player1)) {
+                        gameRef.child("rematchPlayer1").setValue(2);
+                    } else {
+                        gameRef.child("rematchPlayer2").setValue(2);
+                    }
+                }
+            });
+            rematchDialog = builder.create();
+            rematchDialog.show();
+        }
     }
 
     private void showNoInternetDialog(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("No Internet Connection");
-        builder.setMessage("Please check your internet connection and try again.");
-        builder.setCancelable(false);
-        builder.setNegativeButton("Home", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (countDownTimer != null) {
-                    countDownTimer.cancel();
+        if (v.isShown()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("No Internet Connection");
+            builder.setMessage("Please check your internet connection and try again.");
+            builder.setCancelable(false);
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
                 }
-                NavController navController = Navigation.findNavController(v);
-                navController.navigate(R.id.action_inGameOnlineFragment_to_mainMenuFragment);
-            }
-        });
-        noInternetDialog = builder.create();
-        noInternetDialog.show();
+            });
+            builder.setNegativeButton("Home", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (countDownTimer != null) {
+                        countDownTimer.cancel();
+                    }
+                    NavController navController = Navigation.findNavController(v);
+                    navController.navigate(R.id.action_inGameOnlineFragment_to_mainMenuFragment);
+                }
+            });
+            noInternetDialog = builder.create();
+            noInternetDialog.show();
+        }
     }
 
     private void showRoomIdDialog(View v) {
-        if (!player2.isEmpty()) {
-            return; // Nếu player2 có giá trị, không làm gì cả và thoát
-        }
-        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-        builder.setTitle("roomId is " + idRoom);
-        builder.setMessage("Give it to the friend you want to play with");
-        builder.setCancelable(false);
-        builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                onClickBack(v);
+        if (v.isShown()) {
+            if (!player2.isEmpty()) {
+                return; // Nếu player2 có giá trị, không làm gì cả và thoát
             }
-        });
-        roomIdDialog = builder.show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+            builder.setTitle("roomId is " + idRoom);
+            builder.setMessage("Give it to the friend you want to play with");
+            builder.setCancelable(false);
+            builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    onClickBack(v);
+                }
+            });
+            roomIdDialog = builder.show();
+        }
     }
     private void showWaitPlayerJoinRoom(View v) {
-        if (!player2.isEmpty()) {
-            return;
-        }
-        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-        builder.setTitle("Wait for other players");
-        builder.setMessage("Wait for the second player to start the match");
-        builder.setCancelable(false);
-        builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                onClickBack(v);
+        if (v.isShown()) {
+            if (!player2.isEmpty()) {
+                return;
             }
-        });
-        roomIdDialog = builder.show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+            builder.setTitle("Wait for other players");
+            builder.setMessage("Wait for the second player to start the match");
+            builder.setCancelable(false);
+            builder.setNegativeButton("Back", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    onClickBack(v);
+                }
+            });
+            roomIdDialog = builder.show();
+        }
     }
 
     private void startCountdownTimer(long millisInFuture, TextView txtWatch, View v) {
@@ -1176,8 +1221,7 @@ public class InGameOnlineFragment extends Fragment {
             public void onFinish() {
                 // Xử lý khi đếm ngược kết thúc (hết thời gian)
                 if (times != -1) {
-                    if (txtWatch.getText().toString().equals("00:00") &&
-                            NetworkUtils.isNetworkAvailable(requireContext())) {
+                    if (txtWatch.getText().toString().equals("00:00") && checkConnect) {
                         gameOver = true;
                     }
                     if (currentPlayer.equals(player1)) {
@@ -1232,6 +1276,7 @@ public class InGameOnlineFragment extends Fragment {
         }
         NavController navController = Navigation.findNavController(v);
         navController.navigate(R.id.action_inGameOnlineFragment_to_pvpFragment, bundle);
+        onDestroy();
     }
 
     @Override
@@ -1242,9 +1287,23 @@ public class InGameOnlineFragment extends Fragment {
         
         if(rematchPlayer1!=1||rematchPlayer2!=1) {
             if (userId.equals(player1)) {
-                gameRef.child("rematchPlayer1").setValue(2);
+                gameRef.child("rematchPlayer1").setValue(2, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                        if(rematchPlayer2==2&&rematchPlayer1==2 || player2.equals("")){
+                            gameRef.removeValue();
+                        }
+                    }
+                });
             } else {
-                gameRef.child("rematchPlayer2").setValue(2);
+                gameRef.child("rematchPlayer2").setValue(2, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                        if(rematchPlayer2==2&&rematchPlayer1==2||player2.equals("")){
+                            gameRef.removeValue();
+                        }
+                    }
+                });
             }
         }
         if(checkAgree){
@@ -1255,15 +1314,13 @@ public class InGameOnlineFragment extends Fragment {
             }
         }
 
-
         turnOffDialog();
+
 
     }
 
     public void turnOffDialog() {
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
+
         if (winnerDialog != null && winnerDialog.isShowing()) {
             winnerDialog.dismiss();
         }
