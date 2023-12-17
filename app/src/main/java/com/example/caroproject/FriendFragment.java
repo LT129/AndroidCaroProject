@@ -44,7 +44,6 @@ public class FriendFragment extends Fragment {
     private String mParam2;
     Context context;
 
-    private UserInfo[] items;
     private EditText edtSearchBar;
     private Button btnOK;
     private RecyclerView recyclerViewFriend;
@@ -152,6 +151,7 @@ public class FriendFragment extends Fragment {
                             if (currentUser != null && currentUser.getFriends() != null) {
                                 loadFriendsData(currentUser.getFriends());
                             } else {
+
                                 // Display a message indicating no friends
                                 showNoFriendsMessage();
                             }

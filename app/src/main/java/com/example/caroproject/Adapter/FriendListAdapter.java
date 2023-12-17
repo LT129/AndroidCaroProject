@@ -3,6 +3,7 @@ package com.example.caroproject.Adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import androidx.annotation.NonNull;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.caroproject.Data.UserInfo;
@@ -24,6 +27,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
     Context context;
     ArrayList<UserInfo> userInfoArrayList;
     View view;
+    Button btnChat;
     private OnItemClickListener onItemClickListener;
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.onItemClickListener = listener;
@@ -50,7 +54,6 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
             holder.status.setText("Online");
         }else holder.status.setText("Offline");
         Glide.with(view).load(user.getAvatar()).error(R.drawable.user_account).into(holder.avatar);
-
         holder.name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +62,18 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
                 }
             }
         });
+
+        btnChat = view.findViewById(R.id.btnChat);
+        btnChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putString("UserID",user.getID());
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.action_mainMenuFragment_to_chatFragment, args);
+            }
+        });
+
     }
     public interface OnItemClickListener {
         void onItemClick(String username);

@@ -1,35 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:fadingEdge="none">
-    <ImageView
-        android:id="@+id/imgViewAvatar"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="@drawable/user_account">
-    </ImageView>
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/txtViewName"
+        android:orientation="horizontal">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgViewAvatar"
+            android:layout_width="100dp"
+            android:layout_height="100dp">
+        </de.hdodenhof.circleimageview.CircleImageView>
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="@string/username"
-            android:textColor="@color/black"
-            android:textSize="25dp"
-            android:textStyle="italic">
-        </TextView>
-        <TextView
-            android:id="@+id/txtViewStatus"
-            android:layout_width="match_parent"
-            android:text="Status"
-            android:textColor="@color/black"
-            android:textStyle="italic"
-            android:textSize="25dp"
-            android:layout_height="50dp">
-        </TextView>
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/txtViewName"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="@string/username"
+                android:textColor="@color/black"
+                android:textSize="25dp"
+                android:textStyle="italic">
+            </TextView>
+            <TextView
+                android:id="@+id/txtViewStatus"
+                android:layout_width="match_parent"
+                android:text="Status"
+                android:textColor="@color/black"
+                android:textStyle="italic"
+                android:textSize="25dp"
+                android:layout_height="50dp">
+            </TextView>
+        </LinearLayout>
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatView"
+        android:layout_width="match_parent"
+        android:layout_height="574dp"
+        android:layout_marginBottom="10dp"
+        android:clipToPadding="false"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="bottom">
+        <EditText
+            android:id="@+id/edtMessage"
+            android:hint="Type a message"
+            android:layout_width="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="3"
+            android:layout_height="match_parent">
+        </EditText>
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/send_button"
+            android:layout_gravity="end">
+        </Button>
     </LinearLayout>
 </LinearLayout>

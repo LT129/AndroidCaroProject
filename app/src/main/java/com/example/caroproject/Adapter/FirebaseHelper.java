@@ -6,10 +6,12 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 
+import com.example.caroproject.Data.Message;
 import com.example.caroproject.Data.UserInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -223,6 +225,22 @@ public class FirebaseHelper {
     public interface OnResultUploadAvatarListener {
         void onResult(Uri Uri);
     }
+
+    public static DocumentReference getChatRoomRef(String chatroomID){
+        return FirebaseFirestore.getInstance().collection("ChatRoom").document(chatroomID);
+    }
+    public static CollectionReference getMsgRef(String chatroomID){
+        return getChatRoomRef(chatroomID).collection("chats");
+    }
+
+    public static String getChatRoomID(String userID1,String userID2){
+        if(userID1.hashCode()<userID2.hashCode()){
+            return userID1 + "_" + userID2;
+        }else {
+            return userID2 + "_" + userID1;
+        }
+    }
+
 
 
     private static FirebaseHelper instance;
