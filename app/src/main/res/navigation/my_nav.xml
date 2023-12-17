@@ -5,6 +5,17 @@
     android:id="@+id/my_nav"
     app:startDestination="@id/mainMenuFragment">
     <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.example.caroproject.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat">
+        <action
+            android:id="@+id/action_chatFragment_to_friendFragment"
+            app:destination="@id/mainMenuFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
+    </fragment>
+    <fragment
         android:id="@+id/showInfoFragment"
         android:name="com.example.caroproject.ShowInfoFragment"
         android:label="fragment_show_info"
@@ -74,6 +85,11 @@
         android:name="com.example.caroproject.MainMenuFragment"
         android:label="fragment_main_menu"
         tools:layout="@layout/fragment_main_menu" >
+        <action
+            android:id="@+id/action_mainMenuFragment_to_chatFragment"
+            app:destination="@id/chatFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_mainMenuFragment_to_showInfoFragment"
             app:destination="@id/showInfoFragment"

@@ -22,7 +22,10 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="4dp"
+        android:maxLines="1"
+        android:imeOptions="actionNext"
         android:textSize="32sp"
+        android:inputType="textEmailAddress"
         android:hint="@string/email"
         android:textAllCaps="false"
         android:background="@drawable/custom_edittext_3"/>
