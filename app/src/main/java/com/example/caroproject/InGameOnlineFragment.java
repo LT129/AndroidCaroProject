@@ -619,10 +619,10 @@ public class InGameOnlineFragment extends Fragment {
                         int row = positionUpdate / sizeBoard; // Lấy hàng dựa trên vị trí ô
                         int col = positionUpdate % sizeBoard; // Lấy cột dựa trên vị trí ô
                         if (currentPlayer.equals(player1)) {
-                            board[col][row] = 2;
+                            board[row][col] = 2;
                             adapter.markCellAsPlayer2(positionUpdate);
                         } else {
-                            board[col][row] = 1;
+                            board[row][col] = 1;
                             adapter.markCellAsPlayer1(positionUpdate);
                         }
 
