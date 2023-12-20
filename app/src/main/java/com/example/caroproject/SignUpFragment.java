@@ -1,6 +1,5 @@
 package com.example.caroproject;
 
-import static android.database.sqlite.SQLiteDatabase.openDatabase;
 
 import android.os.Bundle;
 

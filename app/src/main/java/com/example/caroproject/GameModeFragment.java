@@ -26,10 +26,12 @@ import com.bumptech.glide.Glide;
 import com.example.caroproject.Adapter.FirebaseHelper;
 import com.example.caroproject.Data.SoundMaking;
 import com.example.caroproject.Data.UserInfo;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
 public class GameModeFragment extends Fragment {
 
@@ -141,6 +143,7 @@ public class GameModeFragment extends Fragment {
 
     private void initiateData(View view) {
         pref = requireActivity().getSharedPreferences(MainActivity.PREF_FILE, Context.MODE_PRIVATE);
+        getUserInfoFromDatabase();
 
         btnPvp = view.findViewById(R.id.btnPvp);
         btnPve = view.findViewById(R.id.btnPve);
@@ -171,6 +174,26 @@ public class GameModeFragment extends Fragment {
         Type type = new TypeToken<UserInfo>() {
         }.getType();
         return gson.fromJson(json, type);
+    }
+
+    private void getUserInfoFromDatabase() {
+        String userId = FirebaseAuth.getInstance().getUid();
+        FirebaseHelper.getInstance().retrieveDataFromDatabase("UserInfo", userId, UserInfo.class,
+                new FirebaseHelper.OnCompleteRetrieveDataListener() {
+                    @Override
+                    public<T> void onComplete(List<T> list) {
+                        updateSharedPreferences((UserInfo) list.get(0));
+                    }
+                });
+
+    }
+
+    private void updateSharedPreferences(UserInfo userInfo) {
+        Gson gson = new Gson();
+        String json;
+        json = gson.toJson(userInfo);
+        pref.edit().putString("USER_INFORMATION", json).apply();
+        pref.edit().putBoolean(MainActivity.LOGGED_IN_ACCOUNT, true).apply();
     }
 
 }

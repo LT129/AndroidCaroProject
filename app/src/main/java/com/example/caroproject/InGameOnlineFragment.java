@@ -851,7 +851,7 @@ public class InGameOnlineFragment extends Fragment {
                     }
                     if (checkConnect) {
                         String opponentId = (userId.equals(player1)?player2:player1);
-                        //updateData(opponentId);
+                        updateData(opponentId);
                         showWinDialog(winner, view);
                         checkWin = false;
                     }
@@ -926,9 +926,6 @@ public class InGameOnlineFragment extends Fragment {
                                 userInfo.setLosses(userInfo.getLosses() + 1);
                                 userInfo.getCoins().setCopperCoins(userInfo.getCoins().getCopperCoins() + 5);
                             }
-
-                            //Save userInfo change to sharePreferences
-                            updateUserInfoToSharedPreferences(userInfo);
 
                             //Save userInfo to db
                             FirebaseHelper.getInstance().addDataToDatabase("UserInfo", userId, userInfo);
@@ -1347,11 +1344,5 @@ public class InGameOnlineFragment extends Fragment {
         }
     }
 
-    private void updateUserInfoToSharedPreferences(UserInfo userInfo) {
-        SharedPreferences pref = requireContext().getSharedPreferences("CARO", Context.MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = gson.toJson(userInfo);
-        pref.edit().putString("USER_INFORMATION", json).apply();
-    }
 }
 
