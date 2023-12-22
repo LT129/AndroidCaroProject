@@ -27,10 +27,14 @@
     <EditText
         android:id="@+id/editMessage"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:textSize="15dp"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
         android:layout_margin="20dp"
-        android:paddingLeft="20dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:inputType="text"
+        android:gravity="start"
+        android:maxLength="60"
         android:background="@drawable/custom_edittext"
         android:hint="Enter your message" />
     <LinearLayout

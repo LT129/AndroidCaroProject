@@ -2,6 +2,8 @@ package com.example.caroproject.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +11,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 import com.bumptech.glide.Glide;
 import com.example.caroproject.Data.MatchHistory;
 import com.example.caroproject.Data.UserInfo;
 import com.example.caroproject.R;
+import com.example.caroproject.ShowInfoFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +48,17 @@ public class MatchHistoryAdapter extends ArrayAdapter<MatchHistory> {
                 UserInfo userInfo = (UserInfo) list.get(0);
                 Glide.with(row).load(userInfo.getAvatar()).error(R.drawable.user_account).into(avatar);
                 opponentName.setText(userInfo.getUsername());
+            }
+        });
+
+        avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putString(ShowInfoFragment.USER_ID, items.get(position).getUserId());
+                args.putString(ShowInfoFragment.USER_TYPE, ShowInfoFragment.USER_TYPE_2);
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.action_mainMenuFragment_to_showInfoFragment, args);
             }
         });
 

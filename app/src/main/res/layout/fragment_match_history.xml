@@ -4,12 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/custom_edittext_2"
+        android:background="@drawable/friend_item_background"
         android:layout_gravity="center"
-        android:text="@string/history"
+        android:layout_margin="4dp"
+        android:gravity="center"
+        android:text="Match History"
         android:textColor="@color/word_color_gray"
         android:textSize="24sp"
         android:textStyle="bold" />

@@ -169,7 +169,8 @@ public class FriendFragment extends Fragment {
                     @Override
                     public void onSuccess(String userId) {
                             Bundle args = new Bundle();
-                            args.putString("UserID",userId);
+                            args.putString(ShowInfoFragment.USER_ID, userId);
+                            args.putString(ShowInfoFragment.USER_TYPE, ShowInfoFragment.USER_TYPE_1);
                             View view = getView();
                             if(view!=null) {
                                 NavController navController = Navigation.findNavController(view);

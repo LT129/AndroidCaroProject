@@ -248,11 +248,14 @@ public class InGameOnlineFragment extends Fragment {
 
                 //send message
                 if (!message.isEmpty() && message != messageOld) {
+                    txtMessage.setVisibility(View.VISIBLE);
                     if (userId.equals(keyMessage)) {
                         txtMessage.setText("You: " + message);
                     } else {
                         txtMessage.setText(username + ": " + message);
                     }
+                } else {
+                    txtMessage.setVisibility(View.INVISIBLE);
                 }
 
                 //set nickname

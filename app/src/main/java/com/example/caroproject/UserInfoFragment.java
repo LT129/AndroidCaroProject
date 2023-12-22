@@ -68,6 +68,8 @@ public class UserInfoFragment extends Fragment {
 
     private RelativeLayout phoneDetail;
     private TextView txtPhone;
+    private TextView now;
+    private TextView nol;
 
     private RelativeLayout passwordDetail;
 
@@ -221,6 +223,8 @@ public class UserInfoFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 pref.edit().clear().apply();
+                                userInfo.setStatus(false);
+                                FirebaseHelper.getInstance().addDataToDatabase("UserInfo", userInfo.getID(), userInfo);
                                 FirebaseHelper.getInstance().logOut();
                                 reSetAppSetting();
                                 NavController navController = Navigation.findNavController(v);
@@ -300,6 +304,10 @@ public class UserInfoFragment extends Fragment {
         txtUsername.setText(userInfo.getUsername());
         txtEmail.setText(userInfo.getEmail());
         txtPhone.setText(userInfo.getPhoneNumber());
+        now = view.findViewById(R.id.now);
+        nol = view.findViewById(R.id.nol);
+        now.setText("Number of Wins: " + userInfo.getWins());
+        nol.setText("Number of Losses: " + userInfo.getLosses());
         Glide.with(view).load(userInfo.getAvatar())
                 .placeholder(R.drawable.user_account)
                 .error(R.drawable.user_account)
