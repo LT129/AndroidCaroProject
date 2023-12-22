@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -53,6 +54,7 @@ public class ChatFragment extends Fragment {
     private String mParam2;
     Context context;
     private CircleImageView imgViewAvatar;
+    private ImageButton btnCallBack;
     private TextView txtViewName,txtViewStatus;
     private RecyclerView chatView;
     private String otherUserID;
@@ -126,6 +128,14 @@ public class ChatFragment extends Fragment {
                 if(msg.isEmpty())
                     return;
                 sendMessageToUsers(msg);
+            }
+        });
+
+        btnCallBack = view.findViewById(R.id.btnCallBack);
+        btnCallBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
         EventChangeListener();

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UserInfoFragment">
+    tools:context=".ShowInfoFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,19 +11,25 @@
         android:orientation="vertical">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/btnCallBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/custom_edittext_2"
+                android:src="@drawable/back_arrow"/>
 
             <TextView
-                android:id="@+id/txtDisplayName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:background="@drawable/custom_edittext_2"
                 android:gravity="center"
                 android:text="@string/user_info"
                 android:textColor="@color/word_color_gray"
                 android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:background="@drawable/custom_edittext_2"/>
 
         </RelativeLayout>
         <RelativeLayout
@@ -31,7 +37,7 @@
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <ImageButton
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/userAvatar"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
@@ -41,6 +47,17 @@
                 android:layout_centerVertical="true"
                 android:background="@drawable/custom_picture"
                 android:src="@drawable/user_account" />
+
+            <TextView
+                android:id="@+id/txtDisplayName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/userAvatar"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:background="@drawable/custom_edittext_2"/>
 
         </RelativeLayout>
 
@@ -77,13 +94,15 @@
                 android:text="@string/username"/>
 
             <TextView
-                android:id="@+id/txtUserName"
+                android:id="@+id/txtUsername"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:textSize="18sp"
                 android:textColor="@color/black"/>
+
+
         </RelativeLayout>
 
         <RelativeLayout
@@ -111,6 +130,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:gravity="right"
+                android:ems="10"
+                android:maxLines="1"
                 android:textSize="18sp"
                 android:textColor="@color/black"/>
 
@@ -139,25 +161,18 @@
                 android:id="@+id/txtPhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:textSize="18sp"
                 android:textColor="@color/black"/>
         </RelativeLayout>
-        <Button
-            android:id="@+id/btnFriendRequest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Send Friend Request"
-            android:visibility="gone"
-            android:layout_gravity="center">
 
-        </Button>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3"/>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -170,15 +185,17 @@
                 android:layout_weight="1"/>
 
             <Button
-                android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
+                android:id="@+id/btnFriendRequest"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
                 android:background="@drawable/custom_button_1"
-                android:text="Back"
+                android:text="Add Friend"
                 android:textAllCaps="false"
                 android:textColor="@color/black"
                 android:textSize="24sp"
                 android:textStyle="bold" />
+
             <View
                 android:layout_width="0dp"
                 android:layout_height="0dp"

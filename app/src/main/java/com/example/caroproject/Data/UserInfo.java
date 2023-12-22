@@ -14,6 +14,7 @@ public class UserInfo {
     private String username;
     private String email;
     private List<String> friends;
+    private List<String> friendRequest;
     private String avatar;
     private ArrayList<MatchHistory> matchHistory;
     private boolean Status;
@@ -68,10 +69,11 @@ public class UserInfo {
         this.wins = 0;
     }
 
-    public UserInfo(String ID, String username, List<String> friends, String avatar, ArrayList<MatchHistory> matchHistory, boolean status, String email, String phoneNumber, Coins coins) {
+    public UserInfo(String ID, String username, List<String> friends, List<String> friendRequest, String avatar, ArrayList<MatchHistory> matchHistory, boolean status, String email, String phoneNumber, Coins coins) {
         this.ID = ID;
         this.username = username;
         this.friends = friends;
+        this.friendRequest = friendRequest;
         this.avatar = avatar;
         this.matchHistory = matchHistory;
         this.Status = status;
@@ -149,6 +151,14 @@ public class UserInfo {
 
     public List<String> getFriends() {
         return friends;
+    }
+
+    public List<String> getFriendRequest() {
+        return friendRequest;
+    }
+
+    public void setFriendRequest(List<String> friendRequest) {
+        this.friendRequest = friendRequest;
     }
 
     public String getAvatar() {

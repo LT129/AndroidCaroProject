@@ -59,7 +59,6 @@ public class UserInfoFragment extends Fragment {
     public static final String PASSWORD = "Password";
 
     private ImageView userAvatar;
-    private TextView txtDisplayName;
 
     private RelativeLayout usernameDetail;
     private TextView txtUsername;
@@ -115,7 +114,6 @@ public class UserInfoFragment extends Fragment {
                 if(result.containsKey(USERNAME)) {
                     String username = result.getString(USERNAME);
                     txtUsername.setText(username);
-                    txtDisplayName.setText(username);
                     userInfo.setUsername(username);
                 }
 
@@ -141,7 +139,6 @@ public class UserInfoFragment extends Fragment {
                 imageChooser(view);
             }
         });
-        txtDisplayName = view.findViewById(R.id.txtDisplayName);
 
         usernameDetail = view.findViewById(R.id.usernameDetail);
         usernameDetail.setOnClickListener(new View.OnClickListener() {
@@ -300,7 +297,6 @@ public class UserInfoFragment extends Fragment {
 
 
     private void init(View view) {
-        txtDisplayName.setText(userInfo.getUsername());
         txtUsername.setText(userInfo.getUsername());
         txtEmail.setText(userInfo.getEmail());
         txtPhone.setText(userInfo.getPhoneNumber());

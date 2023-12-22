@@ -49,7 +49,18 @@
                 android:src="@drawable/user_account" />
 
             <TextView
-                android:id="@+id/txtDisplayName"
+                android:id="@+id/win"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/userAvatar"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:background="@drawable/custom_edittext_2"/>
+
+            <TextView
+                android:id="@+id/loose"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"

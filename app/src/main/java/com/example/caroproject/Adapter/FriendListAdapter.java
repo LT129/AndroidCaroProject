@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -27,7 +28,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
     Context context;
     ArrayList<UserInfo> userInfoArrayList;
     View view;
-    Button btnChat;
+    LinearLayout btnChat;
     private OnItemClickListener onItemClickListener;
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.onItemClickListener = listener;
@@ -54,7 +55,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
             holder.status.setText("Online");
         }else holder.status.setText("Offline");
         Glide.with(view).load(user.getAvatar()).error(R.drawable.user_account).into(holder.avatar);
-        holder.name.setOnClickListener(new View.OnClickListener() {
+        holder.avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (onItemClickListener != null) {

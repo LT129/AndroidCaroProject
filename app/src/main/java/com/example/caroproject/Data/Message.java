@@ -37,6 +37,8 @@ public class Message {
         this.addtime = addtime;
     }
 
-    // Constructor, getters, and setters
+    public Message() {
+    }
+// Constructor, getters, and setters
 }
 
