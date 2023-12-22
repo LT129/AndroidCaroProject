@@ -17,7 +17,10 @@ import com.example.caroproject.Data.Message;
 import com.example.caroproject.R;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
 
@@ -33,7 +36,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     @Override
     public ChatAdapter.ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         view = LayoutInflater.from(context).inflate(R.layout.custom_chat_view,parent,false);
-
         return new ChatAdapter.ChatViewHolder(view);
     }
 
@@ -41,23 +43,28 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     @Override
     public void onBindViewHolder(@NonNull ChatAdapter.ChatViewHolder holder, int position) {
         Message msg = MessageArrayList.get(position);
+        Date date = msg.getAddtime().toDate();
 
-        if (msg.getUid().equals(FirebaseAuth.getInstance().getCurrentUser())){
+        // Format the Date to display only the time
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        String formattedTime = sdf.format(date);
+
+        if (msg.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
             holder.recievedMessage.setVisibility(View.GONE);
             holder.sentMessage.setVisibility(View.VISIBLE);
             holder.txtSentMessage.setText(msg.getContent());
-            holder.txtSentDateTime.setText(msg.getAddtime().toString());
+            holder.txtSentDateTime.setText(formattedTime);
         }else {
             holder.sentMessage.setVisibility(View.GONE);
             holder.recievedMessage.setVisibility(View.VISIBLE);
             holder.txtRecieveMessage.setText(msg.getContent());
-            holder.txtRecieveDateTime.setText(msg.getAddtime().toString());
+            holder.txtRecieveDateTime.setText(formattedTime);
         }
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return MessageArrayList.size();
     }
 
     public static class ChatViewHolder extends RecyclerView.ViewHolder{
