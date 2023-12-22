@@ -1,6 +1,14 @@
 package com.example.caroproject;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +23,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -36,6 +45,7 @@ public class ShowInfoFragment extends Fragment {
     public static final String USER_TYPE = "USER_TYPE";
     public static final String USER_TYPE_1 = "Friend";
     public static final String USER_TYPE_2 = "Opponent";
+    private static final int FRIEND_REQUEST_NOTIFICATION = 1;
     private String TargetUserID;
     private ImageView userAvatar;
 
@@ -80,10 +90,12 @@ public class ShowInfoFragment extends Fragment {
             }
         });
 
+        //TODO check if this user is friend or not
         btnFriendRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TODO send friends request
+                sendFriendRequestNotification();
             }
         });
 
@@ -112,5 +124,33 @@ public class ShowInfoFragment extends Fragment {
                 .placeholder(R.drawable.user_account)
                 .error(R.drawable.user_account)
                 .into(userAvatar);
+    }
+
+    private void sendFriendRequestNotification() {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_playstore);
+
+        String channelId = "channelId";
+
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(getContext().getApplicationContext(), channelId);
+        builder.setSmallIcon(R.drawable.ic_notifications)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText("Want to add friend")
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel = notificationManager.getNotificationChannel(channelId);
+
+        if(channel == null) {
+            channel = new NotificationChannel(channelId,
+                    "NAME", NotificationManager.IMPORTANCE_HIGH);
+            channel.setLightColor(Color.GREEN);
+            channel.enableVibration(true);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify(FRIEND_REQUEST_NOTIFICATION, builder.build());
     }
 }
