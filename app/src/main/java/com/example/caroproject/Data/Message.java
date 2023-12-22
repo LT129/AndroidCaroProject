@@ -6,7 +6,6 @@ public class Message {
     private String uid;
     private String content;
     private Timestamp addtime;
-
     public String getUid() {
         return uid;
     }
@@ -35,6 +34,9 @@ public class Message {
         this.uid = uid;
         this.content = content;
         this.addtime = addtime;
+    }
+    public Message(){
+        //default constructor
     }
 
     public Message() {

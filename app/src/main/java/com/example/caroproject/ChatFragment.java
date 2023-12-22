@@ -1,5 +1,7 @@
 package com.example.caroproject;
 
+import static java.lang.Thread.sleep;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -13,9 +15,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -119,7 +123,8 @@ public class ChatFragment extends Fragment {
 
         adapter = new ChatAdapter(context, msgArrayList);
         chatView.setAdapter(adapter);
-
+        chatView.setLayoutManager(new LinearLayoutManager(context));
+        getOrCreateChatRoom();
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,7 +144,7 @@ public class ChatFragment extends Fragment {
             }
         });
         EventChangeListener();
-        getOrCreateChatRoom();
+
         return view;
     }
 
@@ -180,6 +185,48 @@ public class ChatFragment extends Fragment {
             });
         }
     private void EventChangeListener(){
+        LoadUserData();
+        db.collection("ChatRoom").document(chatroomID).collection("chats")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            QuerySnapshot querySnapshot = task.getResult();
+                            if (querySnapshot != null) {
+                                for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                                    // Get the document ID
+                                    String documentId = document.getId();
+                                    LoadMsgData(documentId);
+                                }
+                            }
+                        } else {
+                            Log.e("Firestore", "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+
+    }
+
+
+    private void LoadMsgData(String msgID){
+        db.collection("ChatRoom").document(chatroomID).collection("chats").document(msgID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot != null && documentSnapshot.exists()) {
+                            Message msg = documentSnapshot.toObject(Message.class);
+                            if (msg != null) {
+                                msgArrayList.add(msg);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void LoadUserData() {
         db.collection("UserInfo").document(otherUserID)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -198,7 +245,6 @@ public class ChatFragment extends Fragment {
                                 if(currentUser.isOnline()){
                                     txtViewStatus.setText("Online");
                                 }else txtViewStatus.setText("Offline");
-                                LoadMsgData();
 
                             } else {
                                 return;
@@ -206,32 +252,5 @@ public class ChatFragment extends Fragment {
                         }
                     }
                 });
-    }
-
-    public interface OnCompleteMsgLoadListener{
-        void onComplete(Message msg);
-    }
-    private void LoadMsgData() {
-        firebaseHelper.getMsgRef(chatroomID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    QuerySnapshot querySnapshot = task.getResult();
-                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        List<DocumentSnapshot> documentSnapshots = querySnapshot.getDocuments();
-                        // Duyệt qua từng document
-                        for (DocumentSnapshot documentSnapshot : documentSnapshots) {
-                            Message msg = documentSnapshot.toObject(Message.class);
-                        }
-                    } else {
-                    }
-                } else {
-                    // Xử lý lỗi nếu cần
-                    Exception exception = task.getException();
-                    // ...
-                }
-            }
-        });
-
     }
 }
