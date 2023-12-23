@@ -30,7 +30,9 @@ import com.google.firebase.storage.UploadTask;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FirebaseHelper {
     private FirebaseFirestore firestore;
@@ -89,7 +91,6 @@ public class FirebaseHelper {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()) {
                     QuerySnapshot querySnapshot = task.getResult();
-
                     if(!querySnapshot.isEmpty()) {
                         List<T> result = new ArrayList<>();
                         for (DocumentSnapshot documentSnapshot :
@@ -255,5 +256,12 @@ public class FirebaseHelper {
         } else {
             return new FirebaseHelper();
         }
+    }
+
+    public void SetTatus(boolean status){
+        String uid  = auth.getCurrentUser().getUid();
+        Map<String,Object> updates = new HashMap<>();
+        updates.put("online",status);
+        firestore.collection("UserInfo").document(uid).update(updates);
     }
 }
