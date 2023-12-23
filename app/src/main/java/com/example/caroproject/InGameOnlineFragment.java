@@ -4,9 +4,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -39,7 +37,6 @@ import com.example.caroproject.Adapter.AdapterGridview;
 import com.example.caroproject.Adapter.CaroCenter;
 import com.example.caroproject.Adapter.FirebaseHelper;
 import com.example.caroproject.Adapter.NetworkUtils;
-import com.example.caroproject.Data.Coins;
 import com.example.caroproject.Data.MatchHistory;
 import com.example.caroproject.Data.Room;
 import com.example.caroproject.Data.UserInfo;
@@ -55,7 +52,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -111,7 +107,7 @@ public class InGameOnlineFragment extends Fragment {
     private TextView txtWatch2, txtWatch1, txtMessage, txtUsername, txtNickname, txtNoWins, txtNoLosses;
     private boolean checkWatch = true, checkDoneRematch=false, checkClick = false, checkAgree=false, checkConnect = true, checkWin = true, checkRematch = true, checkResult=true, checkRandom=false;
     private String idRoom="", winner = "", currentPlayerOld="", message = "", messageOld="", username = "", keyMessage = "";
-    private AlertDialog roomIdDialog, noInternetDialog, winnerDialog, rematchDialog, waitRematchDialog, resultRematchDialog;
+    private AlertDialog roomIdDialog, confirmSurrender,noInternetDialog, winnerDialog, rematchDialog, waitRematchDialog, resultRematchDialog;
     private int sizeBoard=0, countTurn=0;
     private int times=0;
     private float offsetX = 0, offsetY = 0;
@@ -202,6 +198,7 @@ public class InGameOnlineFragment extends Fragment {
             public void run() {
                 if (!NetworkUtils.isNetworkAvailable(requireContext()) && checkConnect) {
                     checkConnect = false;
+                    turnOffDialog();
                     showNoInternetDialog(view);
                 }
                 if (NetworkUtils.isNetworkAvailable(requireContext())) {
@@ -318,13 +315,6 @@ public class InGameOnlineFragment extends Fragment {
                             }
                         });
                     }
-//                    Bundle bundle = new Bundle();
-//                    bundle.putInt("sizeBoard", sizeBoard);
-//                    bundle.putInt("time", times);
-//                    bundle.putString("idRoom", idRoom);
-//                    NavController navController = Navigation.findNavController(view);
-//                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
-
                 }
 
                 //reject rematch
@@ -493,15 +483,8 @@ public class InGameOnlineFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (winner.isEmpty()) {
-                    if (userId.equals(player1)) {
-                        gameRef.child("winner").setValue(player2);
-                        gameRef.child("gameOver").setValue(true);
-
-                    } else {
-                        gameRef.child("winner").setValue(player1);
-                        gameRef.child("gameOver").setValue(true);
-
-                    }
+                    turnOffDialog();
+                    showConfirmSurrender(v);
                 }
             }
         });
@@ -568,7 +551,6 @@ public class InGameOnlineFragment extends Fragment {
                                 noWins = 0;
                                 noLosses = 0;
                             }
-                        } else {
                         }
                     }
                 })
@@ -660,12 +642,6 @@ public class InGameOnlineFragment extends Fragment {
                     checkAgree=true;
                     checkDoneRematch=false;
                     gameRef.child("checkRematch").setValue(false);
-//                    Bundle bundle = new Bundle();
-//                    bundle.putInt("sizeBoard", sizeBoard);
-//                    bundle.putInt("time", times);
-//                    bundle.putString("idRoom", idRoom);
-//                    NavController navController = Navigation.findNavController(view);
-//                    navController.navigate(R.id.action_inGameOnlineFragment_self, bundle);
                     initializeBoard(view);
                     readDoc();
                     if (userId.equals(currentPlayer)) {
@@ -849,6 +825,7 @@ public class InGameOnlineFragment extends Fragment {
                         String opponentId = (userId.equals(player1)?player2:player1);
                         updateData(opponentId);
                         showWinDialog(winner, view);
+                        checkClick=false;
                         checkWin = false;
                     }
                 }
@@ -940,12 +917,15 @@ public class InGameOnlineFragment extends Fragment {
 
     private void initializeBoard(View v) {
         turnOffDialog();
-          checkWatch = true; checkDoneRematch=false;
-          checkClick = false; checkAgree=false;
-          checkConnect = true;
-          checkWin = true;
-          checkRematch = true; checkResult=true;
-          checkRandom=false;
+        checkWatch = true;
+        checkDoneRematch=false;
+        checkClick = false;
+        checkAgree=false;
+        checkConnect = true;
+        checkWin = true;
+        checkRematch = true;
+        checkResult=true;
+        checkRandom=false;
 
         board = new int[sizeBoard][sizeBoard];  // Bảng sizeBoardxsizeBoard
         //savePlayerPosition=new int[sizeBoard*sizeBoard/2];
@@ -1007,6 +987,7 @@ public class InGameOnlineFragment extends Fragment {
                 }
                 if (caroCenter.checkWin(checkPlayer, sizeBoard, board)) {
                     gameOver = true;
+                    checkClick=false;
                     gameRef.child("winner").setValue(currentPlayer);
                 }
                 //dung o luot choi cua nguoi win
@@ -1159,6 +1140,36 @@ public class InGameOnlineFragment extends Fragment {
             noInternetDialog.show();
         }
     }
+    private void showConfirmSurrender(View v) {
+        if (v.isShown()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Confirm surrender");
+            builder.setMessage("You will face defeat.");
+            builder.setCancelable(false);
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (userId.equals(player1)) {
+                        gameRef.child("winner").setValue(player2);
+                        gameRef.child("gameOver").setValue(true);
+
+                    } else {
+                        gameRef.child("winner").setValue(player1);
+                        gameRef.child("gameOver").setValue(true);
+
+                    }
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            confirmSurrender = builder.create();
+            confirmSurrender.show();
+        }
+    }
 
     private void showRoomIdDialog(View v) {
         if (v.isShown()) {
@@ -1216,6 +1227,7 @@ public class InGameOnlineFragment extends Fragment {
                 if (times != -1) {
                     if (txtWatch.getText().toString().equals("00:00") && checkConnect) {
                         gameOver = true;
+                        checkClick=false;
                     }
                     if (currentPlayer.equals(player1)) {
                         currentPlayer = player2;
@@ -1269,7 +1281,6 @@ public class InGameOnlineFragment extends Fragment {
         }
         NavController navController = Navigation.findNavController(v);
         navController.navigate(R.id.action_inGameOnlineFragment_to_pvpFragment, bundle);
-        onDestroy();
     }
 
     @Override
@@ -1299,21 +1310,11 @@ public class InGameOnlineFragment extends Fragment {
                 });
             }
         }
-        if(checkAgree){
-            if (userId.equals(player1)) {
-                gameRef.child("rematchPlayer1").setValue(0);
-            } else {
-                gameRef.child("rematchPlayer2").setValue(0);
-            }
-        }
 
         turnOffDialog();
-
-
     }
 
     public void turnOffDialog() {
-
         if (winnerDialog != null && winnerDialog.isShowing()) {
             winnerDialog.dismiss();
         }
@@ -1337,6 +1338,9 @@ public class InGameOnlineFragment extends Fragment {
         }
         if (resultRematchDialog != null && resultRematchDialog.isShowing()) {
             resultRematchDialog.dismiss();
+        }
+        if (confirmSurrender != null && confirmSurrender.isShowing()) {
+            confirmSurrender.dismiss();
         }
     }
 
