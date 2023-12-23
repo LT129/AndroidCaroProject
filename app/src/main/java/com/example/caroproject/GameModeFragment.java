@@ -178,14 +178,15 @@ public class GameModeFragment extends Fragment {
 
     private void getUserInfoFromDatabase() {
         String userId = FirebaseAuth.getInstance().getUid();
-        FirebaseHelper.getInstance().retrieveDataFromDatabase("UserInfo", userId, UserInfo.class,
-                new FirebaseHelper.OnCompleteRetrieveDataListener() {
-                    @Override
-                    public<T> void onComplete(List<T> list) {
-                        updateSharedPreferences((UserInfo) list.get(0));
-                    }
-                });
-
+        if(userId != null) {
+            FirebaseHelper.getInstance().retrieveDataFromDatabase("UserInfo", userId, UserInfo.class,
+                    new FirebaseHelper.OnCompleteRetrieveDataListener() {
+                        @Override
+                        public<T> void onComplete(List<T> list) {
+                            updateSharedPreferences((UserInfo) list.get(0));
+                        }
+                    });
+        }
     }
 
     private void updateSharedPreferences(UserInfo userInfo) {

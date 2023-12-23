@@ -34,10 +34,12 @@ import com.example.caroproject.Adapter.FirebaseHelper;
 import com.example.caroproject.Adapter.FriendListAdapter;
 import com.example.caroproject.Data.UserInfo;
 import com.firebase.ui.auth.data.model.User;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ShowInfoFragment extends Fragment {
@@ -90,15 +92,6 @@ public class ShowInfoFragment extends Fragment {
             }
         });
 
-        //TODO check if this user is friend or not
-        btnFriendRequest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO send friends request
-                sendFriendRequestNotification();
-            }
-        });
-
         firebaseHelper.getUserById(TargetUserID, new FirebaseHelper.OnGetUserByIdListener() {
             @Override
             public void onSuccess(UserInfo userInfo) {
@@ -124,33 +117,87 @@ public class ShowInfoFragment extends Fragment {
                 .placeholder(R.drawable.user_account)
                 .error(R.drawable.user_account)
                 .into(userAvatar);
+        String currentUserId = FirebaseAuth.getInstance().getUid();
+
+        if(userInfo.getFriends().contains(currentUserId)) {
+            btnFriendRequest.setText("Unfriend");
+            btnFriendRequest.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onUnfriendClick(TargetUserID);
+                    btnFriendRequest.setText("Add Friend");
+                    btnFriendRequest.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            sendFriendRequest(TargetUserID);
+                            btnFriendRequest.setText("Waiting for reply");
+                            btnFriendRequest.setEnabled(false);
+                        }
+                    });
+                }
+            });
+        } else {
+            if(userInfo.getFriendRequest().contains(currentUserId)) {
+                btnFriendRequest.setText("Waiting for reply");
+                btnFriendRequest.setEnabled(false);
+            } else {
+                FirebaseHelper.getInstance().retrieveDataFromDatabase("UserInfo", currentUserId, UserInfo.class,
+                        new FirebaseHelper.OnCompleteRetrieveDataListener() {
+                            @Override
+                            public <T> void onComplete(List<T> list) {
+                                UserInfo currentUser = (UserInfo) list.get(0);
+                                if(currentUser.getFriendRequest().contains(userInfo.getID())) {
+                                    btnFriendRequest.setVisibility(View.INVISIBLE);
+                                } else {
+                                    btnFriendRequest.setText("Add Friend");
+                                    btnFriendRequest.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            sendFriendRequest(TargetUserID);
+                                            btnFriendRequest.setText("Waiting for reply");
+                                            btnFriendRequest.setEnabled(false);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+            }
+        }
     }
 
-    private void sendFriendRequestNotification() {
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_playstore);
+    private void sendFriendRequest(String targetUserID) {
+        FirebaseHelper.getInstance().retrieveDataFromDatabase("UserInfo", targetUserID, UserInfo.class, new FirebaseHelper.OnCompleteRetrieveDataListener() {
+            @Override
+            public <T> void onComplete(List<T> list) {
+                UserInfo userInfo = (UserInfo) list.get(0);
 
-        String channelId = "channelId";
+                if(userInfo.getFriendRequest() == null) {
+                    userInfo.setFriendRequest(new ArrayList<>());
+                }
 
+                userInfo.getFriendRequest().add(FirebaseAuth.getInstance().getUid());
+                FirebaseHelper.getInstance().addDataToDatabase("UserInfo/", targetUserID, userInfo);
+            }
+        });
+    }
 
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(getContext().getApplicationContext(), channelId);
-        builder.setSmallIcon(R.drawable.ic_notifications)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText("Want to add friend")
-                .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+    private void onUnfriendClick(String targetUserID) {
+        FirebaseHelper.getInstance().retrieveDataFromDatabase("UserInfo", targetUserID, UserInfo.class, new FirebaseHelper.OnCompleteRetrieveDataListener() {
+            @Override
+            public <T> void onComplete(List<T> list) {
+                UserInfo userInfo = (UserInfo) list.get(0);
+                userInfo.getFriends().remove(FirebaseAuth.getInstance().getUid());
+                FirebaseHelper.getInstance().addDataToDatabase("UserInfo/", targetUserID, userInfo);
+            }
+        });
 
-        NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationChannel channel = notificationManager.getNotificationChannel(channelId);
-
-        if(channel == null) {
-            channel = new NotificationChannel(channelId,
-                    "NAME", NotificationManager.IMPORTANCE_HIGH);
-            channel.setLightColor(Color.GREEN);
-            channel.enableVibration(true);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        notificationManager.notify(FRIEND_REQUEST_NOTIFICATION, builder.build());
+        FirebaseHelper.getInstance().retrieveDataFromDatabase("UserInfo", FirebaseAuth.getInstance().getUid(), UserInfo.class, new FirebaseHelper.OnCompleteRetrieveDataListener() {
+            @Override
+            public <T> void onComplete(List<T> list) {
+                UserInfo userInfo = (UserInfo) list.get(0);
+                userInfo.getFriends().remove(targetUserID);
+                FirebaseHelper.getInstance().addDataToDatabase("UserInfo/", FirebaseAuth.getInstance().getUid(), userInfo);
+            }
+        });
     }
 }

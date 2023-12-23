@@ -223,7 +223,7 @@ public class UserInfoFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 pref.edit().clear().apply();
-                                userInfo.setStatus(false);
+                                userInfo.setOnline(false);
                                 FirebaseHelper.getInstance().addDataToDatabase("UserInfo", userInfo.getID(), userInfo);
                                 FirebaseHelper.getInstance().logOut();
                                 reSetAppSetting();

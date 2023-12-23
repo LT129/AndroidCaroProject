@@ -51,9 +51,12 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
         UserInfo user = userInfoArrayList.get(position);
 
         holder.name.setText(user.getUsername());
+        System.out.println(user.isOnline());
         if(user.isOnline()){
             holder.status.setText("Online");
-        }else holder.status.setText("Offline");
+        }else {
+            holder.status.setText("Offline");
+        }
         Glide.with(view).load(user.getAvatar()).error(R.drawable.user_account).into(holder.avatar);
         holder.avatar.setOnClickListener(new View.OnClickListener() {
             @Override

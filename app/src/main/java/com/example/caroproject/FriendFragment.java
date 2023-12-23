@@ -51,6 +51,7 @@ public class FriendFragment extends Fragment {
     private RecyclerView recyclerViewFriend;
     private ArrayList<UserInfo> userInfoArrayList;
     private ProgressBar progressBar;
+    private ImageButton friendRequestNotification;
     FriendListAdapter adapter;
     FirebaseFirestore db;
     Dialog dialog;
@@ -91,6 +92,7 @@ public class FriendFragment extends Fragment {
         edtSearchBar = (EditText) fragment_friendlist.findViewById(R.id.edtSearchBar);
         recyclerViewFriend = (RecyclerView) fragment_friendlist.findViewById(R.id.recyclerViewFriend);
         btnSearch =  fragment_friendlist.findViewById(R.id.btnSearch);
+        friendRequestNotification = fragment_friendlist.findViewById(R.id.friendRequestNotification);
         progressBar = (ProgressBar)fragment_friendlist.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
@@ -100,6 +102,14 @@ public class FriendFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         userInfoArrayList = new ArrayList<UserInfo>();
         firebaseHelper = FirebaseHelper.getInstance();
+
+        friendRequestNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.action_mainMenuFragment_to_friendRequestFragment);
+            }
+        });
 
         // Initialize the global adapter variable
         adapter = new FriendListAdapter(context, userInfoArrayList);

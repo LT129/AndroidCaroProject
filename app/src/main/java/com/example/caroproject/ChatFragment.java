@@ -71,6 +71,7 @@ public class ChatFragment extends Fragment {
     ChatAdapter adapter;
     FirebaseFirestore db;
     FirebaseHelper firebaseHelper;
+    private View view;
 
     public ChatFragment() {
         //Empty constructor
@@ -103,7 +104,7 @@ public class ChatFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chat, null);
+        view = inflater.inflate(R.layout.fragment_chat, null);
         imgViewAvatar =  view.findViewById(R.id.imgViewAvatar);
         txtViewName = view.findViewById(R.id.txtViewName);
         txtViewStatus =  view.findViewById(R.id.txtViewStatus);
@@ -240,7 +241,7 @@ public class ChatFragment extends Fragment {
                             UserInfo currentUser = value.toObject(UserInfo.class);
 
                             if (currentUser != null) {
-                                Glide.with(getView()).load(currentUser.getAvatar()).error(R.drawable.user_account).into(imgViewAvatar);
+                                Glide.with(view).load(currentUser.getAvatar()).error(R.drawable.user_account).into(imgViewAvatar);
                                 txtViewName.setText(currentUser.getUsername());
                                 if(currentUser.isOnline()){
                                     txtViewStatus.setText("Online");

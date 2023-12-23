@@ -60,6 +60,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -124,7 +125,7 @@ public class InGameOnlineFragment extends Fragment {
     private boolean gameOver=false;
     private EditText editMessage;
     private Handler handler;
-    private Button btnSendMessage, btnCancel, btnClose, btnAddFriends;
+    private Button btnSendMessage, btnCancel, btnClose;
     private Button btnTop, btnSurrender, btnMessage, btnZoom, btnHome;
     private int[] savePlayerPosition;
     private CountDownTimer countDownTimer;
@@ -475,18 +476,10 @@ public class InGameOnlineFragment extends Fragment {
                 txtNoLosses = dialogInfo.findViewById(R.id.no_losses);
                 txtNoWins = dialogInfo.findViewById(R.id.no_wins);
                 btnClose = dialogInfo.findViewById(R.id.btnClose);
-                btnAddFriends = dialogInfo.findViewById(R.id.btnAddFriends);
 
                 txtNickname.setText("Nickname: " + username);
                 txtNoWins.setText("Number of wins: " + noWins);
                 txtNoLosses.setText("Number of losses: " + noLosses);
-                btnAddFriends.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialogInfo.dismiss();
-                        //lam sau
-                    }
-                });
                 btnClose.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -1346,6 +1339,7 @@ public class InGameOnlineFragment extends Fragment {
             resultRematchDialog.dismiss();
         }
     }
+
 
 }
 

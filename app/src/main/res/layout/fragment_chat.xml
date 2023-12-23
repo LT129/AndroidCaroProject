@@ -34,7 +34,7 @@
                 android:textStyle="italic"/>
             <TextView
                 android:id="@+id/txtViewStatus"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:text="Status"
                 android:textColor="@color/black"
                 android:textStyle="italic"
