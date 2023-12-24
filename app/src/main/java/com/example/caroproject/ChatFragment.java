@@ -199,23 +199,6 @@ public class ChatFragment extends Fragment {
     }
 
 
-
-    private void LoadMsgData(String msgID){
-        db.collection("ChatRoom").document(chatroomID).collection("chats").document(msgID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot documentSnapshot = task.getResult();
-                            Message msg = documentSnapshot.toObject(Message.class);
-                            msgArrayList.add(msg);
-                            adapter.notifyDataSetChanged();
-                        }
-                    }
-                });
-    }
-
     private void LoadUserData() {
         db.collection("UserInfo").document(otherUserID)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
