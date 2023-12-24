@@ -36,11 +36,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -126,7 +128,7 @@ public class ChatFragment extends Fragment {
         chatView.setAdapter(adapter);
         chatView.setLayoutManager(new LinearLayoutManager(context));
         getOrCreateChatRoom();
-
+        EventChangeListener();
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,8 +146,6 @@ public class ChatFragment extends Fragment {
                 getActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
-        EventChangeListener();
-
         return view;
     }
 
@@ -155,15 +155,8 @@ public class ChatFragment extends Fragment {
         firebaseHelper.getChatRoomRef(chatroomID).set(chatRoom);
 
         Message msg = new Message(message,myID,Timestamp.now());
-        firebaseHelper.getMsgRef(chatroomID).add(msg)
-                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentReference> task) {
-                        if(task.isSuccessful()){
-                            edtMessage.setText("");
-                        }
-                    }
-                });
+        firebaseHelper.getMsgRef(chatroomID).add(msg);
+        edtMessage.setText("");
     }
 
     void getOrCreateChatRoom(){
@@ -185,47 +178,35 @@ public class ChatFragment extends Fragment {
                 }
             });
         }
-    private void EventChangeListener(){
+    private void EventChangeListener() {
         LoadUserData();
+        // Listen for real-time updates on the chat messages
         db.collection("ChatRoom").document(chatroomID).collection("chats")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .orderBy("addtime", Query.Direction.ASCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            QuerySnapshot querySnapshot = task.getResult();
-                            if (querySnapshot != null) {
-                                for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                                    // Get the document ID
-                                    String documentId = document.getId();
-                                    LoadMsgData(documentId);
+                    public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            Log.e("Firestore", "Error getting documents.", error);
+                            return;
+                        }
+                        if (querySnapshot != null) {
+                            for (DocumentChange dc : querySnapshot.getDocumentChanges()) {
+                                switch (dc.getType()) {
+                                    case ADDED:
+                                        // New message added
+                                        Message msg = dc.getDocument().toObject(Message.class);
+                                        msgArrayList.add(msg);
+                                        adapter.notifyItemInserted(msgArrayList.size() - 1);
+                                        break;
+                                    // Handle other cases if needed (MODIFIED, REMOVED)
                                 }
                             }
-                        } else {
-                            Log.e("Firestore", "Error getting documents.", task.getException());
-                        }
-                    }
-                });
-
-    }
-
-
-    private void LoadMsgData(String msgID){
-        db.collection("ChatRoom").document(chatroomID).collection("chats").document(msgID)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot != null && documentSnapshot.exists()) {
-                            Message msg = documentSnapshot.toObject(Message.class);
-                            if (msg != null) {
-                                msgArrayList.add(msg);
-                                adapter.notifyDataSetChanged();
-                            }
                         }
                     }
                 });
     }
+
 
     private void LoadUserData() {
         db.collection("UserInfo").document(otherUserID)
