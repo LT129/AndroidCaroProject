@@ -48,16 +48,49 @@
                 android:background="@drawable/custom_picture"
                 android:src="@drawable/user_account" />
 
-            <TextView
-                android:id="@+id/txtDisplayName"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
                 android:layout_toEndOf="@id/userAvatar"
-                android:textAllCaps="false"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:background="@drawable/custom_edittext_2"/>
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/now"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/custom_edittext_2"
+                    android:text="Number of Wins:"
+                    android:textAllCaps="false"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/nol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/custom_edittext_2"
+                    android:text="Number of Losses:"
+                    android:textAllCaps="false"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
 
         </RelativeLayout>
 

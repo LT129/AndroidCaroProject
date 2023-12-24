@@ -14,9 +14,10 @@ public class UserInfo {
     private String username;
     private String email;
     private List<String> friends;
+    private List<String> friendRequest;
     private String avatar;
     private ArrayList<MatchHistory> matchHistory;
-    private boolean Status;
+    private boolean online;
     private String phoneNumber;
     private Coins coins;
     private ArrayList<Boolean> backgroundStatus;
@@ -28,7 +29,8 @@ public class UserInfo {
         this.ID = ID;
         this.username = username;
         this.email = email;
-        this.friends = null;
+        this.friends = new ArrayList<>();
+        this.friendRequest = new ArrayList<>();
         this.avatar = null;
         this.matchHistory = null;
         this.coins = new Coins(50);
@@ -50,7 +52,8 @@ public class UserInfo {
         this.ID = user.getUid();
         this.username = user.getDisplayName();
         this.email = user.getEmail();
-        this.friends = null;
+        this.friends = new ArrayList<>();
+        this.friendRequest = new ArrayList<>();
         this.avatar = null;
         this.matchHistory = null;
         this.coins = new Coins(100);
@@ -68,13 +71,14 @@ public class UserInfo {
         this.wins = 0;
     }
 
-    public UserInfo(String ID, String username, List<String> friends, String avatar, ArrayList<MatchHistory> matchHistory, boolean status, String email, String phoneNumber, Coins coins) {
+    public UserInfo(String ID, String username, List<String> friends, List<String> friendRequest, String avatar, ArrayList<MatchHistory> matchHistory, boolean status, String email, String phoneNumber, Coins coins) {
         this.ID = ID;
         this.username = username;
         this.friends = friends;
+        this.friendRequest = friendRequest;
         this.avatar = avatar;
         this.matchHistory = matchHistory;
-        this.Status = status;
+        this.online = status;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.coins = coins;
@@ -85,7 +89,8 @@ public class UserInfo {
     public UserInfo() {
         this.ID = null;
         this.username = null;
-        this.friends = null;
+        this.friends = new ArrayList<>();
+        this.friendRequest = new ArrayList<>();
         this.avatar = null;
         this.matchHistory = null;
         this.coins = new Coins(100);
@@ -94,8 +99,10 @@ public class UserInfo {
     }
     public UserInfo(String username, boolean status, String avatar){
         this.username = username;
-        this.Status = status;
+        this.online = status;
         this.avatar = avatar;
+        this.friends = new ArrayList<>();
+        this.friendRequest = new ArrayList<>();
         this.coins = new Coins(100);
         this.matchHistory = null;
         this.losses = 0;
@@ -151,6 +158,14 @@ public class UserInfo {
         return friends;
     }
 
+    public List<String> getFriendRequest() {
+        return friendRequest;
+    }
+
+    public void setFriendRequest(List<String> friendRequest) {
+        this.friendRequest = friendRequest;
+    }
+
     public String getAvatar() {
         return avatar;
     }
@@ -168,11 +183,11 @@ public class UserInfo {
     }
 
     public boolean isOnline() {
-        return Status;
+        return online;
     }
 
-    public void setStatus(boolean status) {
-        Status = status;
+    public void setOnline(boolean status) {
+        this.online = status;
     }
 
     public String getPhoneNumber() {

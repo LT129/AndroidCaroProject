@@ -3,6 +3,7 @@ package com.example.caroproject;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
@@ -45,10 +47,11 @@ public class FriendFragment extends Fragment {
     Context context;
 
     private EditText edtSearchBar;
-    private Button btnOK;
+    private ImageButton btnSearch;
     private RecyclerView recyclerViewFriend;
     private ArrayList<UserInfo> userInfoArrayList;
     private ProgressBar progressBar;
+    private ImageButton friendRequestNotification;
     FriendListAdapter adapter;
     FirebaseFirestore db;
     Dialog dialog;
@@ -88,7 +91,8 @@ public class FriendFragment extends Fragment {
         LinearLayout fragment_friendlist = (LinearLayout) inflater.inflate(R.layout.fragment_friendlist, null);
         edtSearchBar = (EditText) fragment_friendlist.findViewById(R.id.edtSearchBar);
         recyclerViewFriend = (RecyclerView) fragment_friendlist.findViewById(R.id.recyclerViewFriend);
-        btnOK = (Button) fragment_friendlist.findViewById(R.id.btnOK);
+        btnSearch =  fragment_friendlist.findViewById(R.id.btnSearch);
+        friendRequestNotification = fragment_friendlist.findViewById(R.id.friendRequestNotification);
         progressBar = (ProgressBar)fragment_friendlist.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
@@ -99,11 +103,19 @@ public class FriendFragment extends Fragment {
         userInfoArrayList = new ArrayList<UserInfo>();
         firebaseHelper = FirebaseHelper.getInstance();
 
+        friendRequestNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(v);
+                navController.navigate(R.id.action_mainMenuFragment_to_friendRequestFragment);
+            }
+        });
+
         // Initialize the global adapter variable
         adapter = new FriendListAdapter(context, userInfoArrayList);
         recyclerViewFriend.setAdapter(adapter);
         EventChangeListener();
-        btnOK.setOnClickListener(new View.OnClickListener() {
+        btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String username = edtSearchBar.getText().toString();
@@ -167,7 +179,8 @@ public class FriendFragment extends Fragment {
                     @Override
                     public void onSuccess(String userId) {
                             Bundle args = new Bundle();
-                            args.putString("UserID",userId);
+                            args.putString(ShowInfoFragment.USER_ID, userId);
+                            args.putString(ShowInfoFragment.USER_TYPE, ShowInfoFragment.USER_TYPE_1);
                             View view = getView();
                             if(view!=null) {
                                 NavController navController = Navigation.findNavController(view);

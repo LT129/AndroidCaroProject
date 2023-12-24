@@ -39,6 +39,6 @@ public class Message {
         //default constructor
     }
 
-    // Constructor, getters, and setters
+// Constructor, getters, and setters
 }
 

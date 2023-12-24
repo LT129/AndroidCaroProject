@@ -59,7 +59,6 @@ public class UserInfoFragment extends Fragment {
     public static final String PASSWORD = "Password";
 
     private ImageView userAvatar;
-    private TextView txtDisplayName;
 
     private RelativeLayout usernameDetail;
     private TextView txtUsername;
@@ -69,6 +68,8 @@ public class UserInfoFragment extends Fragment {
 
     private RelativeLayout phoneDetail;
     private TextView txtPhone;
+    private TextView now;
+    private TextView nol;
 
     private RelativeLayout passwordDetail;
 
@@ -115,7 +116,6 @@ public class UserInfoFragment extends Fragment {
                 if(result.containsKey(USERNAME)) {
                     String username = result.getString(USERNAME);
                     txtUsername.setText(username);
-                    txtDisplayName.setText(username);
                     userInfo.setUsername(username);
                 }
 
@@ -141,7 +141,6 @@ public class UserInfoFragment extends Fragment {
                 imageChooser(view);
             }
         });
-        txtDisplayName = view.findViewById(R.id.txtDisplayName);
 
         usernameDetail = view.findViewById(R.id.usernameDetail);
         usernameDetail.setOnClickListener(new View.OnClickListener() {
@@ -224,6 +223,8 @@ public class UserInfoFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 pref.edit().clear().apply();
+                                userInfo.setOnline(false);
+                                FirebaseHelper.getInstance().addDataToDatabase("UserInfo", userInfo.getID(), userInfo);
                                 FirebaseHelper.getInstance().logOut();
                                 reSetAppSetting();
                                 NavController navController = Navigation.findNavController(v);
@@ -300,10 +301,13 @@ public class UserInfoFragment extends Fragment {
 
 
     private void init(View view) {
-        txtDisplayName.setText(userInfo.getUsername());
         txtUsername.setText(userInfo.getUsername());
         txtEmail.setText(userInfo.getEmail());
         txtPhone.setText(userInfo.getPhoneNumber());
+        now = view.findViewById(R.id.now);
+        nol = view.findViewById(R.id.nol);
+        now.setText("Number of Wins: " + userInfo.getWins());
+        nol.setText("Number of Losses: " + userInfo.getLosses());
         Glide.with(view).load(userInfo.getAvatar())
                 .placeholder(R.drawable.user_account)
                 .error(R.drawable.user_account)

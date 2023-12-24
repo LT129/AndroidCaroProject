@@ -6,34 +6,40 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/chat_topbar_background">
+        <ImageButton
+            android:id="@+id/btnCallBack"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@null"
+            android:src="@drawable/back_arrow"/>
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgViewAvatar"
-            android:layout_width="100dp"
-            android:layout_height="100dp">
-        </de.hdodenhof.circleimageview.CircleImageView>
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="6dp"/>
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
             <TextView
                 android:id="@+id/txtViewName"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_height="30dp"
                 android:text="@string/username"
                 android:textColor="@color/black"
-                android:textSize="25dp"
-                android:textStyle="italic">
-            </TextView>
+                android:textSize="24sp"
+                android:textStyle="italic"/>
             <TextView
                 android:id="@+id/txtViewStatus"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:text="Status"
                 android:textColor="@color/black"
                 android:textStyle="italic"
-                android:textSize="25dp"
-                android:layout_height="50dp">
+                android:textSize="24sp"
+                android:layout_height="30dp">
             </TextView>
         </LinearLayout>
     </LinearLayout>
@@ -41,29 +47,41 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatView"
         android:layout_width="match_parent"
-        android:layout_height="574dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginBottom="10dp"
         android:clipToPadding="false"
         />
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="bottom">
+        android:layout_gravity="bottom"
+        android:background="@drawable/custom_edittext_3">
+
         <EditText
             android:id="@+id/edtMessage"
-            android:hint="Type a message"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:textSize="20sp"
             android:layout_weight="3"
-            android:layout_height="match_parent">
-        </EditText>
+            android:layout_gravity="center"
+            android:gravity="start"
+            android:hint="Type a message"
+            android:inputType="text|textMultiLine|textCapSentences"
+            android:maxLines="5"
+            android:scrollHorizontally="false"
+            android:scrollbars="vertical"
+            android:textColor="#000000"
+            android:background="@null"/>
+
         <Button
             android:id="@+id/btnSend"
             android:layout_width="50dp"
-            android:layout_height="match_parent"
+            android:layout_height="50dp"
             android:background="@drawable/send_button"
-            android:layout_gravity="end">
+            android:layout_gravity="bottom|end">
         </Button>
     </LinearLayout>
 </LinearLayout>

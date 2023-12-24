@@ -110,7 +110,10 @@ public class SignInFragment extends Fragment {
                                                 new FirebaseHelper.OnCompleteRetrieveDataListener() {
                                                     @Override
                                                     public<T> void onComplete(List<T> list) {
-                                                        updateSharedPreferences((UserInfo) list.get(0));
+                                                        UserInfo userInfo = (UserInfo) list.get(0);
+                                                        userInfo.setOnline(true);
+                                                        FirebaseHelper.getInstance().addDataToDatabase("UserInfo", userInfo.getID(), userInfo);
+                                                        updateSharedPreferences(userInfo);
                                                     }
                                                 });
 

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -59,6 +60,7 @@ public class ChatFragment extends Fragment {
     private String mParam2;
     Context context;
     private CircleImageView imgViewAvatar;
+    private ImageButton btnCallBack;
     private TextView txtViewName,txtViewStatus;
     private RecyclerView chatView;
     private String otherUserID;
@@ -71,6 +73,7 @@ public class ChatFragment extends Fragment {
     ChatAdapter adapter;
     FirebaseFirestore db;
     FirebaseHelper firebaseHelper;
+    private View view;
 
     public ChatFragment() {
         //Empty constructor
@@ -103,7 +106,7 @@ public class ChatFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chat, null);
+        view = inflater.inflate(R.layout.fragment_chat, null);
         imgViewAvatar =  view.findViewById(R.id.imgViewAvatar);
         txtViewName = view.findViewById(R.id.txtViewName);
         txtViewStatus =  view.findViewById(R.id.txtViewStatus);
@@ -136,6 +139,14 @@ public class ChatFragment extends Fragment {
             }
         });
 
+        btnCallBack = view.findViewById(R.id.btnCallBack);
+        btnCallBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
+            }
+        });
+        EventChangeListener();
         return view;
     }
 
@@ -170,7 +181,6 @@ public class ChatFragment extends Fragment {
         }
     private void EventChangeListener() {
         LoadUserData();
-
         // Listen for real-time updates on the chat messages
         db.collection("ChatRoom").document(chatroomID).collection("chats")
                 .orderBy("addtime", Query.Direction.ASCENDING)
@@ -213,7 +223,7 @@ public class ChatFragment extends Fragment {
                             UserInfo currentUser = value.toObject(UserInfo.class);
 
                             if (currentUser != null) {
-                                Glide.with(getView()).load(currentUser.getAvatar()).error(R.drawable.user_account).into(imgViewAvatar);
+                                Glide.with(view).load(currentUser.getAvatar()).error(R.drawable.user_account).into(imgViewAvatar);
                                 txtViewName.setText(currentUser.getUsername());
                                 if(currentUser.isOnline()){
                                     txtViewStatus.setText("Online");

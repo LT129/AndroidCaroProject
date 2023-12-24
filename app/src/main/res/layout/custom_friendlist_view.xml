@@ -2,67 +2,62 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_friend"
-    android:fadingEdge="none">
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/imgViewAvatar"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_margin="10dp"
-        android:layout_gravity="center">
-    </de.hdodenhof.circleimageview.CircleImageView>
+    android:layout_margin="4dp"
+    android:background="@drawable/friend_item_background"
+    android:id="@+id/btnChat">
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_marginStart="10dp"
-        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/txtViewName"
-                android:layout_width="0dp"
-                android:layout_weight="4"
-                android:layout_height="match_parent"
-                android:text="@string/username"
-                android:textColor="@color/white"
-                android:textSize="25dp"
-                android:textStyle="italic">
-            </TextView>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgViewAvatar"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center">
+        </de.hdodenhof.circleimageview.CircleImageView>
 
-            <Button
-                android:id="@+id/btnChat"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:background="@drawable/chat">
-            </Button>
-        </LinearLayout>
         <TextView
             android:id="@+id/txtViewStatus"
             android:layout_width="match_parent"
+            android:layout_marginTop="4dp"
             android:text="Status"
-            android:textColor="@color/white"
-            android:textStyle="italic"
-            android:textSize="24sp"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:gravity="center"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:layout_height="wrap_content">
         </TextView>
-        <Button
-            android:id="@+id/btnRemove"
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/txtViewName"
             android:layout_width="match_parent"
-            android:background="@android:color/transparent"
-            android:textColor="@color/white"
-            android:gravity="start"
-            android:textSize="24sp"
-            android:text="Remove"
-            android:textAllCaps="false"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-        </Button>
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:gravity="center_vertical"
+            android:text="@string/username"
+            android:textColor="#000000"
+            android:textSize="24sp">
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtLastMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:requiresFadingEdge="horizontal"
+            android:ellipsize="end"
+            android:layout_margin="10dp"
+            android:gravity="center_vertical"
+            android:textColor="#000000"
+            android:textSize="22sp"
+            android:maxLines="1"
+            android:text="Hello">
+        </TextView>
     </LinearLayout>
 </LinearLayout>

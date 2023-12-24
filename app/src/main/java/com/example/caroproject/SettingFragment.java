@@ -51,7 +51,7 @@ public class SettingFragment extends Fragment {
 
         AudioManager audioManager = (AudioManager) requireActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         seekBarMusic.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-        seekBarMusic.setProgress(pref.getInt(MainActivity.MUSIC_VOLUME, 100));
+        seekBarMusic.setProgress(pref.getInt(MainActivity.MUSIC_VOLUME, 50));
         seekBarMusic.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int newVolume, boolean b) {

@@ -46,12 +46,12 @@ public class MainActivity extends AppCompatActivity {
         if(pref != null) {
             backgroundPosition = pref.getInt(BACKGROUND, 0);
             musicPosition = pref.getInt(MUSIC, 0);
-            musicVolume = pref.getInt(MUSIC_VOLUME, 100);
+            musicVolume = pref.getInt(MUSIC_VOLUME, 50);
 
         } else {
             backgroundPosition = 0;
             musicPosition = 0;
-            musicVolume = 100;
+            musicVolume = 50;
         }
 
 
