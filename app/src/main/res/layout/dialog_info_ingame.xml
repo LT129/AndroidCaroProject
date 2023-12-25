@@ -20,7 +20,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add friends for more chatting"
+        android:text="Add friends in match history for more chatting"
         android:textAlignment="center"
         android:textSize="15dp"
         android:layout_margin="10dp"

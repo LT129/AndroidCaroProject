@@ -146,7 +146,7 @@ public class ChatFragment extends Fragment {
                 getActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
-        EventChangeListener();
+        //EventChangeListener();
         return view;
     }
 
