@@ -56,7 +56,6 @@ public class MatchHistoryAdapter extends ArrayAdapter<MatchHistory> {
             public void onClick(View v) {
                 Bundle args = new Bundle();
                 args.putString(ShowInfoFragment.USER_ID, items.get(position).getUserId());
-                args.putString(ShowInfoFragment.USER_TYPE, ShowInfoFragment.USER_TYPE_2);
                 NavController navController = Navigation.findNavController(v);
                 navController.navigate(R.id.action_mainMenuFragment_to_showInfoFragment, args);
             }

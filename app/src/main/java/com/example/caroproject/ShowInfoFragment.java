@@ -44,9 +44,6 @@ import java.util.List;
 
 public class ShowInfoFragment extends Fragment {
     public static final String USER_ID = "UserID";
-    public static final String USER_TYPE = "USER_TYPE";
-    public static final String USER_TYPE_1 = "Friend";
-    public static final String USER_TYPE_2 = "Opponent";
     private static final int FRIEND_REQUEST_NOTIFICATION = 1;
     private String TargetUserID;
     private ImageView userAvatar;
@@ -84,7 +81,7 @@ public class ShowInfoFragment extends Fragment {
         firebaseHelper = FirebaseHelper.getInstance();
         TargetUserID = getArguments().getString(USER_ID);
 
-        txtNameInfo.setText(getArguments().getString(USER_TYPE) + " Information");
+        txtNameInfo.setText("User Information");
         btnCallBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
