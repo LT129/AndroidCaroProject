@@ -203,6 +203,7 @@ public class FriendFragment extends Fragment {
     }
 
     private void loadFriendsData(List<String> friendIds) {
+        userInfoArrayList.clear();
         for (String friendId : friendIds) {
             db.collection("UserInfo").document(friendId)
                     .get()

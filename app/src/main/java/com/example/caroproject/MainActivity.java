@@ -11,10 +11,18 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
 
+import com.example.caroproject.Adapter.FirebaseHelper;
 import com.example.caroproject.Data.AppData;
 import com.example.caroproject.Data.Background;
 import com.example.caroproject.Data.Music;
 import com.example.caroproject.Data.SoundMaking;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public final static String PREF_FILE = "CARO";
@@ -33,6 +41,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null) {
+            FirebaseFirestore.getInstance()
+                    .collection("UserInfo").document(user.getUid())
+                    .update("online", true);
+        }
     }
 
 
@@ -74,6 +88,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         SoundMaking.getInstance().playMusic();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null) {
+            FirebaseFirestore.getInstance()
+                    .collection("UserInfo").document(user.getUid())
+                    .update("online", false);
+        }
     }
 
 

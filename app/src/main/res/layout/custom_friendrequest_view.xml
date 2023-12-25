@@ -44,11 +44,11 @@
             <Button
                 android:id="@+id/btnAccept"
                 android:layout_width="0dp"
-                android:layout_weight="5"
+                android:layout_weight="10"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_button_2"
                 android:textAllCaps="false"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:text="Accept"/>
             <View
                 android:layout_width="0dp"
@@ -57,11 +57,11 @@
             <Button
                 android:id="@+id/btnDecline"
                 android:layout_width="0dp"
-                android:layout_weight="5"
+                android:layout_weight="10"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_button_1"
                 android:textAllCaps="false"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:text="Decline"/>
             <View
                 android:layout_width="0dp"
