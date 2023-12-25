@@ -42,7 +42,10 @@ import com.example.caroproject.Data.Background;
 import com.example.caroproject.Data.Music;
 import com.example.caroproject.Data.SoundMaking;
 import com.example.caroproject.Data.UserInfo;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -224,8 +227,15 @@ public class UserInfoFragment extends Fragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 pref.edit().clear().apply();
                                 userInfo.setOnline(false);
-                                FirebaseHelper.getInstance().addDataToDatabase("UserInfo", userInfo.getID(), userInfo);
-                                FirebaseHelper.getInstance().logOut();
+
+                                FirebaseFirestore.getInstance().collection("UserInfo")
+                                        .document(userInfo.getID()).set(userInfo)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                FirebaseHelper.getInstance().logOut();
+                                            }
+                                        });
                                 reSetAppSetting();
                                 NavController navController = Navigation.findNavController(v);
                                 navController.navigate(R.id.action_userInfoFragment_to_signInFragment);
